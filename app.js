@@ -1,10 +1,17 @@
 const express = require('express');
 const mysql = require('mysql');
+const bodyParser = require('body-parser');
 const app = express();
-
-app.listen('3000', () => {
-    console.log('Server started on port 3000');
-});
+app.use(express.json());
+app.use(bodyParser.json({
+    limit: '50mb'
+}))
+app.use(bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000
+}))
+app.listen('3000', '192.168.1.114');
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -15,7 +22,8 @@ const db = mysql.createConnection({
 
 //Create DB
 app.get('/createDB', (req, res) => {
-    let sql = 'CREATE DATABASE exceldata`';
+    let sql = 'CREATE DATABASE exceldata';
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -50,25 +58,33 @@ app.get('/addpost1', (req, res) => {
             throw err;
         }
         res.send(`${post} added`);
-        console.log(result);
+
     });
 })
 
-//Insert Post 2 
-app.get('/addpost2', (req, res) => {
-    let post = {
-        title: 'Post two',
-        body: 'This is post number two'
-    };
-    let sql = 'INSERT INTO posts SET ?';
+//Insert Clients
+app.post('/addclients', (req, res) => {
 
-    db.query(sql, post, (err, result) => {
+    let sql = 'INSERT IGNORE INTO clients (client_number, ident_code, date_created) VALUES ?';
+    db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
         }
-        res.send(`${post} added`);
-        console.log(result);
+        console.log('Clients inserted');
     });
+})
+
+//Insert Readings
+app.post('/addreadings', (req, res) => {
+
+    let sql = 'INSERT INTO readings (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
+    db.query(sql, [req.body], (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Readings inserted');
+    });
+
 })
 
 

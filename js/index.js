@@ -3,24 +3,31 @@ const companies = {
     ENERGO_PRO: 'ENERGO_PRO',
     EVN: 'EVN'
 };
-var company = '';
+
+class Company {
+    constructor() {
+        this.company = '';
+    }
+    getCompany() {
+        return this.company;
+    }
+    setCompany(company) {
+        this.company = company;
+    }
+}
+
+let company = new Company();
+
 ($('body > div.container').click(() => {
 
     if ($('#energo-pro').is(':checked')) {
-        company = 'ENERGO_PRO';
+        company.setCompany('ENERGO_PRO');
     } else if ($('#cez').is(':checked')) {
-        company = 'CEZ';
+        company.setCompany('CEZ');
     } else if ($('#evn').is(':checked')) {
-        company = 'EVN';
+        company.setCompany('EVN');
     }
-    if (company === '') {
-        notification('Choose company', 'error');
-    } else if (company !== '') {
-        notification('Company chosen', 'success')
-    }
-    console.log(company);
 }));
-
 $(document).ready(function () {
     document.getElementById('input-excel').addEventListener('drop', processFile, false);
 });
@@ -34,6 +41,9 @@ function processFile(e) {
     var reader = new FileReader();
     var fileName = e.dataTransfer.files[0].name;
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
+
+    let clientsAll = []
+    let readingsAll = []
 
     if (extension === 'xls') {
         reader.onload = function (e) {
@@ -55,113 +65,101 @@ function processFile(e) {
 
             //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
 
-
-
-            //Energo-pro 
-            if (companies.ENERGO_PRO === company) {
+            //////////////
+            //ENERGO_PRO//
+            //////////////
+            if (companies.ENERGO_PRO === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
-                    /*   if (i !== 0) {
-                           let clientNumber = value['7'];
-                           let identCode = value['4'];
-                           let dateCreated = new Date();
-                           let period_from = value['12'];
-                           let period_to = value['13'];
-                           let periodDays = value['14'];
-                           let scaleNumber = value['15'];
-                           let scaleType = value['17'];
-                           let timeZone = value['18'];
-                           let readingsNew = value['19'];
-                           let readingOld = value['20'];
-                           let diff = value['21'];
-                           let correction = value['23'];
-                           let deduction = value['24'];
-                           let totalQty = value['25'];
-                           let service = value['26'];
-                           let qty = value['27'];
-                           let price = value['28'];
-                           let valueBgn = value['29'];
-                           let type = value['3'];
-                           if (type === 'Техническа част') {
-                               type = 1;
-                           } else if (type === 'Разпределение') {
-                               type = 2;
-                           }
-                           let operator = '3' //ENERGOPRO !
-                       }
-                       console.log(value); */
+                    if (i !== 0) {
+                        if (value['4'] == '' || value['4'] == undefined) {
+                            return;
+                        }
+                        if (value['7'] == '') {
+                            return;
+                        }
+                        let client = [value['7'], value['4'], new Date()];
+
+                        let type = value['3'];
+                        if (type === 'Техническа част') {
+                            type = 1;
+                        } else if (type === 'Разпределение') {
+                            type = 2;
+                        }
+                        //ENERGO PRO operator 3
+                        let operator = 3;
+
+                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        readingsAll.push(reading);
+                        clientsAll.push(client);
+                    }
                 });
+                saveClientsToDB(clientsAll);
+                saveReadingsToDB(readingsAll);
             }
 
 
-
-            //CEZ 
-            if (companies.CEZ === company) {
+            /////////
+            //CEZ///
+            //////// 
+            if (companies.CEZ === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
-                    /*   if (i !== 0 && i !== 1) {
-                           let clientNumber = value['7'];
-                           let identCode = value['4'];
-                           let dateCreated = new Date();
-                           let period_from = value['12'];
-                           let period_to = value['13'];
-                           let periodDays = value['14'];
-                           let scaleNumber = value['15'];
-                           let scaleType = value['17'];
-                           let timeZone = value['18'];
-                           let readingsNew = value['19'];
-                           let readingOld = value['20'];
-                           let diff = value['21'];
-                           let correction = value['23'];
-                           let deduction = value['24'];
-                           let totalQty = value['25'];
-                           let service = value['26'];
-                           let qty = value['27'];
-                           let price = value['28'];
-                           let valueBgn = value['29'];
-                           let type = value['3'];
-                           if (type === 'Техническа част') {
-                               type = 1;
-                           } else if (type === 'Разпределение') {
-                               type = 2;
-                           }
-                           let operator = '3' //ENERGOPRO !
-                       }
-                       console.log(value); */
+                    if (i !== 0 && i !== 1) {
+                        if (value['4'] == '' || value['4'] == undefined) {
+                            return;
+                        }
+                        if (value['7'] == '') {
+                            return;
+                        }
+                        let client = [value['7'], value['4'], new Date()];
+
+                        let type = value['3'];
+                        if (type === 'Техническа част') {
+                            type = 1;
+                        } else if (type === 'Разпределение') {
+                            type = 2;
+                        }
+                        //CEZ operator 2
+                        let operator = 2;
+
+                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        readingsAll.push(reading);
+                        clientsAll.push(client);
+
+                    }
                 });
+                saveClientsToDB(clientsAll);
+                saveReadingsToDB(readingsAll);
             }
-
-            //EVN
-            if (companies.EVN === company) {
+            ///////
+            //EVN//
+            ///////
+            if (companies.EVN === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
-                    /*   if (i !== 0 && i !== 1 && i !==2) {
-                           let clientNumber = value['7'];
-                           let identCode = value['4'];
-                           let dateCreated = new Date();
-                           let period_from = value['12'];
-                           let period_to = value['13'];
-                           let periodDays = value['14'];
-                           let scaleNumber = value['15'];
-                           let scaleType = value['17'];
-                           let timeZone = value['18'];
-                           let readingsNew = value['19'];
-                           let readingOld = value['20'];
-                           let diff = value['21'];
-                           let correction = value['23'];
-                           let deduction = value['24'];
-                           let totalQty = value['25'];
-                           let service = value['26'];
-                           let qty = value['27'];
-                           let price = value['28'];
-                           let valueBgn = value['29'];
-                           let type = value['3'];
-                           if (type === 'Техническа част') {
-                               type = 1;
-                           } else if (type === 'Разпределение') {
-                               type = 2;
-                           }
-                           let operator = '3' //ENERGOPRO !
-                       }
-                       console.log(value); */
+                    if (i !== 0 && i !== 1 && i !== 2) {
+                        if (value['4'] == '' || value['4'] == undefined) {
+                            return;
+                        }
+                        if (value['7'] == '') {
+                            return;
+                        }
+                        let client = [value['7'], value['4'], new Date()];
+
+                        let type = value['3'];
+                        if (type === 'Техническа част') {
+                            type = 1;
+                        } else if (type === 'Разпределение') {
+                            type = 2;
+                        }
+                        //EVN operator 1
+                        let operator = 1;
+
+                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        readingsAll.push(reading);
+                        clientsAll.push(client);
+                    }
                 });
+                saveClientsToDB(clientsAll);
+                saveReadingsToDB(readingsAll);
             }
         };
         reader.readAsArrayBuffer(f);
@@ -172,64 +170,180 @@ function processFile(e) {
     } else {
         notification('Invalid file format', 'error');
     }
-}
 
-
-function checkCompany(company) {
-    if (company === companies.ENERGO_PRO) {
-        return company;
-    } else if (company === companies.EVN) {
-        return company;
-    } else if (company === companies.CEZ) {
-        return company;
-    }
-    notification('Invalid company!', error);
-    throw new Error('Invalid company!');
-}
-
-function getCols(sheet) {
-    var result = [];
-    var row;
-    var rowNum;
-    var colNum;
-    var range = XLSX.utils.decode_range(sheet['!ref']);
-    for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-        row = [];
-        for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
-            var nextCell = sheet[
-                XLSX.utils.encode_cell({
-                    r: rowNum,
-                    c: colNum
-                })
-            ];
-            if (typeof nextCell === 'undefined') {
-                row.push(void 0);
-            } else row.push(nextCell.w);
+    function getCols(sheet) {
+        var result = [];
+        var row;
+        var rowNum;
+        var colNum;
+        var range = XLSX.utils.decode_range(sheet['!ref']);
+        for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+            row = [];
+            for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
+                var nextCell = sheet[
+                    XLSX.utils.encode_cell({
+                        r: rowNum,
+                        c: colNum
+                    })
+                ];
+                if (typeof nextCell === 'undefined') {
+                    row.push(void 0);
+                } else row.push(nextCell.w);
+            }
+            result.push(row);
         }
-        result.push(row);
+        return result;
     }
-    return result;
-}
 
-function loadHandler(event) {
+    function loadHandler(event) {
 
-    let csv = event.target.result;
-    processData(csv);
-}
+        let csv = event.target.result;
+        processData(csv);
+    }
 
-function processData(csv) {
-    let text = csv.split("/\r\n|\n");
+    Array.prototype.insert = function (index, item) {
+        this.splice(index, 0, item);
+    };
 
-    for (let i = 0; i < text.length; i++) {
-        let row = text[i].split(';');
-        let col = [];
-        for (let j = 0; j < row.length; j++) {
-            col.push(row[j]);
-           
+    function processData(csv) {
+        let text = csv.split(/\r?\n/);
+        var col = [];
+        for (let i = 0; i < text.length; i++) {
+            let row = text[i].split(';');
+            col.insert(i, row);
         }
-        console.log(col);
-        console.log(" ");
+        ///////
+        //EVN//
+        ///////
+        if (company.getCompany() === companies.EVN) {
+            col.forEach(function (value, i) {
+                if (i !== 0 && i !== 1 && i !== 2) {
+                    if (value['4'] == '' || value['4'] == undefined) {
+                        return;
+                    }
+                    if (value['7'] == '') {
+                        return;
+                    }
+                    let client = [value['7'], value['4'], new Date()];
+
+                    let type = value['3'];
+                    if (type === 'Техническа част') {
+                        type = 1;
+                    } else if (type === 'Разпределение') {
+                        type = 2;
+                    }
+                    //EVN operator 1
+                    let operator = 1;
+
+                    let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    readingsAll.push(reading);
+                    clientsAll.push(client);
+                }
+            });
+            saveClientsToDB(clientsAll);
+            saveReadingsToDB(readingsAll);
+        }
+        //////
+        //CEZ//
+        ////// 
+        else if (company.getCompany() === companies.CEZ) {
+            col.forEach(function (value, i) {
+                if (i !== 0 && i !== 1) {
+                    if (value['4'] == '' || value['4'] == undefined) {
+                        return;
+                    }
+                    if (value['7'] == '') {
+                        return;
+                    }
+                    let client = [value['7'], value['4'], new Date()];
+
+                    let type = value['3'];
+                    if (type === 'Техническа част') {
+                        type = 1;
+                    } else if (type === 'Разпределение') {
+                        type = 2;
+                    }
+                    //CEZ operator 2
+                    let operator = 2;
+
+                    let reading = [value['7'], value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    readingsAll.push(reading);
+                    clientsAll.push(client);
+
+                }
+            });
+            console.log(clientsAll);
+            saveClientsToDB(clientsAll);
+            saveReadingsToDB(readingsAll);
+        }
+        //////////////
+        //ENERGO_PRO//
+        //////////////
+        else if (company.getCompany() === companies.ENERGO_PRO) {
+            col.forEach(function (value, i) {
+                if (i !== 0) {
+                    if (value['4'] == '' || value['4'] == undefined) {
+                        return;
+                    }
+                    if (value['7'] == '') {
+                        return;
+                    }
+                    let client = [value['7'], value['4'], new Date()];
+
+                    let type = value['3'];
+                    if (type === 'Техническа част') {
+                        type = 1;
+                    } else if (type === 'Разпределение') {
+                        type = 2;
+                    }
+                    //ENERGO PRO operator 3
+                    let operator = 3;
+
+                    let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    readingsAll.push(reading);
+                    clientsAll.push(client);
+                }
+            });
+            saveClientsToDB(clientsAll);
+            saveReadingsToDB(readingsAll);
+        }
     }
+}
+
+function saveClientsToDB(clients) {
+    notification('Loading..', 'loading');
+    $.ajax({
+        url: 'http://192.168.1.114:3000/addclients',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(clients),
+        success: function data() {
+
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(errorThrown, 'error');
+            console.log('error');
+        }
+    });
+}
+
+function saveReadingsToDB(readings) {
+    $.ajax({
+        url: 'http://192.168.1.114:3000/addreadings',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(readings),
+        success: function (data) {
+
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(errorThrown, 'error');
+            console.log('error');
+        }
+    });
+    notification('Everything is good', 'success');
 }
 
 function notification(msg, type) {
