@@ -208,6 +208,7 @@ function processFile(e) {
     function processData(csv) {
         let text = csv.split(/\r?\n/);
         var col = [];
+        var clientIds = [];
         for (let i = 0; i < text.length; i++) {
             let row = text[i].split(';');
             col.insert(i, row);
@@ -255,7 +256,7 @@ function processFile(e) {
                     if (value['7'] == '') {
                         return;
                     }
-                    let client = [value['7'], value['4'], new Date()];
+                    let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
                     if (type === 'Техническа част') {
@@ -268,13 +269,16 @@ function processFile(e) {
 
                     let reading = [value['7'], value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                     readingsAll.push(reading);
+                    clientIds.push(value['4']);
                     clientsAll.push(client);
 
                 }
             });
             console.log(clientsAll);
             saveClientsToDB(clientsAll);
-            saveReadingsToDB(readingsAll);
+            var cl = await getClientsFromDB(clientIds);
+            console.log(cl);
+            saveReadingsToDB(readingsAll, cl);
         }
         //////////////
         //ENERGO_PRO//
@@ -288,7 +292,7 @@ function processFile(e) {
                     if (value['7'] == '') {
                         return;
                     }
-                    let client = [value['7'], value['4'], new Date()];
+                    let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
                     if (type === 'Техническа част') {
@@ -301,10 +305,13 @@ function processFile(e) {
 
                     let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                     readingsAll.push(reading);
+
                     clientsAll.push(client);
                 }
             });
             saveClientsToDB(clientsAll);
+            var cl = getClientsFromDB(clientIds);
+            console.log(cl);
             saveReadingsToDB(readingsAll);
         }
     }
@@ -319,13 +326,34 @@ function saveClientsToDB(clients) {
         dataType: 'json',
         data: JSON.stringify(clients),
         success: function data() {
-
+            console.log(1);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(errorThrown, 'error');
             console.log('error');
         }
     });
+}
+
+async function getClientsFromDB(clients) {
+    notification('Loading..', 'loading');
+    var retVal;
+    $.ajax({
+        url: 'http://192.168.1.114:3000/getClient',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(clients),
+        success: function (data) {
+            console.log(2);
+            retVal = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(errorThrown, 'error');
+            console.log('error');
+        }
+    });
+    return retVal;
 }
 
 function saveReadingsToDB(readings) {

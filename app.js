@@ -2,17 +2,51 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const app = express();
+const expressLayouts = require('express-ejs-layouts');
+const flash = require('connect-flash');
+const session = require('express-session');
+
+// EJS 
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+
+// Make bootstrap work locally
+app.use(express.static('public'))
+
+// Bodydparser
 app.use(express.json());
 app.use(bodyParser.json({
     limit: '50mb'
-}))
+}));
 app.use(bodyParser.urlencoded({
     limit: "50mb",
     extended: true,
     parameterLimit: 50000
-}))
-app.listen('3000', '192.168.1.114');
+}));
 
+// Express Session
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+    //  cookie: {secure: true}
+}));
+
+// Connect flash
+app.use(flash());
+
+// Global vars
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    next();
+});
+
+// PORT
+const PORT = process.env.PORT || 3000 || '192.168.1.114';
+app.listen(PORT, console.log(`Server started on port ${PORT}`));
+
+// DB connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -20,7 +54,15 @@ const db = mysql.createConnection({
     database: 'exceldata'
 });
 
-//Create DB
+
+// Routing
+app.use('/', require('./routes/dashboard'));
+app.use('/homepage', require('./routes/dashboard'));
+app.use('/dashboard', require('./routes/dashboard'));
+
+app.use('/users', require('./routes/users'));
+
+// Create DB
 app.get('/createDB', (req, res) => {
     let sql = 'CREATE DATABASE exceldata';
 
@@ -33,7 +75,7 @@ app.get('/createDB', (req, res) => {
     });
 });
 
-//Create Table
+// Create Table
 app.get('/createposttable', (req, res) => {
     let sql = 'CREATE TABLE posts(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))';
     db.query(sql, (err, result) => {
@@ -45,7 +87,7 @@ app.get('/createposttable', (req, res) => {
     });
 });
 
-//Insert Post 1
+// Insert Post 1
 app.get('/addpost1', (req, res) => {
     let post = {
         title: 'Post one',
@@ -62,7 +104,7 @@ app.get('/addpost1', (req, res) => {
     });
 })
 
-//Insert Clients
+// Insert Clients
 app.post('/addclients', (req, res) => {
 
     let sql = 'INSERT IGNORE INTO clients (client_number, ident_code, date_created) VALUES ?';
@@ -71,10 +113,11 @@ app.post('/addclients', (req, res) => {
             throw err;
         }
         console.log('Clients inserted');
+        return res.send("Clients added");
     });
 })
 
-//Insert Readings
+// Insert Readings
 app.post('/addreadings', (req, res) => {
 
     let sql = 'INSERT INTO readings (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
@@ -83,12 +126,11 @@ app.post('/addreadings', (req, res) => {
             throw err;
         }
         console.log('Readings inserted');
+        return res.send("Readings added");
     });
-
 })
 
-
-//Select posts
+// Select posts
 app.get('/getposts', (req, res) => {
 
     let sql = 'SELECT * FROM posts';
@@ -102,20 +144,21 @@ app.get('/getposts', (req, res) => {
     });
 })
 
-//Select single post
-app.get('/getpost/:id', (req, res) => {
-    let sql = `SELECT * FROM posts WHERE id = ${req.params.id}`;
-    db.query(sql, (err, result) => {
+// Get clients
+app.post('/getClient', (req, res) => {
+    console.log(req.body);
+    let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join()})`;
+    db.query(sql, req.body.join(), (err, result) => {
         if (err) {
             throw err;
         }
-        res.send('Post fetched');
-        console.log(result);
+        console.log('Clients get');
+        return res.send(JSON.stringify(result));
     });
 })
 
 
-//Update post
+// Update post
 app.get('/updatepost/:id', (req, res) => {
     let newTitle = 'new title';
     let sql = `UPDATE posts SET title = '${newTitle}' WHERE id = ${req.params.id}`;
@@ -128,7 +171,7 @@ app.get('/updatepost/:id', (req, res) => {
     });
 })
 
-//Delete post
+// Delete post
 app.get('/deletepost/:id', (req, res) => {
     let sql = `DELETE from posts WHERE id = ${req.params.id}`;
     db.query(sql, (err, result) => {
@@ -140,7 +183,7 @@ app.get('/deletepost/:id', (req, res) => {
     });
 })
 
-//Connect to DB
+// Connect to DB
 db.connect((err) => {
     if (err) {
         throw err;
