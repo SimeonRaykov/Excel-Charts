@@ -5,6 +5,10 @@ const app = express();
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
+
+// Passport config
+require('./config/passport.js')(passport);
 
 // EJS 
 app.use(expressLayouts);
@@ -32,6 +36,10 @@ app.use(session({
     //  cookie: {secure: true}
 }));
 
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Connect flash
 app.use(flash());
 
@@ -39,6 +47,7 @@ app.use(flash());
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
     next();
 });
 
@@ -146,7 +155,6 @@ app.get('/getposts', (req, res) => {
 
 // Get clients
 app.post('/getClient', (req, res) => {
-    console.log(req.body);
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join()})`;
     db.query(sql, req.body.join(), (err, result) => {
         if (err) {
@@ -156,7 +164,6 @@ app.post('/getClient', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 })
-
 
 // Update post
 app.get('/updatepost/:id', (req, res) => {
@@ -190,3 +197,5 @@ db.connect((err) => {
     }
     console.log('Mysql connected');
 });
+
+exports.db = db;

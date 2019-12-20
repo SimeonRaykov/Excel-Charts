@@ -33,6 +33,8 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
+    let cl;
+    let clientIds = [];
 
     e.stopPropagation();
     e.preventDefault();
@@ -65,9 +67,9 @@ function processFile(e) {
 
             //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
 
-            //////////////
-            //ENERGO_PRO//
-            //////////////
+            //////////////////
+            //ENERGO_PRO XLS//
+            //////////////////
             if (companies.ENERGO_PRO === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                     if (i !== 0) {
@@ -88,19 +90,22 @@ function processFile(e) {
                         //ENERGO PRO operator 3
                         let operator = 3;
 
-                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                         readingsAll.push(reading);
+                        clientIds.push(value['4']);
                         clientsAll.push(client);
                     }
                 });
                 saveClientsToDB(clientsAll);
+                cl = getClientsFromDB(clientIds);
+                changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
             }
 
 
-            /////////
-            //CEZ///
-            //////// 
+            ////////////
+            //CEZ XLS///
+            /////////// 
             if (companies.CEZ === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                     if (i !== 0 && i !== 1) {
@@ -110,7 +115,7 @@ function processFile(e) {
                         if (value['7'] == '') {
                             return;
                         }
-                        let client = [value['7'], value['4'], new Date()];
+                        let client = [value['7'], value['4'].replace(/"/g, ''), new Date()];
 
                         let type = value['3'];
                         if (type === 'Техническа част') {
@@ -121,18 +126,21 @@ function processFile(e) {
                         //CEZ operator 2
                         let operator = 2;
 
-                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                         readingsAll.push(reading);
+                        clientIds.push(value['4']);
                         clientsAll.push(client);
 
                     }
                 });
                 saveClientsToDB(clientsAll);
+                cl = getClientsFromDB(clientIds);
+                changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
             }
-            ///////
-            //EVN//
-            ///////
+            ///////////
+            //EVN XLS//
+            ///////////
             if (companies.EVN === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                     if (i !== 0 && i !== 1 && i !== 2) {
@@ -142,7 +150,7 @@ function processFile(e) {
                         if (value['7'] == '') {
                             return;
                         }
-                        let client = [value['7'], value['4'], new Date()];
+                        let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                         let type = value['3'];
                         if (type === 'Техническа част') {
@@ -153,12 +161,15 @@ function processFile(e) {
                         //EVN operator 1
                         let operator = 1;
 
-                        let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                         readingsAll.push(reading);
+                        clientIds.push(value['4']);
                         clientsAll.push(client);
                     }
                 });
                 saveClientsToDB(clientsAll);
+                cl = getClientsFromDB(clientIds);
+                changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
             }
         };
@@ -208,14 +219,13 @@ function processFile(e) {
     function processData(csv) {
         let text = csv.split(/\r?\n/);
         var col = [];
-        var clientIds = [];
         for (let i = 0; i < text.length; i++) {
             let row = text[i].split(';');
             col.insert(i, row);
         }
-        ///////
-        //EVN//
-        ///////
+        ////////////
+        //EVN CSV///
+        ////////////
         if (company.getCompany() === companies.EVN) {
             col.forEach(function (value, i) {
                 if (i !== 0 && i !== 1 && i !== 2) {
@@ -225,7 +235,7 @@ function processFile(e) {
                     if (value['7'] == '') {
                         return;
                     }
-                    let client = [value['7'], value['4'], new Date()];
+                    let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
                     if (type === 'Техническа част') {
@@ -236,17 +246,20 @@ function processFile(e) {
                     //EVN operator 1
                     let operator = 1;
 
-                    let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                     readingsAll.push(reading);
+                    clientIds.push(value['4']);
                     clientsAll.push(client);
                 }
             });
             saveClientsToDB(clientsAll);
+            cl = getClientsFromDB(clientIds);
+            changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
         }
-        //////
-        //CEZ//
-        ////// 
+        ////////////
+        //CEZ CSV///
+        ////////////
         else if (company.getCompany() === companies.CEZ) {
             col.forEach(function (value, i) {
                 if (i !== 0 && i !== 1) {
@@ -267,22 +280,21 @@ function processFile(e) {
                     //CEZ operator 2
                     let operator = 2;
 
-                    let reading = [value['7'], value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                     readingsAll.push(reading);
                     clientIds.push(value['4']);
                     clientsAll.push(client);
 
                 }
             });
-            console.log(clientsAll);
             saveClientsToDB(clientsAll);
-            var cl = await getClientsFromDB(clientIds);
-            console.log(cl);
-            saveReadingsToDB(readingsAll, cl);
+            cl = getClientsFromDB(clientIds);
+            changeClientIdForReadings(readingsAll, cl)
+            saveReadingsToDB(readingsAll);
         }
-        //////////////
-        //ENERGO_PRO//
-        //////////////
+        //////////////////
+        //ENERGO_PRO CSV//
+        /////////////////
         else if (company.getCompany() === companies.ENERGO_PRO) {
             col.forEach(function (value, i) {
                 if (i !== 0) {
@@ -303,15 +315,15 @@ function processFile(e) {
                     //ENERGO PRO operator 3
                     let operator = 3;
 
-                    let reading = [value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                     readingsAll.push(reading);
-
+                    clientIds.push(value['4']);
                     clientsAll.push(client);
                 }
             });
             saveClientsToDB(clientsAll);
-            var cl = getClientsFromDB(clientIds);
-            console.log(cl);
+            cl = getClientsFromDB(clientIds);
+            changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
         }
     }
@@ -326,26 +338,27 @@ function saveClientsToDB(clients) {
         dataType: 'json',
         data: JSON.stringify(clients),
         success: function data() {
-            console.log(1);
+            console.log('Clients saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(errorThrown, 'error');
-            console.log('error');
+            //  notification(errorThrown, 'error');
+            console.log('error in save clients');
         }
     });
-}
+};
 
-async function getClientsFromDB(clients) {
+function getClientsFromDB(clients) {
     notification('Loading..', 'loading');
-    var retVal;
+    let retVal;
     $.ajax({
         url: 'http://192.168.1.114:3000/getClient',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
+        async: false,
         data: JSON.stringify(clients),
         success: function (data) {
-            console.log(2);
+            console.log('Got clients');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -354,7 +367,17 @@ async function getClientsFromDB(clients) {
         }
     });
     return retVal;
-}
+};
+
+function changeClientIdForReadings(readingsAll, cl) {
+    readingsAll.forEach(reading => {
+        for (let i = 0; i < cl.length; i++) {
+            if (cl[i].ident_code === reading['0']) {
+                reading['0'] = cl[i].id;
+            }
+        }
+    });
+};
 
 function saveReadingsToDB(readings) {
     $.ajax({
@@ -364,15 +387,15 @@ function saveReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-
+            console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(errorThrown, 'error');
-            console.log('error');
+            //   notification(errorThrown, 'error');
+            console.log('error in save readings');
         }
     });
     notification('Everything is good', 'success');
-}
+};
 
 function notification(msg, type) {
     toastr.clear();
@@ -400,4 +423,4 @@ function notification(msg, type) {
     } else if (type == 'loading') {
         toastr.info(msg);
     }
-}
+};
