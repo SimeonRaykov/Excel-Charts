@@ -68,7 +68,6 @@ const db = mysql.createConnection({
 app.use('/', require('./routes/dashboard'));
 app.use('/homepage', require('./routes/dashboard'));
 app.use('/dashboard', require('./routes/dashboard'));
-
 app.use('/users', require('./routes/users'));
 
 // Create DB
@@ -84,6 +83,51 @@ app.get('/createDB', (req, res) => {
     });
 });
 
+// Get Readings
+app.get('/listReadings', (req, res) => {
+    let sql = `SELECT client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.ident_code;`
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+});
+
+// Get Client Details
+app.get('/getClientDetails/:id', (req, res) => {
+    let client_id = req.params.id;
+    console.log(client_id);
+    let sql = `SELECT id, period_from, period_to, value_bgn, type
+    FROM readings WHERE client_id = '${client_id}';`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+
+})
+
+// Get Single Reading Details
+
+app.get('/getReadingDetails/:id', (req, res) => {
+    let reading_id = req.params.id;
+    let sql = `SELECT * FROM readings WHERE id ='${reading_id}';`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result[0]);
+    });
+})
+
 // Create Table
 app.get('/createposttable', (req, res) => {
     let sql = 'CREATE TABLE posts(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))';
@@ -93,6 +137,7 @@ app.get('/createposttable', (req, res) => {
         }
         res.send('table created');
         console.log(result);
+        return result;
     });
 });
 

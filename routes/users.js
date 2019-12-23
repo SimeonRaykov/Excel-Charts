@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const app = require('../app.js');
-const passport = require('../config/passport');
+const passport = require('passport');
 
 router.get('/login', (req, res) => {
     res.render('login');
@@ -58,8 +58,8 @@ router.post('/register', (req, res) => {
                 throw err;
             }
             if (result.length > 0) {
-                req.flash('error_msg','Username already exists');
-              // errors.push({msg:'Username already exists'});
+                req.flash('error_msg', 'Username already exists');
+                // errors.push({msg:'Username already exists'});
                 res.redirect('register');
             } else {
 
@@ -81,16 +81,14 @@ router.post('/register', (req, res) => {
     }
 });
 
-
 // Login handler
-router.post('login', (req, res, next) => {
+router.post('/login', (req, res, next) => {
     passport.authenticate('local', {
         successRedirect: '/dashboard',
-        failureRequest: '/users/login',
+        failureRedirect: '/users/login',
         failureFlash: true
     })(req, res, next);
 });
-
 
 // Logout handler
 router.get('/logout', (req, res) => {
