@@ -90,7 +90,16 @@ function processFile(e) {
                         //ENERGO PRO operator 3
                         let operator = 3;
 
-                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let d1 = value['12'].replace(/"/g, '');
+                        let arr = d1.split('.');
+                        let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+
+                        let d2 = value['13'].replace(/"/g, '');
+                        let arr1 = d2.split('.');
+                        let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+
+                        let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                         readingsAll.push(reading);
                         clientIds.push(value['4']);
                         clientsAll.push(client);
@@ -126,7 +135,16 @@ function processFile(e) {
                         //CEZ operator 2
                         let operator = 2;
 
-                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let d1 = value['12'].replace(/"/g, '');
+                        let arr = d1.split('.');
+                        let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+
+                        let d2 = value['13'].replace(/"/g, '');
+                        let arr1 = d2.split('.');
+                        let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+
+                        let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                         readingsAll.push(reading);
                         clientIds.push(value['4']);
                         clientsAll.push(client);
@@ -161,7 +179,16 @@ function processFile(e) {
                         //EVN operator 1
                         let operator = 1;
 
-                        let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                        let d1 = value['12'].replace(/"/g, '');
+                        let arr = d1.split('.');
+                        let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+
+                        let d2 = value['13'].replace(/"/g, '');
+                        let arr1 = d2.split('.');
+                        let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+
+                        let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                         readingsAll.push(reading);
                         clientIds.push(value['4']);
                         clientsAll.push(client);
@@ -246,7 +273,16 @@ function processFile(e) {
                     //EVN operator 1
                     let operator = 1;
 
-                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let d1 = value['12'].replace(/"/g, '');
+                    let arr = d1.split('.');
+                    let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+
+                    let d2 = value['13'].replace(/"/g, '');
+                    let arr1 = d2.split('.');
+                    let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+
+                    let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                     readingsAll.push(reading);
                     clientIds.push(value['4']);
                     clientsAll.push(client);
@@ -279,8 +315,16 @@ function processFile(e) {
                     }
                     //CEZ operator 2
                     let operator = 2;
+                    let d1 = value['12'].replace(/"/g, '');
+                    let arr = d1.split('.');
+                    let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
 
-                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let d2 = value['13'].replace(/"/g, '');
+                    let arr1 = d2.split('.');
+                    let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+    
+                    let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                     readingsAll.push(reading);
                     clientIds.push(value['4']);
                     clientsAll.push(client);
@@ -315,7 +359,16 @@ function processFile(e) {
                     //ENERGO PRO operator 3
                     let operator = 3;
 
-                    let reading = [value['4'].replace(/"/g, ''), value['12'], value['13'], value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
+                    let d1 = value['12'].replace(/"/g, '');
+                    let arr = d1.split('.');
+                    let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+
+                    let d2 = value['13'].replace(/"/g, '');
+                    let arr1 = d2.split('.');
+                    let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+
+                    let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+
                     readingsAll.push(reading);
                     clientIds.push(value['4']);
                     clientsAll.push(client);
@@ -381,7 +434,7 @@ function changeClientIdForReadings(readingsAll, cl) {
 
 function saveReadingsToDB(readings) {
     $.ajax({
-        url: 'http://192.168.1.114:3000/addreadings',
+        url: 'http://localhost:3000/addreadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',

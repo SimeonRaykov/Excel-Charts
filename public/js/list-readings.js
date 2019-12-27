@@ -38,9 +38,9 @@ function getAllListings(data) {
         currRow
             .append($('<td>' + data[el]['client_number'] + '</td>'))
             .append($(`<td><a href=clients/${data[el]['ident_code']}>${data[el]['ident_code']}</a></td>`))
-            .append($('<td>' + data[el]['period_from'] + '</td>'))
-            .append($('<td>' + data[el]['period_to'] + '</td>'))
-            .append($('<td>' + (data[el]['value_bgn'] == null ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
+            .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
+            .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
+            .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
             .append($('<td>' + (data[el]['type'] == 2 ? 'Техническа част' : 'Разпределение') + '</td>'))
             .append($(`<td><a href="reading/${data[el]['id']}"><button type="button" class="btn btn-success" data-id="${data[el]['id']}">Детайли на мерене</button></a></td>`))
             .append($('</tr>'));
@@ -49,4 +49,10 @@ function getAllListings(data) {
     $('#tBody').addClass('text-center');
     $('#list-readings > thead').addClass('text-center');
     $('#list-readings').DataTable();
+}
+
+function getJsDate(isoFormatDateString) {
+    let dateParts = isoFormatDateString.split("-");
+    let jsDate = `${dateParts[0]}-${dateParts[1] - 1}-${dateParts[2].substr(0,2)}`;
+    return jsDate;
 }
