@@ -9,24 +9,23 @@
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="../datatables.min.css">
-    <script src="../datatables.js"></script>
+    <link rel="stylesheet" href="/datatables.min.css">
+    <script src="/datatables.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="mt-5 mb-5 text-center">Импортирани Мерения</h1>
+        <h1 class="mt-5 mb-5 text-center">Клиент:</h1>
     </div>
     <div class="container mb-4">
         <a href="/users/logout"> <button class="btn btn-danger float-right">Излизане</button></a>
-        <a href="/dashboard"> <button class="btn btn-success">Връщане</button></a>
+        <a href="/users/listReadings"> <button class="btn btn-success float">Връщане</button></a>
     </div>
 
-    <table id="list-readings" class="display">
+    <table id="clients" class="display">
         <thead>
             <tr>
-                <th>Клиентски номер</th>
-                <th>Идентификационен код</th>
+                <th>ID на отчет</th>
                 <th>Период на отчетност от</th>
                 <th>Период на отчетност до</th>
                 <th>Стойност в лв.</th>
@@ -37,7 +36,7 @@
         <tbody id="tBody">
         </tbody>
     </table>
-    <script src="../js/list-readings.js"></script>
+    <script src="/js/clients.js"></script>
 </body>
 
 </html>

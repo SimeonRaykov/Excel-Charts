@@ -14,7 +14,7 @@ require('./config/passport.js')(passport);
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
-// Make bootstrap work locally
+// Make bootstrap / ejs work with js and datable files
 app.use(express.static('public'))
 
 // Bodydparser
@@ -85,7 +85,7 @@ app.get('/createDB', (req, res) => {
 
 // Get Readings
 app.get('/listReadings', (req, res) => {
-    let sql = `SELECT client_number, ident_code, period_from, period_to, value_bgn, type
+    let sql = `SELECT readings.id AS id,client_number, ident_code, period_from, period_to, value_bgn, type
     FROM readings
     INNER JOIN clients
     ON readings.client_id = clients.ident_code;`
@@ -94,7 +94,8 @@ app.get('/listReadings', (req, res) => {
         if (err) {
             throw err;
         }
-        return res.send(result);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json(result);
     });
 });
 
@@ -102,8 +103,11 @@ app.get('/listReadings', (req, res) => {
 app.get('/getClientDetails/:id', (req, res) => {
     let client_id = req.params.id;
     console.log(client_id);
-    let sql = `SELECT id, period_from, period_to, value_bgn, type
-    FROM readings WHERE client_id = '${client_id}';`;
+    let sql = `SELECT clients.ident_code AS clients_id, readings.id AS readings_id, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.ident_code
+    WHERE client_id = '${client_id}';`;
 
     db.query(sql, (err, result) => {
         if (err) {
