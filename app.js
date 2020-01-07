@@ -10,7 +10,7 @@ const passport = require('passport');
 // Passport config
 require('./config/passport.js')(passport);
 
-// EJS 
+// EJS  
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
@@ -18,15 +18,30 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'))
 
 // Bodydparser
-app.use(express.json());
-app.use(bodyParser.json({
+app.use(express.json({
     limit: '50mb'
 }));
-app.use(bodyParser.urlencoded({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000
+var jsonParser = bodyParser.json({
+    limit: 1024 * 1024 * 20,
+    type: 'application/json'
+});
+app.use(bodyParser.json({
+    limit: '500mb'
 }));
+app.use(bodyParser.urlencoded({
+    limit: "500mb",
+    extended: true,
+    parameterLimit: 500000
+}));
+
+var urlencodedParser = bodyParser.urlencoded({
+    extended: true,
+    limit: 1024 * 1024 * 20,
+    type: 'application/x-www-form-urlencoded'
+})
+
+app.use(jsonParser);
+app.use(urlencodedParser);
 
 // Express Session
 app.use(session({
@@ -84,12 +99,14 @@ app.get('/createDB', (req, res) => {
 });
 
 // Get Readings
-app.get('/listReadings', (req, res) => {
-    let sql = `SELECT readings.id AS id,client_number, ident_code, period_from, period_to, value_bgn, type
-    FROM readings
-    INNER JOIN clients
-    ON readings.client_id = clients.ident_code;`
 
+app.get('/listReadings', (req, res) => {
+
+    let sql = `SELECT clients.id AS clients_id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+        FROM readings
+        INNER JOIN clients
+        ON readings.client_id = clients.id
+        ORDER BY readings.id;`
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -99,14 +116,51 @@ app.get('/listReadings', (req, res) => {
     });
 });
 
+app.get('/listReadings/:date_from/:to_date', (req, res) => {
+    let date_from = req.params.date_from;
+    let to_date = req.params.to_date;
+    let sql = '';
+    if (date_from != 'null' && to_date != 'null') {
+        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.id
+    WHERE readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'
+    ORDER BY readings.id;`
+    } else if (date_from != 'null') {
+        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.id
+    WHERE readings.period_from >= '${date_from}'
+    ORDER BY readings.id;`
+    } else if (to_date != 'null') {
+        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+        FROM readings
+        INNER JOIN clients
+        ON readings.client_id = clients.id
+        WHERE readings.period_to <= '${to_date}'
+        ORDER BY readings.id;`
+    }
+ 
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(result);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json(result);
+    });
+});
+
+
 // Get Client Details
 app.get('/getClientDetails/:id', (req, res) => {
     let client_id = req.params.id;
-    console.log(client_id);
-    let sql = `SELECT clients.ident_code AS clients_id, readings.id AS readings_id, period_from, period_to, value_bgn, type
+    let sql = `SELECT clients.ident_code, readings.id AS reading_id, period_from, period_to, value_bgn, type
     FROM readings
     INNER JOIN clients
-    ON readings.client_id = clients.ident_code
+    ON readings.client_id = clients.id
     WHERE client_id = '${client_id}';`;
 
     db.query(sql, (err, result) => {
@@ -183,6 +237,7 @@ app.post('/addreadings', (req, res) => {
         if (err) {
             throw err;
         }
+
         console.log('Readings inserted');
         return res.send("Readings added");
     });
@@ -225,7 +280,7 @@ app.get('/updatepost/:id', (req, res) => {
         res.send('Post updated');
         console.log(result);
     });
-})
+});
 
 // Delete post
 app.get('/deletepost/:id', (req, res) => {

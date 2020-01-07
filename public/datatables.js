@@ -11796,7 +11796,7 @@
 			 *    $(document).ready( function() {
 			 *      $('#example').dataTable( {
 			 *        "language": {
-			 *          "zeroRecords": "No records to display"
+			 *          "zeroRecords": " "
 			 *        }
 			 *      } );
 			 *    } );

@@ -1,6 +1,7 @@
 ;
 $(document).ready(function () {
     let url = location.href;
+
     let clientNum = url.substring(url.indexOf('?') + 37);
     getReadingData(clientNum);
 });
@@ -20,8 +21,9 @@ function getReadingData(clientNum) {
 };
 
 function callback(data) {
-    $('body > div > div:nth-child(8) > h1').text(`Клиент: ${data[0]['clients_id']}`)
+    $('body > div > div:nth-child(8) > h1').text(`Клиент: ${data[0]['ident_code']}`)
     let i = 0;
+    console.log(data);
     for (let el in data) {
 
         let currRow = $('<tr>').attr('role', 'row');
@@ -32,12 +34,12 @@ function callback(data) {
         }
         i += 1;
         currRow
-            .append($('<td>' + data[el]['readings_id'] + '</td>'))
+            .append($('<td>' + data[el]['reading_id'] + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
             .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв.`) + ' </td>'))
-            .append($('<td>' + (data[el]['type'] == 2 ? 'Техническа част' : 'Разпределение') + '</td>'))
-            .append($(`<td><a href="/users/reading/${data[el]['readings_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['id']}">Детайли на мерене</button></a></td>`))
+            .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
+            .append($(`<td><a href="/users/reading/${data[el]['reading_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['reading_id']}">Детайли на мерене</button></a></td>`))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }

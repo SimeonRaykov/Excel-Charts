@@ -82,9 +82,9 @@ function processFile(e) {
                         let client = [value['7'], value['4'], new Date()];
 
                         let type = value['3'];
-                        if (type === 'Техническа част') {
+                        if (type === '"Техническа част"') {
                             type = 1;
-                        } else if (type === 'Разпределение') {
+                        } else if (type === '"Разпределение"') {
                             type = 2;
                         }
                         //ENERGO PRO operator 3
@@ -105,7 +105,8 @@ function processFile(e) {
                         clientsAll.push(client);
                     }
                 });
-                saveClientsToDB(clientsAll);
+                let filteredClients = filterClients(clientsAll);
+                saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
                 changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
@@ -127,9 +128,9 @@ function processFile(e) {
                         let client = [value['7'], value['4'].replace(/"/g, ''), new Date()];
 
                         let type = value['3'];
-                        if (type === 'Техническа част') {
+                        if (type === '"Техническа част"') {
                             type = 1;
-                        } else if (type === 'Разпределение') {
+                        } else if (type === '"Разпределение"') {
                             type = 2;
                         }
                         //CEZ operator 2
@@ -151,7 +152,8 @@ function processFile(e) {
 
                     }
                 });
-                saveClientsToDB(clientsAll);
+                let filteredClients = filterClients(clientsAll);
+                saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
                 changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
@@ -171,9 +173,9 @@ function processFile(e) {
                         let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                         let type = value['3'];
-                        if (type === 'Техническа част') {
+                        if (type === '"Техническа част"') {
                             type = 1;
-                        } else if (type === 'Разпределение') {
+                        } else if (type === '"Разпределение"') {
                             type = 2;
                         }
                         //EVN operator 1
@@ -194,7 +196,8 @@ function processFile(e) {
                         clientsAll.push(client);
                     }
                 });
-                saveClientsToDB(clientsAll);
+                let filteredClients = filterClients(clientsAll);
+                saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
                 changeClientIdForReadings(readingsAll, cl)
                 saveReadingsToDB(readingsAll);
@@ -265,9 +268,9 @@ function processFile(e) {
                     let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
-                    if (type === 'Техническа част') {
+                    if (type === '"Техническа част"') {
                         type = 1;
-                    } else if (type === 'Разпределение') {
+                    } else if (type === '"Разпределение"') {
                         type = 2;
                     }
                     //EVN operator 1
@@ -288,7 +291,8 @@ function processFile(e) {
                     clientsAll.push(client);
                 }
             });
-            saveClientsToDB(clientsAll);
+            let filteredClients = filterClients(clientsAll);
+            saveClientsToDB(filteredClients);
             cl = getClientsFromDB(clientIds);
             changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
@@ -308,9 +312,9 @@ function processFile(e) {
                     let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
-                    if (type === 'Техническа част') {
+                    if (type == '"Техническа част"') {
                         type = 1;
-                    } else if (type === 'Разпределение') {
+                    } else if (type == '"Разпределение"') {
                         type = 2;
                     }
                     //CEZ operator 2
@@ -322,16 +326,16 @@ function processFile(e) {
                     let d2 = value['13'].replace(/"/g, '');
                     let arr1 = d2.split('.');
                     let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
-    
+
                     let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
 
                     readingsAll.push(reading);
                     clientIds.push(value['4']);
                     clientsAll.push(client);
-
                 }
             });
-            saveClientsToDB(clientsAll);
+            let filteredClients = filterClients(clientsAll);
+            saveClientsToDB(filteredClients);
             cl = getClientsFromDB(clientIds);
             changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
@@ -351,9 +355,9 @@ function processFile(e) {
                     let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
-                    if (type === 'Техническа част') {
+                    if (type === '"Техническа част"') {
                         type = 1;
-                    } else if (type === 'Разпределение') {
+                    } else if (type === '"Разпределение"') {
                         type = 2;
                     }
                     //ENERGO PRO operator 3
@@ -374,12 +378,41 @@ function processFile(e) {
                     clientsAll.push(client);
                 }
             });
-            saveClientsToDB(clientsAll);
+            let filteredClients = filterClients(clientsAll);
+            saveClientsToDB(filteredClients);
             cl = getClientsFromDB(clientIds);
             changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
         }
     }
+}
+
+function filterClients(clientsAll) {
+    let filteredclientsAll = [];
+    let filteredClients = '';
+    let isFalse = false;
+
+    for (let i = 0; i <= clientsAll.length; i += 1) {
+        if (clientsAll[i] != undefined) {
+            if (clientsAll[i].length > 1) {
+                isFalse = false;
+                filteredClients = clientsAll[i].filter(el => {
+                    if (el == "") {
+                        isFalse = true;
+                        return false;
+                    }
+                    return true;
+                });
+                if (filteredClients != undefined && filteredClients != '' && filteredClients != null) {
+                    if (!isFalse) {
+                        filteredclientsAll.push(filteredClients);
+                    }
+                }
+            }
+        }
+    }
+    console.log(filteredclientsAll);
+    return filteredclientsAll;
 }
 
 function saveClientsToDB(clients) {
@@ -389,6 +422,7 @@ function saveClientsToDB(clients) {
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
+        async: false,
         data: JSON.stringify(clients),
         success: function data() {
             console.log('Clients saved');
@@ -424,9 +458,11 @@ function getClientsFromDB(clients) {
 
 function changeClientIdForReadings(readingsAll, cl) {
     readingsAll.forEach(reading => {
-        for (let i = 0; i < cl.length; i++) {
-            if (cl[i].ident_code === reading['0']) {
-                reading['0'] = cl[i].id;
+        if (cl != undefined) {
+            for (let i = 0; i < cl.length; i++) {
+                if (cl[i].ident_code == reading['0']) {
+                    reading['0'] = cl[i].id;
+                }
             }
         }
     });

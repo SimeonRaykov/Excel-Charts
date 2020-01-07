@@ -53,12 +53,20 @@ function loadDetailsData(data) {
     $('body > div > main > div > div:nth-child(16) > input').val(`${data['qty']}`);
     $('body > div > main > div > div:nth-child(17) > input').val(`${data['price']==0?'няма стойност':`${data['price']} лв.`}`);
     $('body > div > main > div > div:nth-child(18) > input').val(`${data['value_bgn']==0?'няма стойност':`${data['value_bgn']} лв.`} `);
-    $('body > div > main > div > div:nth-child(19) > input').val(`${data['type']==1?'Разпределение':'Техническа част'}`);
+    $('body > div > main > div > div:nth-child(19) > input').val(`${data['type']==2?'Разпределение':'Техническа част'}`);
     $('body > div > main > div > div:nth-child(20) > input').val(`${operator}`);
 }
 
 function getJsDate(isoFormatDateString) {
     let dateParts = isoFormatDateString.split("-");
-    let jsDate = `${dateParts[0]}-${dateParts[1] - 1}-${dateParts[2].substr(0,2)}`;
+    let days = Number(dateParts[2].substr(0, 2)) + 1
+    let months = dateParts[1];
+    if (days == 32) {
+        dateParts[1] += 1;
+        days -= 31;
+        months = Number(months) + 1;
+    };
+    let jsDate = `${dateParts[0]}-${months}-${days}`;
+
     return jsDate;
 }
