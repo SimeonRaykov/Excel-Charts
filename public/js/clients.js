@@ -23,7 +23,6 @@ function getReadingData(clientNum) {
 function callback(data) {
     $('body > div > div:nth-child(8) > h1').text(`Клиент: ${data[0]['ident_code']}`)
     let i = 0;
-    console.log(data);
     for (let el in data) {
 
         let currRow = $('<tr>').attr('role', 'row');
@@ -45,7 +44,12 @@ function callback(data) {
     }
     $('#tBody').addClass('text-center');
     $('#clients > thead').addClass('text-center');
-    $('#clients').DataTable();
+    //DESC order 
+    $('#clients').DataTable({
+        "order": [
+            [0, "desc"]
+        ]
+    });
 };
 
 function getJsDate(isoFormatDateString) {

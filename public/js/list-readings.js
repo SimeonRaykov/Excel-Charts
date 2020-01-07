@@ -12,6 +12,7 @@ function getAllListings(data) {
         }
         i += 1;
         currRow
+            .append('<td>' + data[el]['reading_id'] + '</td>')
             .append($('<td>' + data[el]['client_number'] + '</td>'))
             .append($(`<td><a href=clients/${data[el]['clients_id']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
@@ -22,7 +23,11 @@ function getAllListings(data) {
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }
+    // Order DESC
     dataTable = $('#list-readings').DataTable({
+        "order": [
+            [0, "desc"]
+        ],
         retrieve: true
     });
     $('#tBody').addClass('text-center');
@@ -42,15 +47,19 @@ $(document).ready(function () {
 
 $('body > div > form > div > button').on('click', (event) => {
     event.preventDefault();
-    let drawTable = $("#list-readings").on("draw.dt", function () {
-        $(this).find(".dataTables_empty").parents('tbody').empty();
-    }).DataTable();
+    // Remove - No data in db msg
+    //  let drawTable = $("#list-readings").on("draw.dt", function () {
+    //    $(this).find(".dataTables_empty").parents('tbody').empty();
+    //  }).DataTable();
     let fromDate = $('body > div > form > div > input:nth-child(1)').val();
     let toDate = $('body > div > form > div > input:nth-child(2)').val();
-    $('#list-readings').DataTable().clear().draw();
-
+    //   $('#list-readings').DataTable().clear().draw({
+    //       'paging': true,
+    //      'full-reset':true
+    //   });
+    dataTable.clear().destroy();
+    dataTable;
     listAllReadings(fromDate, toDate);
-
 });
 
 function listAllReadings(fromDate, toDate) {

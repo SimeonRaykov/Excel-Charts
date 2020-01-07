@@ -19,7 +19,7 @@
     </div>
     <div class="container mb-4">
         <a href="/users/logout"> <button class="btn-lg btn-danger float-right">Излизане</button></a>
-        <a href="/dashboard"> <button class="btn-lg btn-success">Връщане</button></a>
+        <a href="javascript:history.back()"> <button class="btn-lg btn-success">Връщане</button></a>
     </div>
     <form action="" method="GET">
     <div class="mb-3">
@@ -31,6 +31,7 @@
     <table id="list-readings" class="display">
         <thead>
             <tr>
+                <th>ID на отчет</th>
                 <th>Клиентски номер</th>
                 <th>Идентификационен код</th>
                 <th>Период на отчетност от</th>
