@@ -302,6 +302,8 @@ function processFile(e) {
         ////////////
         else if (company.getCompany() === companies.CEZ) {
             col.forEach(function (value, i) {
+                let clientName = value['8'];
+                let timeZone = value['18'];
                 if (i !== 0 && i !== 1) {
                     if (value['4'] == '' || value['4'] == undefined) {
                         return;
@@ -309,7 +311,7 @@ function processFile(e) {
                     if (value['7'] == '') {
                         return;
                     }
-                    let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), new Date()];
+                    let client = [value['7'].replace(/"/g, ''), clientName, value['10'].replace(/"/g, ''), new Date()];
 
                     let type = value['3'];
                     if (type == '"Техническа част"') {
@@ -327,10 +329,9 @@ function processFile(e) {
                     let arr1 = d2.split('.');
                     let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
 
-                    let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
-
+                    let reading = [value['10'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
                     readingsAll.push(reading);
-                    clientIds.push(value['4']);
+                    clientIds.push(value['10']);
                     clientsAll.push(client);
                 }
             });
@@ -411,7 +412,6 @@ function filterClients(clientsAll) {
             }
         }
     }
-    console.log(filteredclientsAll);
     return filteredclientsAll;
 }
 

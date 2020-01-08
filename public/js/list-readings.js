@@ -14,11 +14,14 @@ function getAllListings(data) {
         currRow
             .append('<td>' + data[el]['reading_id'] + '</td>')
             .append($('<td>' + data[el]['client_number'] + '</td>'))
-            .append($(`<td><a href=clients/${data[el]['clients_id']}>${data[el]['ident_code']}</a></td>`))
+            .append($(`<td><a href=clients/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
+            .append($('<td>' + data[el]['client_name'] + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
+            .append($('<td>' + (data[el]['time_zone'] == '' ? '' : data[el]['time_zone']) + '</td>'))
             .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
             .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
+            .append($('<td>' + (data[el]['operator'] == 2 ? 'ЧЕЗ' : data[el]['operator'] == 1 ? 'EVN' : 'EnergoPRO') + '</td>'))
             .append($(`<td><a href="reading/${data[el]['reading_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['reading_id']}">Детайли на мерене</button></a></td>`))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
@@ -40,38 +43,99 @@ function callback(data) {
 }
 
 $(document).ready(function () {
-    let fromDate = $('body > div > div.mb-3 > input[type=search]:nth-child(1)').val();
-    let toDate = $('body > div > div.mb-3 > input[type=search]:nth-child(2)').val();
-    listAllReadings(fromDate, toDate);
+    getDataListing();
+    findGetParameter('toDate') === null ? '' : $('#toDate').val(findGetParameter('toDate'));
+    findGetParameter('fromDate') === null ? '' : $('#fromDate').val(findGetParameter('fromDate'));
+    findGetParameter('clientNames') === null ? '' : $('#nameOfClient').val(findGetParameter('clientNames'));
+    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
+    findGetParameter('ERP') === null ? '' : $('#ERP').val(findGetParameter('ERP'));
+    listAllReadings();
 });
+
+function getDataListing() {
+    $.ajax({
+        url: 'http://localhost:3000/getAllClientIDs&Names',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            convertDataToSet(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function convertDataToSet(data) {
+    let clientNames = [];
+    let clientIDs = [];
+    for (let num in data) {
+        clientNames.push(data[num].client_name);
+        clientIDs.push(data[num].ident_code);
+    }
+    let uniqueClientNames = removeDuplicatesFromArr(clientNames);
+
+    VisualiseDataListings([uniqueClientNames, clientIDs]);
+}
+
+function VisualiseDataListings(arr) {
+    let clientNames = arr[0];
+    let clientIds = arr[1]
+
+    for (let name of clientNames) {
+        $('#names').append(`<option value=${name}>`);
+    }
+
+    for (let ID of clientIds) {
+        $('#idList').append(`<option value="${ID}">`);
+    }
+}
 
 $('body > div > form > div > button').on('click', (event) => {
     event.preventDefault();
-    // Remove - No data in db msg
-    //  let drawTable = $("#list-readings").on("draw.dt", function () {
-    //    $(this).find(".dataTables_empty").parents('tbody').empty();
-    //  }).DataTable();
-    let fromDate = $('body > div > form > div > input:nth-child(1)').val();
-    let toDate = $('body > div > form > div > input:nth-child(2)').val();
-    //   $('#list-readings').DataTable().clear().draw({
-    //       'paging': true,
-    //      'full-reset':true
-    //   });
     dataTable.clear().destroy();
     dataTable;
-    listAllReadings(fromDate, toDate);
+    let fromDate = $('#fromDate').val();
+    let toDate = $('#toDate').val();
+    let nameOfClient = $('#nameOfClient').val();
+    let clientID = $('#clientID').val();
+    let ERP = $('#ERP').val();
+
+    listAllReadings([fromDate, toDate, nameOfClient, clientID, ERP]);
 });
 
-function listAllReadings(fromDate, toDate) {
-    let url = 'http://localhost:3000/listReadings';
-    fromDate == '' ? fromDate = null : fromDate;
-    toDate == '' ? toDate = null : toDate;
-    if (fromDate != null || toDate != null) {
-        url = `http://localhost:3000/listReadings/${fromDate}/${toDate}`
+function listAllReadings(arr) {
+    if (!arr) {
+        var fromDate = findGetParameter('fromDate');
+        var toDate = findGetParameter('toDate');
+        var nameOfClient = findGetParameter('clientNames');
+        var ERP = findGetParameter('ERP');
+        var clientID = findGetParameter('clientID');
+    } else {
+        var [
+            fromDate,
+            toDate,
+            nameOfClient,
+            clientID,
+            ERP
+        ] = arr;
     }
+    if (fromDate === null && toDate === null) {
+        let dates = getThisAndLastMonthDates();
+        fromDate = dates[1];
+        toDate = dates[0];
+    }
+
     $.ajax({
-        url,
-        method: 'GET',
+        url: `http://localhost:3000/api/filterData`,
+        method: 'POST',
+        data: {
+            date_from: fromDate,
+            to_date: toDate,
+            name: nameOfClient,
+            ERP,
+            id: clientID
+        },
         dataType: 'json',
         success: function (data) {
             callback(data);
@@ -82,6 +146,16 @@ function listAllReadings(fromDate, toDate) {
     });
 
 };
+
+function findGetParameter(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
 function getJsDate(isoFormatDateString) {
     let dateParts = isoFormatDateString.split("-");
@@ -95,4 +169,22 @@ function getJsDate(isoFormatDateString) {
     let jsDate = `${dateParts[0]}-${months}-${days}`;
 
     return jsDate;
+}
+
+function getThisAndLastMonthDates() {
+    let today = new Date();
+    let thisMonthDate = `${today.getFullYear()}-${Number(today.getMonth())+1}-${today.getDay()}`;
+    let lastMonthDate = `${today.getFullYear()}-${Number(today.getMonth())}-${today.getDay()}`;
+    if (Number(today.getMonth()) - 1 === -1) {
+        lastMonthDate = `${Number(today.getFullYear())-1}-${Number(today.getMonth())+12}-${today.getDay()}`;
+    }
+    return [thisMonthDate, lastMonthDate];
+}
+
+function removeDuplicatesFromArr(arr) {
+    let uniqueNames = [];
+    $.each(arr, function (i, el) {
+        if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+    });
+    return uniqueNames;
 }

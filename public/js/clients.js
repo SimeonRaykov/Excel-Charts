@@ -21,7 +21,7 @@ function getReadingData(clientNum) {
 };
 
 function callback(data) {
-    $('body > div > div:nth-child(8) > h1').text(`Клиент: ${data[0]['ident_code']}`)
+    $('body > div > div:nth-child(8) > h1').text(`Клиент: ${data[0]['client_name']}`)
     let i = 0;
     for (let el in data) {
 
@@ -36,8 +36,10 @@ function callback(data) {
             .append($('<td>' + data[el]['reading_id'] + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
+            .append($('<td>' + (data[el]['time_zone']) + '</td>'))
             .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв.`) + ' </td>'))
             .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
+            .append($('<td>' + (data[el]['operator'] == 2 ? 'ЧЕЗ' : data[el]['operator'] == 1 ? 'EVN' : 'EnergoPRO') + '</td>'))
             .append($(`<td><a href="/users/reading/${data[el]['reading_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['reading_id']}">Детайли на мерене</button></a></td>`))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));

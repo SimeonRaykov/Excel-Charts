@@ -102,7 +102,7 @@ app.get('/createDB', (req, res) => {
 
 app.get('/listReadings', (req, res) => {
 
-    let sql = `SELECT clients.id AS clients_id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    let sql = `SELECT  clients.id AS clients_id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.id AS reading_id,client_number, ident_code, period_from, readings.time_zone, period_to, value_bgn, type
         FROM readings
         INNER JOIN clients
         ON readings.client_id = clients.id
@@ -119,30 +119,19 @@ app.get('/listReadings', (req, res) => {
 app.get('/listReadings/:date_from/:to_date', (req, res) => {
     let date_from = req.params.date_from;
     let to_date = req.params.to_date;
-    let sql = '';
+    let sql = `SELECT clients.id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.time_zone, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.id`;
     if (date_from != 'null' && to_date != 'null') {
-        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
-    FROM readings
-    INNER JOIN clients
-    ON readings.client_id = clients.id
-    WHERE readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'
-    ORDER BY readings.id;`
+        sql += ` WHERE readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'`
     } else if (date_from != 'null') {
-        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
-    FROM readings
-    INNER JOIN clients
-    ON readings.client_id = clients.id
-    WHERE readings.period_from >= '${date_from}'
-    ORDER BY readings.id;`
+        sql += ` WHERE readings.period_from >= '${date_from}'`
     } else if (to_date != 'null') {
-        sql = `SELECT clients.id, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
-        FROM readings
-        INNER JOIN clients
-        ON readings.client_id = clients.id
-        WHERE readings.period_to <= '${to_date}'
-        ORDER BY readings.id;`
+        sql += ` WHERE readings.period_to <= '${to_date}'`
     }
- 
+    sql += ' ORDER BY readings.id';
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -153,11 +142,10 @@ app.get('/listReadings/:date_from/:to_date', (req, res) => {
     });
 });
 
-
 // Get Client Details
 app.get('/getClientDetails/:id', (req, res) => {
     let client_id = req.params.id;
-    let sql = `SELECT clients.ident_code, readings.id AS reading_id, period_from, period_to, value_bgn, type
+    let sql = `SELECT clients.id, clients.client_name, readings.operator AS operator, readings.time_zone, readings.id AS reading_id, period_from, period_to, value_bgn, type
     FROM readings
     INNER JOIN clients
     ON readings.client_id = clients.id
@@ -170,6 +158,95 @@ app.get('/getClientDetails/:id', (req, res) => {
         return res.send(result);
     });
 
+})
+
+app.get('/getAllClientNamesDistinct', (req, res) => {
+    let sql = `SELECT DISTINCT client_name FROM clients`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+});
+
+
+app.get('/getAllClientIDs&Names', (req, res) => {
+    let sql = `SELECT DISTINCT clients.client_name, ident_code FROM clients`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+
+})
+
+app.post('/api/filterData', (req, res) => {
+
+    let {
+        date_from,
+        to_date,
+        id,
+        name,
+        ERP
+    } = req.body;
+
+    let sql = `SELECT clients.id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.time_zone, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM readings
+    INNER JOIN clients
+    ON readings.client_id = clients.id`;
+
+    let ifFirst = true;
+
+    function checkIfFirstWhereSQL() {
+        if (ifFirst) {
+            sql += ` WHERE`;
+            ifFirst = false;
+        } else {
+            sql += ` AND `;
+        }
+    }
+
+    if (date_from != '' && to_date != '') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'`
+    } else if (date_from != '') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.period_from >= '${date_from}'`
+    } else if (to_date != '') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.period_to <= '${to_date}'`
+    }
+    if (name != '') {
+        checkIfFirstWhereSQL();
+        sql += ` clients.client_name = '"${name}"'`;
+    }
+    if (id != '') {
+        checkIfFirstWhereSQL();
+        sql += ` clients.ident_code = '${id}'`;
+    }
+    if (ERP === 'CEZ') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.operator = '2'`;
+    } else if (ERP === 'EVN') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.operator = '1'`;
+    } else if (ERP === 'EnergoPRO') {
+        checkIfFirstWhereSQL();
+        sql += ` readings.operator = '3'`;
+    }
+    sql += ' ORDER BY readings.id';
+    console.log(sql);
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json(result);
+    });
 })
 
 // Get Single Reading Details
@@ -216,10 +293,10 @@ app.get('/addpost1', (req, res) => {
     });
 })
 
-// Insert Clients
+// Insert Clients 
 app.post('/addclients', (req, res) => {
 
-    let sql = 'INSERT IGNORE INTO clients (client_number, ident_code, date_created) VALUES ?';
+    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
@@ -259,6 +336,7 @@ app.get('/getposts', (req, res) => {
 
 // Get clients
 app.post('/getClient', (req, res) => {
+    console.log(req.body.join());
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join()})`;
     db.query(sql, req.body.join(), (err, result) => {
         if (err) {
