@@ -332,7 +332,6 @@ app.post('/api/addHourReadings', (req, res) => {
         return res.send("Hour Readings added");
     });
 
-    return res.send('123')
 })
 
 function filterHourReadings(hour_readingsAll) {
@@ -439,87 +438,114 @@ function filterHourReadings(hour_readingsAll) {
                 }
                 // Has something
                 else {
+                    let isChanged = false;
                     let isFirst = true;
                     let updateQuery = `UPDATE hour_readings SET `;
-                    if (result[0].hour_one == -1) {
+                    if (result[0].hour_one == -1 && result[0].hour_one != hour_one) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_one = '${hour_one}' `;
-                    } else if (result[0].hour_two == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_two == -1 && result[0].hour_two != hour_two) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_two = '${hour_two}' `;
-                    } else if (result[0].hour_three == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_three == -1 != result[0].hour_three != hour_three) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_three = '${hour_three}' `;
-                    } else if (result[0].hour_four == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_four == -1 && result[0].hour_four != hour_four) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_four = '${hour_four}' `;
-                    } else if (result[0].hour_five == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_five == -1 && result[0].hour_five != hour_five) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_five = '${hour_five}' `;
-                    } else if (result[0].hour_six == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_six == -1 && result[0].hour_six != hour_six) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_six = '${hour_six}' `;
-                    } else if (result[0].hour_seven == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_seven == -1 && result[0].hour_seven != hour_seven) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_seven = '${hour_seven}' `;
-                    } else if (result[0].hour_eight == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_eight == -1 && result[0].hour_eight != hour_eight) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_eight = '${hour_eight}' `;
-                    } else if (result[0].hour_nine == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_nine == -1 && result[0].hour_nine != hour_nine) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_nine = '${hour_nine}' `;
-                    } else if (result[0].hour_ten == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_ten == -1 && result[0].hour_ten != hour_ten) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_ten = '${hour_ten}' `;
-                    } else if (result[0].hour_eleven == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_eleven == -1 && result[0].hour_eleven != hour_eleven) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_eleven = '${hour_eleven}' `;
-                    } else if (result[0].hour_twelve == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_twelve == -1 && result[0].hour_twelve != hour_twelve) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_twelve = '${hour_twelve}' `;
-                    } else if (result[0].hour_thirteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_thirteen == -1 && result[0].hour_thirteen != hour_thirteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_thirteen = '${hour_thirteen}' `;
-                    } else if (result[0].hour_fourteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_fourteen == -1 && result[0].hour_fourteen != hour_fourteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_fourteen = '${hour_fourteen}' `;
-                    } else if (result[0].hour_fifteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_fifteen == -1 && result[0].hour_fifteen != hour_fifteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_fifteen = '${hour_fifteen}' `;
-                    } else if (result[0].hour_sixteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_sixteen == -1 && result[0].hour_sixteen != hour_sixteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_sixteen = '${hour_sixteen}' `;
-                    } else if (result[0].hour_seventeen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_seventeen == -1 && result[0].hour_seventeen != hour_seventeen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_seventeen = '${hour_seventeen}' `;
-                    } else if (result[0].hour_eighteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_eighteen == -1 && result[0].hour_eighteen != hour_eighteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_eighteen = '${hour_eighteen}' `;
-                    } else if (result[0].hour_nineteen == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_nineteen == -1 && result[0].hour_nineteen != hour_nineteen) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_nineteen = '${hour_nineteen}' `;
-                    } else if (result[0].hour_twenty == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_twenty == -1 && result[0].hour_twenty != hour_twenty) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_twenty = '${hour_twenty}' `;
-                    } else if (result[0].hour_twentyone == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_twentyone == -1 && result[0].hour_twentyone != hour_twentyone) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_twentyone = '${hour_twentyone}' `;
-                    } else if (result[0].hour_twentytwo == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_twentytwo == -1 && result[0].hour_twentytwo != hour_twentytwo) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_twentytwo = '${hour_twentytwo}' `;
-                    } else if (result[0].hour_twentythree == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_twentythree == -1 && result[0].hour_twentythree != hour_twentythree) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_twentythree = '${hour_twentythree}' `;
-                    } else if (result[0].hour_zero == -1) {
+                        isChanged = true;
+                    } else if (result[0].hour_zero == -1 && result[0].hour_zero != hour_zero) {
                         checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
                         updateQuery += ` hour_zero = '${hour_zero}' `;
+                        isChanged = true;
                     }
-                    updateQuery += ` WHERE date = '${currDate}' AND client_id = '${currID}'`;
-                    db.query(updateQuery, (err, result) => {
-                        if (err) {
-                            throw err;
-                        }
-                    });
+                    updateQuery += ` WHERE date = '${currDate}' AND client_id = ${currID} `;
+                    if (isChanged) {
+                        db.query(updateQuery, (err, result) => {
+                            if (err) {
+                                throw err;
+                            }
+                        });
+                    }
                     addToFinalReadings = false;
                 }
                 // No result found in DB for hour_readings TABLE
@@ -565,7 +591,6 @@ app.get('/getposts', (req, res) => {
 
 // Get clients
 app.post('/getClient', (req, res) => {
-    console.log(req.body.join());
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join()})`;
     db.query(sql, req.body.join(), (err, result) => {
         if (err) {
@@ -582,7 +607,6 @@ app.post('/api/getClients', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log(sql);
         console.log('Clients get');
         return res.send(JSON.stringify(result));
     });
