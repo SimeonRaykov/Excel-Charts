@@ -47,7 +47,7 @@ function processFile(e) {
     let clientsAll = []
     let readingsAll = []
 
-    if (extension === 'xls') {
+    if (extension === 'xls' || extension === 'xlsx') {
         reader.onload = function (e) {
 
             var data = new Uint8Array(e.target.result);

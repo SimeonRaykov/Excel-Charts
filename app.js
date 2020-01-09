@@ -320,6 +320,235 @@ app.post('/addreadings', (req, res) => {
     });
 })
 
+app.post('/api/addHourReadings', (req, res) => {
+    let readingsFiltered = filterHourReadings(req.body);
+    let sql = 'INSERT INTO hour_readings (client_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date) VALUES ?';
+    db.query(sql, [readingsFiltered], (err, result) => {
+        if (err) {
+            throw err;
+        }
+
+        console.log('Hour Readings inserted');
+        return res.send("Hour Readings added");
+    });
+
+    return res.send('123')
+})
+
+function filterHourReadings(hour_readingsAll) {
+    let readingsFiltered = [];
+    for (let i = 0; i < hour_readingsAll.length; i += 1) {
+        let addToFinalReadings = true;
+        let currHourReading = hour_readingsAll[i];
+        let hour_one = -1;
+        let hour_two = -1;
+        let hour_three = -1;
+        let hour_four = -1;
+        let hour_five = -1;
+        let hour_six = -1;
+        let hour_seven = -1;
+        let hour_eight = -1;
+        let hour_nine = -1;
+        let hour_ten = -1;
+        let hour_eleven = -1;
+        let hour_twelve = -1;
+        let hour_thirteen = -1;
+        let hour_fourteen = -1;
+        let hour_fifteen = -1;
+        let hour_sixteen = -1;
+        let hour_seventeen = -1;
+        let hour_eighteen = -1;
+        let hour_nineteen = -1;
+        let hour_twenty = -1;
+        let hour_twentyone = -1;
+        let hour_twentytwo = -1;
+        let hour_twentythree = -1;
+        let hour_zero = -1;
+        let filteredHourReading = [];
+        let currID = currHourReading[1];
+        let type = currHourReading[2];
+        let date = currHourReading[3].split('/');
+        let currDate = `20${date[2]}-${date[0]}-${date[1]}`;
+        let createdDate = currHourReading[5];
+
+        for (let z = 0; z < currHourReading[4].length; z += 1) {
+            if (currHourReading[4][z].currHour === '1:00') {
+                hour_one = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '2:00') {
+                hour_two = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '3:00') {
+                hour_three = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '4:00') {
+                hour_four = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '5:00') {
+                hour_five = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '6:00') {
+                hour_six = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '7:00') {
+                hour_seven = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '8:00') {
+                hour_eight = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '9:00') {
+                hour_nine = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '10:00') {
+                hour_ten = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '11:00') {
+                hour_eleven = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '12:00') {
+                hour_twelve = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '13:00') {
+                hour_thirteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '14:00') {
+                hour_fourteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '15:00') {
+                hour_fifteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '16:00') {
+                hour_sixteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '17:00') {
+                hour_seventeen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '18:00') {
+                hour_eighteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '19:00') {
+                hour_nineteen = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '20:00') {
+                hour_twenty = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '21:00') {
+                hour_twentyone = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '22:00') {
+                hour_twentytwo = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '23:00') {
+                hour_twentythree = currHourReading[4][z].currValue;
+            } else if (currHourReading[4][z].currHour === '0:00') {
+                hour_zero = currHourReading[4][z].currValue;
+            }
+
+        }
+        let selectReading = `SELECT * FROM hour_readings 
+        WHERE hour_readings.date = '${currDate}'
+        AND client_id = '${currID}'`;
+        db.query(selectReading, (err, result) => {
+            if (err) {
+                throw err;
+            }
+            if (result) {
+                let hasEverything = false;
+                // Has everything
+                if (result[0].hour_one != -1 && result[0].hour_two != -1 && result[0].hour_three != -1 && result[0].hour_four != -1 && result[0].hour_five != -1 && result[0].hour_six != -1 && result[0].hour_seven != -1 && result[0].hour_eight != -1 && result[0].hour_nine != -1 && result[0].hour_ten != -1 && result[0].hour_eleven != -1 && result[0].hour_twelve != -1 && result[0].hour_thirteen != -1 && result[0].hour_fourteen != -1 && result[0].hour_fifteen != -1 && result[0].hour_sixteen != -1 && result[0].hour_seventeen != -1 && result[0].hour_eighteen != -1 && result[0].hour_nineteen != -1 && result[0].hour_twenty != -1 && result[0].hour_twentyone != -1 && result[0].hour_twentytwo != -1 && result[0].hour_twentythree != -1 && result[0].hour_zero) {
+                    hasEverything = true;
+                    // let DIFF = 1!!!
+                }
+                // Has something
+                else {
+                    let isFirst = true;
+                    let updateQuery = `UPDATE hour_readings SET `;
+                    if (result[0].hour_one == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_one = '${hour_one}' `;
+                    } else if (result[0].hour_two == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_two = '${hour_two}' `;
+                    } else if (result[0].hour_three == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_three = '${hour_three}' `;
+                    } else if (result[0].hour_four == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_four = '${hour_four}' `;
+                    } else if (result[0].hour_five == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_five = '${hour_five}' `;
+                    } else if (result[0].hour_six == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_six = '${hour_six}' `;
+                    } else if (result[0].hour_seven == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_seven = '${hour_seven}' `;
+                    } else if (result[0].hour_eight == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_eight = '${hour_eight}' `;
+                    } else if (result[0].hour_nine == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_nine = '${hour_nine}' `;
+                    } else if (result[0].hour_ten == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_ten = '${hour_ten}' `;
+                    } else if (result[0].hour_eleven == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_eleven = '${hour_eleven}' `;
+                    } else if (result[0].hour_twelve == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_twelve = '${hour_twelve}' `;
+                    } else if (result[0].hour_thirteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_thirteen = '${hour_thirteen}' `;
+                    } else if (result[0].hour_fourteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_fourteen = '${hour_fourteen}' `;
+                    } else if (result[0].hour_fifteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_fifteen = '${hour_fifteen}' `;
+                    } else if (result[0].hour_sixteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_sixteen = '${hour_sixteen}' `;
+                    } else if (result[0].hour_seventeen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_seventeen = '${hour_seventeen}' `;
+                    } else if (result[0].hour_eighteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_eighteen = '${hour_eighteen}' `;
+                    } else if (result[0].hour_nineteen == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_nineteen = '${hour_nineteen}' `;
+                    } else if (result[0].hour_twenty == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_twenty = '${hour_twenty}' `;
+                    } else if (result[0].hour_twentyone == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_twentyone = '${hour_twentyone}' `;
+                    } else if (result[0].hour_twentytwo == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_twentytwo = '${hour_twentytwo}' `;
+                    } else if (result[0].hour_twentythree == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_twentythree = '${hour_twentythree}' `;
+                    } else if (result[0].hour_zero == -1) {
+                        checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)
+                        updateQuery += ` hour_zero = '${hour_zero}' `;
+                    }
+                    updateQuery += ` WHERE date = '${currDate}' AND client_id = '${currID}'`;
+                    db.query(updateQuery, (err, result) => {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                    addToFinalReadings = false;
+                }
+                // No result found in DB for hour_readings TABLE
+            } else {
+                addToFinalReadings = true;
+            }
+        })
+        if (addToFinalReadings) {
+            filteredHourReading = [currID, currDate, hour_one, hour_two, hour_three, hour_four,
+                hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
+                hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen,
+                hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone,
+                hour_twentytwo, hour_twentythree, hour_zero, type, createdDate
+            ]
+            readingsFiltered.push(filteredHourReading);
+        }
+    }
+    return readingsFiltered;
+}
+
+function checkIfFirstAndAddToInsertQuery(isFirst, updateQuery) {
+    if (isFirst) {
+        isFirst = false;
+    } else if (!isFirst) {
+        updateQuery += ' , ';
+    }
+    return updateQuery;
+}
+
 // Select posts
 app.get('/getposts', (req, res) => {
 
@@ -332,7 +561,7 @@ app.get('/getposts', (req, res) => {
         console.log(results);
         console.log('Posts fetched');
     });
-})
+});
 
 // Get clients
 app.post('/getClient', (req, res) => {
@@ -345,7 +574,19 @@ app.post('/getClient', (req, res) => {
         console.log('Clients get');
         return res.send(JSON.stringify(result));
     });
-})
+});
+
+app.post('/api/getClients', (req, res) => {
+    let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join(', ')})`;
+    db.query(sql, req.body.join(), (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(sql);
+        console.log('Clients get');
+        return res.send(JSON.stringify(result));
+    });
+});
 
 // Update post
 app.get('/updatepost/:id', (req, res) => {
