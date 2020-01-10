@@ -86,7 +86,6 @@ function processFile(e) {
                         hours = [];
                         try {
                             currDate = dates[j + 1].split(" ")[0];
-
                         } catch (Exception) {
                             currDate = dates[dates.length - 1].split(" ")[0];
                             let currHour = dates[dates.length - 1].split(" ")[1];
@@ -108,12 +107,12 @@ function processFile(e) {
                     clientsAll.push(client);
                 }
             });
+        
             saveClientsToDB(clientsAll);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
             changeClientIdForHourReadings(allHourReadings, cl);
             console.log(allHourReadings);
             saveHourReadingsToDB(allHourReadings);
-
             /*
               let filteredClients = filterClients(clientsAll);
               saveClientsToDB(filteredClients);
