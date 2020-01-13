@@ -25,6 +25,7 @@
     "mysql": "^2.17.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "sync-mysql": "^3.0.1",
     "toastr": "^2.1.4"
   },
   "devDependencies": {}

@@ -73,9 +73,28 @@ function processFile(e) {
                         clientID = (worksheet['A2'].v).split(" ")[2];
                     }
 
+                    // Validation
+                    if (clientID !== undefined) {
+                        if (clientID.includes('Уникален номер')) {
+                            notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за EnergoPRO`, 'error');
+                            throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за EnergoPRO`);
+                        }
+                    }
+                    if (clientName.includes('Ел Екс Корпорейшън АД')) {
+                        notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за EVN`, 'error');
+                        throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за EVN`);
+                    }
+
+                    let colSize = getCols(workbook['Sheets'][`${first_sheet_name}`])[0].length;
+                    if (colSize > 50) {
+                        notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за CEZ`, 'error');
+                        throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за CEZ`);
+                    }
+
                     // let colSize = getRows(workbook['Sheets'][`${first_sheet_name}`])[0].length;
                     let arr = getRows(workbook['Sheets'][`${first_sheet_name}`]);
                     let allDates = [];
+                    let currDaysFiltered = new Set();
                     let allActiveEnergyValues = [];
                     let allReactiveEnergyValues = [];
                     arr.forEach(function (value, i) {
@@ -84,6 +103,7 @@ function processFile(e) {
                             if (i === 0) {
                                 for (let y = 4; y < value.length; y += 1) {
                                     allDates.push(value[y]);
+                                    currDaysFiltered.add(value[y].split(" ")[0]);
                                 }
                             } else if (i === 1) {
                                 for (let y = 4; y < value.length; y += 1) {
@@ -102,7 +122,7 @@ function processFile(e) {
                     let nextDate;
                     let hourReading = [];
                     let hours = [];
-                    for (let x = 0; x < 8; x += 1) {
+                    for (let x = 0; x < currDaysFiltered.size; x += 1) {
                         try {
                             currDate = 0;
                             nextDate = 0;
@@ -142,7 +162,7 @@ function processFile(e) {
                         }
                     }
                     j = 0;
-                    for (let r = 0; r < 8; r += 1) {
+                    for (let r = 0; r < currDaysFiltered.size; r += 1) {
                         try {
                             currDate = 0;
                             nextDate = 0;
@@ -332,6 +352,31 @@ function saveHourReadingsToDB(readings) {
     });
     notification('Everything is good', 'success');
 };
+
+
+function getCols(sheet) {
+    var result = [];
+    var row;
+    var rowNum;
+    var colNum;
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+        row = [];
+        for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
+            var nextCell = sheet[
+                XLSX.utils.encode_cell({
+                    r: rowNum,
+                    c: colNum
+                })
+            ];
+            if (typeof nextCell === 'undefined') {
+                row.push(void 0);
+            } else row.push(nextCell.w);
+        }
+        result.push(row);
+    }
+    return result;
+}
 
 function notification(msg, type) {
     toastr.clear();

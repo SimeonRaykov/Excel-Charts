@@ -27,7 +27,7 @@ function processFile(e) {
             let first_sheet_name = workbook.SheetNames[0];
             //var address_of_cell = 'A139';
             /* Get worksheet */
-            //var worksheet = workbook.Sheets[first_sheet_name];
+            var worksheet = workbook.Sheets[first_sheet_name];
             /* Find desired cell */
             //var desired_cell = worksheet[address_of_cell];
             /* Get the value */
@@ -37,19 +37,30 @@ function processFile(e) {
 
             //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
             let colSize = getCols(workbook['Sheets'][`${first_sheet_name}`])[0].length;
-            console.log(colSize);
+            if (colSize < 50) {
+                if (worksheet['A1'].v.includes('Ел Екс Корпорейшън АД')) {
+                    notification(`Избрана е опция за CEZ, а е подаден документ за EVN`, 'error');
+                    throw new Error(`Избрана е опция за CEZ, а е подаден документ за EVN`);
+                } else {
+                    notification(`Избрана е опция за CEZ, а е подаден документ за EnergoPRO`, 'error');
+                    throw new Error(`Избрана е опция за CEZ, а е подаден документ за EnergoPRO`);
+                }
+            }
             let cl = [];
             let clientsIDs = [];
             let clientsAll = [];
+            let currDaysFiltered = new Set();
             let client = [];
             let dates = [];
             let allHourReadings = [];
             let hour_reading = [];
+
             getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                 if (i === 0) {
                     for (let x = 4; x <= colSize; x += 1) {
                         if (value[x] !== undefined) {
                             dates.push(value[x]);
+                            currDaysFiltered.add(value[x].split(" ")[0]);
                         }
                     }
                     console.log(dates);
@@ -64,7 +75,7 @@ function processFile(e) {
                     let currDate = dates[0].split(" ")[0];
                     let j = 0;
 
-                    for (let y = 0; y < 8; y += 1) {
+                    for (let y = 0; y < currDaysFiltered.size; y += 1) {
                         while (true) {
                             if (dates[j].split(" ")[0] != currDate) {
                                 break;
@@ -107,7 +118,7 @@ function processFile(e) {
                     clientsAll.push(client);
                 }
             });
-        
+
             saveClientsToDB(clientsAll);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
             changeClientIdForHourReadings(allHourReadings, cl);
