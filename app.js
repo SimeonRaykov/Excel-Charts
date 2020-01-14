@@ -7,16 +7,19 @@ const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+const path = require('path');
 
 // Passport config
 require('./config/passport.js')(passport);
 
 // EJS  
+
+app.set('views', path.join(__dirname, 'views')); // add this one, change 'views' for your folder name if needed.
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 // Make bootstrap / ejs work with js and datable files
-app.use(express.static('public'))
+app.use(express.static('public'), express.static(__dirname + '/static'))
 
 // Bodydparser
 app.use(express.json({
@@ -447,8 +450,7 @@ async function filterHourReadings(hour_readingsAll) {
                     hasEverything = true;
                     addToFinalReadings = true;
                     diff = 1;
-                }
-                else{
+                } else {
                     addToFinalReadings = false;
                 }
             }
