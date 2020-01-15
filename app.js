@@ -11,9 +11,7 @@ const path = require('path');
 
 // Passport config
 require('./config/passport.js')(passport);
-
 // EJS  
-
 app.set('views', path.join(__dirname, 'views')); // add this one, change 'views' for your folder name if needed.
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
@@ -306,7 +304,7 @@ app.get('/addpost1', (req, res) => {
 
 // Insert Clients 
 app.post('/addclients', (req, res) => {
-
+    console.log(req.body);
     let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
@@ -673,6 +671,29 @@ app.post('/api/getClients', (req, res) => {
     });
 });
 
+
+app.get('/api/getAllClients', (req, res) => {
+    let sql = `SELECT id, client_name, ident_code FROM clients`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
+
+app.get('/api/hour-readings/getClient/:id', (req, res) => {
+    let sql = `SELECT * FROM clients
+    INNER JOIN hour_readings on clients.id = hour_readings.client_id 
+    WHERE clients.id = '${req.params.id}'`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
+
 // Update post
 app.get('/updatepost/:id', (req, res) => {
     let newTitle = 'new title';
@@ -705,8 +726,6 @@ db.connect((err) => {
     }
     console.log('Mysql connected');
 });
-
-
 
 exports.db = db;
 exports.dbSync = dbSync;
