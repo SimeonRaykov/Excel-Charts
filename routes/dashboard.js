@@ -5,7 +5,9 @@ const {
 } = require('../config/auth');
 
 router.get('/', (req, res) => {
-    res.render('welcome');
+    res.render('./authentication/login', {
+        layout: 'layoutAuth.ejs'
+    });
 });
 
 

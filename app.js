@@ -18,7 +18,6 @@ app.set('view engine', 'ejs');
 
 // Make bootstrap / ejs work with js and datable files
 app.use(express.static('public'), express.static(__dirname + '/static'))
-
 // Bodydparser
 app.use(express.json({
     limit: '50mb'

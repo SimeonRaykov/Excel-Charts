@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
     </script>
@@ -24,12 +24,23 @@
     <script src='../../../AdminLTE-master/plugins/fullcalendar/main.js'></script>
     <script src='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.js'></script>
     <script src="../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
+    <link rel="stylesheet" href="../../../AdminLTE-master/css/custom-calendar.css">
     <title>Document</title>
 </head>
+
 <body>
     <h1 class="text-center mb-5">Мерения по часове за клиент: </h1>
-    <div class="container">
-        <div id="calendar">
+    <div class="row">
+        <div id="calendar" class="col-md-10">
+        </div>
+
+        <div id="legend" class="col-md-2">
+            <h2 class="text-center mb-3"><i class="fas fa-tags"></i>Легенда</h2>
+            <ul>
+
+                <li class="text-primary mb-3">Синъо: Настоящи мерения</li>
+                <li class="text-danger">Червено: Нови мерения</li>
+            </ul>
         </div>
     </div>
     <script src="../../../../js/hour-readings/clients-hour-readings.js">
