@@ -8,7 +8,6 @@ router.get('/', (req, res) => {
     res.render('welcome');
 });
 
-
 class User {
     constructor() {
         this.name = '';
@@ -45,21 +44,22 @@ router.get('/users/import/hour-readings/evnORenergoPRO', ensureAuthenticated, (r
 }));
 
 // STP Listing
-router.get('/users/listReadings', ensureAuthenticated, (req, res) => res.render('./STP listings/listReadings.ejs',{
-    name:user.getName()
+router.get('/users/listReadings', ensureAuthenticated, (req, res) => res.render('./STP listings/listReadings.ejs', {
+    name: user.getName()
 }));
-router.get('/users/clients/:id', ensureAuthenticated, (req, res) => res.render('./STP listings/clients.ejs',{
-    name:user.getName()
+router.get('/users/clients/:id', ensureAuthenticated, (req, res) => res.render('./STP listings/clients.ejs', {
+    name: user.getName()
 }));
-router.get('/users/reading/:id', ensureAuthenticated, (req, res) => res.render('./STP listings/readingDetails.ejs',{
-    name:user.getName()
+router.get('/users/reading/:id', ensureAuthenticated, (req, res) => res.render('./STP listings/readingDetails.ejs', {
+    name: user.getName()
 }));
- 
+
 // Hour-readings
-router.get('/users/listClients', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients.ejs',{
-    name:user.getName()
+router.get('/users/listClients', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients.ejs', {
+    name: user.getName()
 }));
-router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs',{
-    name:user.getName()
+router.get('/users/clients/hour-reading/:id', ensureAuthenticated, (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
+    name: user.getName()
 }));
+
 module.exports = router;

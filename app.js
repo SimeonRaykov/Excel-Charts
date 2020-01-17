@@ -8,6 +8,10 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
+const m = require('./routes/dashboard');
+const {
+    ensureAuthenticated
+} = require('./config/auth');
 
 // Passport config
 require('./config/passport.js')(passport);
@@ -85,13 +89,11 @@ const dbSync = new mysqlSync({
     password: '',
     database: 'exceldata'
 })
-
-
 // Routing
 app.use('/', require('./routes/dashboard'));
-app.use('/homepage', require('./routes/dashboard'));
-app.use('/dashboard', require('./routes/dashboard'));
 app.use('/users', require('./routes/users'));
+app.use('/homepage', require('./routes/dashboard'));
+app.use('/users', require('./routes/dashboard'));
 
 // Create DB
 app.get('/createDB', (req, res) => {
@@ -672,7 +674,7 @@ app.post('/api/getClients', (req, res) => {
 
 
 app.get('/api/getAllClients', (req, res) => {
-    let sql = `SELECT id, client_name, ident_code FROM clients`;
+    let sql = `SELECT id, client_name, ident_code FROM clients WHERE client_number='0'`;
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -681,10 +683,56 @@ app.get('/api/getAllClients', (req, res) => {
     });
 });
 
+app.post('/api/filter/getAllHourReadingsTable', (req, res) => {
+
+    let {
+        date,
+        name,
+        ident_code,
+    } = req.body;
+
+    let ifFirst = true;
+
+    function checkIfFirstWhereSQL() {
+        if (ifFirst) {
+            sql += ` WHERE`;
+            ifFirst = false;
+        } else {
+            sql += ` AND `;
+        }
+    }
+
+    let sql = `SELECT hour_readings.id, clients.id as cId,clients.ident_code, clients.client_name, hour_readings.date FROM hour_readings
+    INNER JOIN clients ON clients.id = hour_readings.client_id`;
+    if (date != '' && date != undefined) {
+        checkIfFirstWhereSQL();
+        sql += ` hour_readings.date = '${date}' `
+    }
+    if (name != '' && name != undefined) {
+        checkIfFirstWhereSQL();
+        sql += ` clients.client_name = '${name}'`;
+    }
+    if (ident_code != '' && ident_code != undefined) {
+        checkIfFirstWhereSQL();
+        sql += ` clients.ident_code = '${ident_code}'`;
+    }
+    sql += ' ORDER BY hour_readings.id';
+    console.log(sql);
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+
+})
+
 app.get('/api/hour-readings/getClient/:id', (req, res) => {
     let sql = `SELECT * FROM clients
     INNER JOIN hour_readings on clients.id = hour_readings.client_id 
-    WHERE clients.id = '${req.params.id}'`;
+    WHERE clients.id = '${req.params.id}' `;
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
