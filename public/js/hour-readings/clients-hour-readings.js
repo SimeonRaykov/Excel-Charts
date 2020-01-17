@@ -5,14 +5,15 @@ document.addEventListener('DOMContentLoaded', function () {
         eventLimit: 1,
         eventLimitText: 'Има мерене',
         eventLimitClick: 'day',
-        eventOrder:'-title',
         allDaySlot: false,
+        eventOrder: 'groupId',
         events: getHourReadingsByClientID(),
         plugins: ['dayGrid', 'timeGrid'],
         header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next'
+            right: 'prev, dayGridMonth,timeGridDay, next',
+
         }
     });
     calendar.render();
@@ -39,8 +40,8 @@ function getHourReadingsByClientID() {
 }
 
 const colors = {
-    blue: '#blue',
-    red: '#ff0000'
+    blue: '#aa62ea',
+    red: '#ff4d4d'
 }
 
 function processData(data) {
@@ -61,8 +62,9 @@ function processData(data) {
                 // 72 000 - One Hour
                 incrementHoursOne(currHourDate);
                 currHourReading = {
+                    groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
@@ -72,6 +74,7 @@ function processData(data) {
                 currHourReading = {
 
                 };
+                currHourReading.backgroundColor = diff === 0 ? colors.blue : colors.red
                 currHourReading.start = Number(currHourDate);
                 currHourReading.end = Number(currHourDate) + 3600000;
                 currHourReading.title = value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`;
