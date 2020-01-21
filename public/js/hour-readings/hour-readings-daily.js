@@ -1,5 +1,21 @@
+class CurrDate {
+    constructor() {
+        this.date = '';
+    };
+    getDate() {
+        return this.date;
+    }
+    setDate(date) {
+        return this.date = date;
+    }
+}
+let hourReadingDay = new CurrDate();
+
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
+    let currDate = findGetParameter('date');
+    let fixedDate = fixDateForFullCallendar(currDate);
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
         eventLimit: true,
         eventLimit: 1,
@@ -7,25 +23,26 @@ document.addEventListener('DOMContentLoaded', function () {
         eventLimitClick: 'day',
         allDaySlot: false,
         eventOrder: 'groupId',
+        defaultDate: fixedDate,
         events: getHourReadingsByID(),
-        plugins: ['dayGrid', 'timeGrid'],
+        plugins: ['timeGrid', ],
+        defaultView: 'timeGridDay',
         header: {
-            left: 'prev,next today',
+            left: '',
             center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next',
+            right: '',
 
         }
     });
     calendar.render();
 });
 
-
 function getHourReadingsByID() {
-    let url = window.location.href;
-    let clientID = url.substr(49);
+    let currDate = findGetParameter('date'),
+        currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `http://localhost:3000/api/hour-readings/getClient/${clientID}`,
+        url: `http://localhost:3000/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -45,8 +62,9 @@ const colors = {
 }
 
 function processData(data) {
-    writeHourReadingsHeader(data);
     console.log(data);
+    writeHourReadingsHeader(data);
+    hourReadingDay.setDate(data[0]['date']);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -57,7 +75,7 @@ function processData(data) {
         let type = data[el].type;
         let i = 0;
         for (let [key, value] of Object.entries(data[el])) {
-            if (i >= 7 && i <= 29) {
+            if (i >= 3 && i <= 25) {
                 // 3 600 000 - FullCalendar one hour
                 // 72 000 - One Hour
                 incrementHoursOne(currHourDate);
@@ -69,7 +87,7 @@ function processData(data) {
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
                 }
-            } else if (i === 30) {
+            } else if (i === 26) {
                 decrementHoursBy23(currHourDate);
                 currHourReading = {
 
@@ -98,7 +116,7 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsHeader(data) {
-    $('body > div > h1').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
+    $('body > div > h1').text(`Мерения по часове за id: ${data[0].id}`);
 }
 
 function findGetParameter(name, url) {
@@ -109,4 +127,19 @@ function findGetParameter(name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function fixDateForFullCallendar(date) {
+    let splittedDate = date.split('-');
+    let currYear = splittedDate[0];
+    let currMonth = splittedDate[1];
+    let currDate = splittedDate[2];
+
+    if (currMonth < 10) {
+        currMonth = `0${currMonth}`
+    }
+    if (currDate < 10) {
+        currDate = `0${currDate}`;
+    }
+    return `${currYear}-${currMonth}-${currDate}`;
 }

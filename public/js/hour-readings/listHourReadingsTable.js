@@ -3,7 +3,10 @@
 function getAllHourListings(data) {
     let i = 0;
     for (let el in data) {
-        console.log(data);
+        let date = data[el]['date'];
+        let fullDate = new Date(date);
+        let fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+
         let currRow = $('<tr>').attr('role', 'row');
         if (i % 2 == 1) {
             currRow.addClass('even');
@@ -12,11 +15,11 @@ function getAllHourListings(data) {
         }
         i += 1;
         currRow
-            .append('<td>' + data[el]['id'] + '</td>')
+            .append(`<td><a href=/users/clients/hour-reading/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
             .append($(`<td><a href=/users/clients/hour-reading/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + getJsDate(data[el]['date']) + '</td>'))
-            .append($('<td>' + getJsDate(data[el]['date']) + '</td>'))
+            .append($('<td>' + fixedDate + '</td>'))
+            .append($('<td>' + fixedDate + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }
@@ -133,20 +136,6 @@ function findGetParameter(name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
-function getJsDate(isoFormatDateString) {
-    let dateParts = isoFormatDateString.split("-");
-    let days = Number(dateParts[2].substr(0, 2)) + 1
-    let months = dateParts[1];
-    if (days == 32) {
-        dateParts[1] += 1;
-        days -= 31;
-        months = Number(months) + 1;
-    };
-    let jsDate = `${dateParts[0]}-${months}-${days}`;
-
-    return jsDate;
 }
 
 function getThisAndLastMonthDates() {
