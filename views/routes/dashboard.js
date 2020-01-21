@@ -20,9 +20,7 @@ class User {
     setName(name) {
         this.name = name;
     }
-
 }
-
 let user = new User();
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => res.render('../public/AdminLTE-master/index.ejs', {
@@ -59,6 +57,9 @@ router.get('/users/listClients', ensureAuthenticated, (req, res) => res.render('
     name: user.getName()
 }));
 router.get('/users/clients/hour-reading/:id', ensureAuthenticated, (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/clients/hour-reading/daily/s', ensureAuthenticated, (req, res) => res.render('./hour-readings/hour-readings-daily.ejs', {
     name: user.getName()
 }));
 

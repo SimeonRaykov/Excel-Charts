@@ -8,7 +8,6 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
-const m = require('./routes/dashboard');
 const {
     ensureAuthenticated
 } = require('./config/auth');
@@ -94,6 +93,10 @@ app.use('/', require('./routes/dashboard'));
 app.use('/users', require('./routes/users'));
 app.use('/homepage', require('./routes/dashboard'));
 app.use('/users', require('./routes/dashboard'));
+
+app.get('/users/clients/hour-reading/daily/s/', (req, res) => res.render('./hour-readings/hour-readings-daily', {
+    name: '123'
+}));
 
 // Create DB
 app.get('/createDB', (req, res) => {
@@ -740,6 +743,19 @@ app.get('/api/hour-readings/getClient/:id', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
+
+
+app.get('/api/hour-readings/daily/:id/:date', (req, res) => {
+    let sql = `SELECT * FROM hour_readings
+    WHERE date = '${req.params.date}' AND id = '${req.params.id}'`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+})
 
 // Update post
 app.get('/updatepost/:id', (req, res) => {
