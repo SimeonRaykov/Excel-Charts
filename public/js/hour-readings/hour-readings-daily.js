@@ -1,21 +1,7 @@
-class CurrDate {
-    constructor() {
-        this.date = '';
-    };
-    getDate() {
-        return this.date;
-    }
-    setDate(date) {
-        return this.date = date;
-    }
-}
-let hourReadingDay = new CurrDate();
-
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     let currDate = findGetParameter('date');
     let fixedDate = fixDateForFullCallendar(currDate);
-
     var calendar = new FullCalendar.Calendar(calendarEl, {
         eventLimit: true,
         eventLimit: 1,
@@ -64,7 +50,6 @@ const colors = {
 function processData(data) {
     console.log(data);
     writeHourReadingsHeader(data);
-    hourReadingDay.setDate(data[0]['date']);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
