@@ -61,13 +61,18 @@ router.get('/users/reading/:id', ensureAuthenticated, (req, res) => res.render('
 router.get('/users/listClients', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients.ejs', {
     name: user.getName()
 }));
-router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
-    name: user.getName()
-}));
-
 router.get('/users/listHourReadings', ensureAuthenticated, (req, res) => res.render('./hour-readings/listHourReadingsTable.ejs', {
     name: user.getName()
 }));
 
+router.get('/users/clients/hour-reading/daily/s/', (req, res) => res.render('./hour-readings/hour-readings-daily', {
+    name: user.getName()
+}));
 
-module.exports = router, user.getName();
+router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
+    name: user.getName()
+}));
+
+
+
+module.exports = router;
