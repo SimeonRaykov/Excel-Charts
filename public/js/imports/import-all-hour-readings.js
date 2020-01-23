@@ -78,113 +78,145 @@ function processFile(e) {
                     let currDaysFiltered = new Set();
                     let allActiveEnergyValues = [];
                     let allReactiveEnergyValues = [];
-                    arr.forEach(function (value, i) {
-                        // Remove for Reac energy
-                        if (i < 3) {
-                            if (i === 0) {
-                                for (let y = 4; y < value.length; y += 1) {
-                                    allDates.push(value[y]);
-                                    currDaysFiltered.add(value[y].split(" ")[0]);
-                                }
-                            } else if (i === 1) {
-                                for (let y = 4; y < value.length; y += 1) {
-                                    allActiveEnergyValues.push(value[y]);
-                                }
-                            } else if (i === 2) {
-                                for (let y = 4; y < value.length; y += 1) {
-                                    allReactiveEnergyValues.push(value[y]);
-                                }
-                            }
-                        }
-                    });
-                    let client = [];
-                    let j = 0;
-                    let currDate;
-                    let nextDate;
-                    let hourReading = [];
-                    let hours = [];
-                    for (let x = 0; x < currDaysFiltered.size; x += 1) {
-                        try {
-                            currDate = 0;
-                            nextDate = 0;
-                            hourReading = [];
-                            hours = [];
-                            while (true) {
-                                if (currDate !== nextDate) {
-                                    break;
-                                }
-                                currDate = allDates[j].split(" ")[0];
-                                nextDate = allDates[j + 1].split(" ")[0];
+                    let allProfileCoefs = [];
+                    let currHourValues = [];
+                    let currProfileCoef = [];
 
-                                let currHour = allDates[j].split(" ")[1];
-                                let currValue = allActiveEnergyValues[j];
-                                let currHourObj = {
-                                    currHour,
-                                    currValue
-                                }
-                                hours.push(currHourObj);
-                                j += 1;
+                    for (let x = 4; x < arr[0].length; x += 1) {
+                        let currDateHelper = `${arr[0][x]}`;
+                        let currDate = new Date(currDateHelper.split(" ")[0]);
+                        for (let val = 0; val < 24; val += 1) {
+                            currHourObj = {
+                                currHour: val,
+                                currValue: arr[1][x]
                             }
-                            hourReading.push(clientName, clientID, 0, currDate, hours, new Date());
-                            //console.log(hourReading);
-                            allHourReadings.push(hourReading);
-                        } catch (err) {
-                            currDate = allDates[allDates.length - 1].split(" ")[0];
-                            let currHour = allDates[allDates.length - 1].split(" ")[1];
-                            let currValue = allActiveEnergyValues[j];
-                            let currHourObj = {
-                                currHour,
-                                currValue
-                            }
-                            let hours = [];
-                            hours.push(currHourObj);
-                            hourReading.push(clientName, clientID, 0, currDate, hours, new Date());
-                            allHourReadings.push(hourReading);
+                            currHourValues.push(currHourObj);
+                            x += 1;
                         }
-                    }
-                    j = 0;
-                    for (let r = 0; r < currDaysFiltered.size; r += 1) {
-                        try {
-                            currDate = 0;
-                            nextDate = 0;
-                            hourReading = [];
-                            hours = [];
-                            while (true) {
-                                if (currDate !== nextDate) {
-                                    break;
-                                }
-                                currDate = allDates[j].split(" ")[0];
-                                nextDate = allDates[j + 1].split(" ")[0];
-
-                                let currHour = allDates[j].split(" ")[1];
-                                let currValue = allReactiveEnergyValues[j];
-                                let currHourObj = {
-                                    currHour,
-                                    currValue
-                                }
-                                hours.push(currHourObj);
-                                j += 1;
-                            }
-                            hourReading.push(clientName, clientID, 1, currDate, hours, new Date());
-                            // console.log(hourReading);
-                            allHourReadings.push(hourReading);
-                        } catch (err) {
-                            currDate = allDates[allDates.length - 1].split(" ")[0];
-                            let currHour = allDates[allDates.length - 1].split(" ")[1];
-                            let currValue = allReactiveEnergyValues[j];
-                            let currHourObj = {
-                                currHour,
-                                currValue
-                            }
-                            let hours = [];
-                            hours.push(currHourObj);
-                            hourReading.push(clientName, clientID, 1, currDate, hours, new Date());
-                            allHourReadings.push(hourReading);
+                        let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                        if (!formattedDate.includes('NaN')) {
+                            currProfileCoef.push(clientID, formattedDate, currHourValues, new Date());
+                            allProfileCoefs.push(currProfileCoef);
+                            currHourValues = [];
+                            currProfileCoef = [];
+                            currHourObj = {};
+                            x -= 1;
                         }
                     }
                     client.push(0, clientName, clientID, new Date());
                     clientsALL.push(client);
                     clientIDs.push(clientID);
+                    saveProfileReadingsToDB(allProfileCoefs);
+
+                    /*
+                                        arr.forEach(function (value, i) {
+                                            // Remove for Reac energy
+                                            if (i < 3) {
+                                                if (i === 0) {
+                                                    for (let y = 4; y < value.length; y += 1) {
+                                                        allDates.push(value[y]);
+                                                        currDaysFiltered.add(value[y].split(" ")[0]);
+                                                    }
+                                                } else if (i === 1) {
+                                                    for (let y = 4; y < value.length; y += 1) {
+                                                        allActiveEnergyValues.push(value[y]);
+                                                    }
+                                                } else if (i === 2) {
+                                                    for (let y = 4; y < value.length; y += 1) {
+                                                        allReactiveEnergyValues.push(value[y]);
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        let client = [];
+                                        let j = 0;
+                                        let currDate;
+                                        let nextDate;
+                                        let hourReading = [];
+                                        let hours = [];
+                                        for (let x = 0; x < currDaysFiltered.size; x += 1) {
+                                            try {
+                                                currDate = 0;
+                                                nextDate = 0;
+                                                hourReading = [];
+                                                hours = [];
+                                                while (true) {
+                                                    if (currDate !== nextDate) {
+                                                        break;
+                                                    }
+                                                    currDate = allDates[j].split(" ")[0];
+                                                    nextDate = allDates[j + 1].split(" ")[0];
+
+                                                    let currHour = allDates[j].split(" ")[1];
+                                                    let currValue = allActiveEnergyValues[j];
+                                                    let currHourObj = {
+                                                        currHour,
+                                                        currValue
+                                                    }
+                                                    hours.push(currHourObj);
+                                                    j += 1;
+                                                }
+                                                hourReading.push(clientName, clientID, 0, currDate, hours, new Date());
+                                                //console.log(hourReading);
+                                                allHourReadings.push(hourReading);
+                                            } catch (err) {
+                                                currDate = allDates[allDates.length - 1].split(" ")[0];
+                                                let currHour = allDates[allDates.length - 1].split(" ")[1];
+                                                let currValue = allActiveEnergyValues[j];
+                                                let currHourObj = {
+                                                    currHour,
+                                                    currValue
+                                                }
+                                                let hours = [];
+                                                hours.push(currHourObj);
+                                                hourReading.push(clientName, clientID, 0, currDate, hours, new Date());
+                                                allHourReadings.push(hourReading);
+                                            }
+                                        }
+                                        j = 0;
+                                        for (let r = 0; r < currDaysFiltered.size; r += 1) {
+                                            try {
+                                                currDate = 0;
+                                                nextDate = 0;
+                                                hourReading = [];
+                                                hours = [];
+                                                while (true) {
+                                                    if (currDate !== nextDate) {
+                                                        break;
+                                                    }
+                                                    currDate = allDates[j].split(" ")[0];
+                                                    nextDate = allDates[j + 1].split(" ")[0];
+
+                                                    let currHour = allDates[j].split(" ")[1];
+                                                    let currValue = allReactiveEnergyValues[j];
+                                                    let currHourObj = {
+                                                        currHour,
+                                                        currValue
+                                                    }
+                                                    hours.push(currHourObj);
+                                                    j += 1;
+                                                }
+                                                hourReading.push(clientName, clientID, 1, currDate, hours, new Date());
+                                                // console.log(hourReading);
+                                                allHourReadings.push(hourReading);
+                                            } catch (err) {
+                                                currDate = allDates[allDates.length - 1].split(" ")[0];
+                                                let currHour = allDates[allDates.length - 1].split(" ")[1];
+                                                let currValue = allReactiveEnergyValues[j];
+                                                let currHourObj = {
+                                                    currHour,
+                                                    currValue
+                                                }
+                                                let hours = [];
+                                                hours.push(currHourObj);
+                                                hourReading.push(clientName, clientID, 1, currDate, hours, new Date());
+                                                allHourReadings.push(hourReading);
+                                            }
+                                        }
+                                        client.push(0, clientName, clientID, new Date());
+                                        clientsALL.push(client);
+                                        clientIDs.push(clientID);
+                                        */
                     // Last Iteration of files []
                     if (z + 1 === files.length) {
                         saveClientsToDB(clientsALL);
@@ -320,7 +352,6 @@ function getClientsFromDB(clients) {
 };
 
 function saveHourReadingsToDB(readings) {
-
     $.ajax({
         url: 'http://localhost:3000/api/addHourReadings',
         method: 'POST',

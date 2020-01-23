@@ -44,10 +44,35 @@ function processFile(e) {
             let clientsIDs = [];
             let clientsAll = [];
             let currDaysFiltered = new Set();
-            let client = [];
             let dates = [];
             let allHourReadings = [];
             let hour_reading = [];
+
+            let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
+            console.log(arr);
+            return;
+            for (let x = 1; x < arr[0].length; x += 1) {
+                let currDateHelper = `${arr[0][x]}`;
+                let currDate = new Date(currDateHelper.split(" ")[0]);
+                for (let val = 0; val < 24; val += 1) {
+                    currHourObj = {
+                        currHour: val,
+                        currValue: arr[1][x]
+                    }
+                    currHourValues.push(currHourObj);
+                    x += 1;
+                }
+                let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                if (!formattedDate.includes('NaN')) {
+                    currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+                    allProfileCoefs.push(currProfileCoef);
+                    currHourValues = [];
+                    currProfileCoef = [];
+                    currHourObj = {};
+                    x -= 1;
+                }
+            }
+            saveProfileReadingsToDB(allProfileCoefs);
 
             getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                 if (i === 0) {
@@ -58,7 +83,6 @@ function processFile(e) {
                         }
                     }
                     console.log(dates);
-
                 } else if (i !== 0) {
                     let client = [];
                     let clientName = value['0'];
@@ -68,7 +92,6 @@ function processFile(e) {
                     let hours = [];
                     let currDate = dates[0].split(" ")[0];
                     let j = 0;
-
                     for (let y = 0; y < currDaysFiltered.size; y += 1) {
                         while (true) {
                             if (dates[j].split(" ")[0] != currDate) {
@@ -77,6 +100,11 @@ function processFile(e) {
                             currDate = dates[j].split(" ")[0];
 
                             let currHour = dates[j].split(" ")[1];
+                            let firstPartOfHour = `${currHour.split(":")[0]}` - 1;
+                            if (firstPartOfHour == -1) {
+                                firstPartOfHour = 0;
+                            }
+                            currHour = (`${firstPartOfHour}:00`);
                             let currValue = value[j + 4];
                             let currHourObj = {
                                 currHour,
@@ -118,42 +146,35 @@ function processFile(e) {
             changeClientIdForHourReadings(allHourReadings, cl);
             console.log(allHourReadings);
             saveHourReadingsToDB(allHourReadings);
-            /*
-              let filteredClients = filterClients(clientsAll);
-              saveClientsToDB(filteredClients);
-              cl = getClientsFromDB(clientIds);
-              changeClientIdForReadings(readingsAll, cl)
-              saveReadingsToDB(readingsAll);
-              */
         };
         reader.readAsArrayBuffer(f);
     } else {
         throwErrorForInvalidFileFormat();
     }
+}
 
-    function getCols(sheet) {
-        var result = [];
-        var row;
-        var rowNum;
-        var colNum;
-        var range = XLSX.utils.decode_range(sheet['!ref']);
-        for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-            row = [];
-            for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
-                var nextCell = sheet[
-                    XLSX.utils.encode_cell({
-                        r: rowNum,
-                        c: colNum
-                    })
-                ];
-                if (typeof nextCell === 'undefined') {
-                    row.push(void 0);
-                } else row.push(nextCell.w);
-            }
-            result.push(row);
+function getCols(sheet) {
+    var result = [];
+    var row;
+    var rowNum;
+    var colNum;
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+        row = [];
+        for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
+            var nextCell = sheet[
+                XLSX.utils.encode_cell({
+                    r: rowNum,
+                    c: colNum
+                })
+            ];
+            if (typeof nextCell === 'undefined') {
+                row.push(void 0);
+            } else row.push(nextCell.w);
         }
-        return result;
+        result.push(row);
     }
+    return result;
 }
 
 function throwErrorForInvalidFileFormat() {

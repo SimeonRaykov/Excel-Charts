@@ -45,6 +45,12 @@ let profile = new Profile();
     }
 }));
 
+Date.prototype.removeDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - days);
+    return date;
+}
+
 Array.prototype.insert = function (index, item) {
     this.splice(index, 0, item);
 };
@@ -53,11 +59,11 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
+    notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
     var files = e.dataTransfer.files,
         f = '';
-    let allHourReadings = [];
     f = files[0];
     var reader = new FileReader();
     var fileName = e.dataTransfer.files[0].name;
@@ -70,11 +76,6 @@ function processFile(e) {
             });
             let first_sheet_name = workbook.SheetNames[0];
 
-            let clientName;
-            let clientID;
-            let clientIDs = [];
-            let clientsALL = [];
-
             setProfileNameAndType();
             validateDocument();
             createProfile();
@@ -84,47 +85,134 @@ function processFile(e) {
             let currProfileCoef = [];
             let currHourValues = [];
             let currHourObj = {};
-            let currHour;
-            let currValue;
-            let isCompleted = false;
 
-            let i = 1;
-            while (true) {
-                if (arr[0][i] != '' && arr[0][i] != undefined && arr[1][i] != '' && arr[1][i] != undefined) {
-                    let currDate = new Date(arr[0][i]);
-                    let nextDate = new Date(arr[0][i + 1]);
-                    while (currDate.getDate() == nextDate.getDate()) {
-                        currDate = new Date(arr[0][i]);
-                        nextDate = new Date(arr[0][i + 1])
+            if (profile.getCompany() === companies.CEZ) {
+                let i = 1;
+                for (let x = 1; x < arr[0].length; x += 1) {
+                    let currDate = new Date(`${arr[0][x]} ${arr[2][x]}`);
+                    for (let val = 0; val < 24; val += 1) {
                         currHourObj = {
-                            currHour: currDate.getHours(),
-                            currValue: arr[1][i]
+                            currHour: val,
+                            currValue: arr[3][x]
                         }
                         currHourValues.push(currHourObj);
-                        i += 1;
+                        x += 1;
                     }
-
                     let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                    if (currHourValues.length == 0) {
-                        currHourObj = {
-                            currHour: currDate.getHours(),
-                            currValue: arr[1][i]
-                        }
-                        currHourValues.push(currHourObj);
-                        currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-                        allProfileCoefs.push(currProfileCoef);
-                        break;
-                    }
+
                     currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
                     allProfileCoefs.push(currProfileCoef);
-
+                    currHourValues = [];
                     currProfileCoef = [];
                     currHourObj = {};
-                    currHourValues = [];
+                    x -= 1;
                 }
+                console.log(allProfileCoefs);
+                saveProfileReadingsToDB(allProfileCoefs);
+                /*    while (true) {
+                    if (arr[0][i] != '' && arr[0][i] != undefined && arr[2][i] != '' && arr[2][i] != undefined) {
+                        let currDate = new Date(`${arr[0][i]} ${arr[2][i]}`);
+                        let nextDate = new Date(`${arr[0][i + 1]} ${arr[2][i+1]}`);
+                        let currHourHelper = `${arr[2][i].split(":")[0]}`;
+                        currHourHelper -= 1;
+                        if (currHourHelper == -1) {
+                            currHourHelper = 23;
+                        }
+                        let currDateHelper = `${arr[0][i]}`;
+                        while (currDate.getDate() == nextDate.getDate()) {
+                            currDate = new Date(`${arr[0][i]} ${arr[2][i]}`);
+                            nextDate = new Date(`${arr[0][i + 1]} ${arr[2][i+1]}`)
+                            currHourObj = {
+                                currHour: currDate.getHours(),
+                                currValue: Number(arr[3][i].replace(/["']/g, ""))
+                            }
+                            currHourValues.push(currHourObj);
+                            i += 1;
+                        }
+
+                        let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                        if (currHourValues.length == 0) {
+                            currHourObj = {
+                                currHour: currDate.getHours(),
+                                currValue: Number(arr[3][i].replace(/["']/g, ""))
+                            }
+                            currHourValues.push(currHourObj);
+                            currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+                            allProfileCoefs.push(currProfileCoef);
+                            break;
+                        }
+                        currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+                        allProfileCoefs.push(currProfileCoef);
+                        currProfileCoef = [];
+                        currHourObj = {};
+                        currHourValues = [];
+                    }
+                }
+*/
+                //   saveProfileReadingsToDB(allProfileCoefs);
+            } else if (profile.getCompany() === companies.ENERGO_PRO || profile.getCompany() === companies.EVN) {
+
+                for (let x = 1; x < arr[0].length; x += 1) {
+                    let currDateHelper = `${arr[0][x]}`;
+                    let currDate = new Date(currDateHelper.split(" ")[0]);
+                    for (let val = 0; val < 24; val += 1) {
+                        currHourObj = {
+                            currHour: val,
+                            currValue: arr[1][x]
+                        }
+                        currHourValues.push(currHourObj);
+                        x += 1;
+                    }
+                    let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                    if (!formattedDate.includes('NaN')) {
+                        currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+                        allProfileCoefs.push(currProfileCoef);
+                        currHourValues = [];
+                        currProfileCoef = [];
+                        currHourObj = {};
+                        x -= 1;
+                    }
+                }
+                saveProfileReadingsToDB(allProfileCoefs);
+                //     let i = 1;
+                /*     while (true) {
+                         if (arr[0][i] != '' && arr[0][i] != undefined && arr[1][i] != '' && arr[1][i] != undefined) {
+                             let currDate = new Date(arr[0][i]);
+                             let nextDate = new Date(arr[0][i + 1]);
+                             while (currDate.getDate() == nextDate.getDate()) {
+                                 currDate = new Date(arr[0][i]);
+                                 nextDate = new Date(arr[0][i + 1])
+                                 currHourObj = {
+                                     currHour: currDate.getHours(),
+                                     currValue: Number(arr[1][i].replace(/["']/g, ""))
+                                 }
+                                 currHourValues.push(currHourObj);
+                                 i += 1;
+                             }
+
+                             let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                             if (currHourValues.length == 0) {
+                                 currHourObj = {
+                                     currHour: currDate.getHours(),
+                                     currValue: Number(arr[1][i].replace(/["']/g, ""))
+                                 }
+                                 currHourValues.push(currHourObj);
+                                 currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+                                 allProfileCoefs.push(currProfileCoef);
+                                 break;
+                             }
+                             currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
+
+                             allProfileCoefs.push(currProfileCoef);
+
+                             currProfileCoef = [];
+                             currHourObj = {};
+                             currHourValues = [];
+                         }
+                     }
+                     saveProfileReadingsToDB(allProfileCoefs);
+                     */
             }
-            console.log(allProfileCoefs);
-            saveProfileReadingsToDB(allProfileCoefs);
         }
         reader.readAsArrayBuffer(f);
     } else {
@@ -215,23 +303,22 @@ function getProfileID() {
 }
 
 function saveProfileReadingsToDB(readings) {
-
     $.ajax({
         url: 'http://localhost:3000/api/saveProfileReadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(readings),
-        async: false,
         success: function (data) {
             console.log('Readings saved');
+            notification('Everything is good', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             //   notification(errorThrown, 'error');
             console.log('error in save readings');
         }
     });
-    notification('Everything is good', 'success');
+
 };
 
 
