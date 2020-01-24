@@ -39,6 +39,11 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => res.render('../publi
 router.get('/users/import/STP/Readings', ensureAuthenticated, (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));
+
+router.get('/users/import/STP/HourPredictions', (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
+    name: user.getName()
+}))
+
 router.get('/users/import/hour-readings/CEZ', (req, res) => res.render('./imports/hour_readings.ejs', {
     name: user.getName()
 }));
@@ -52,7 +57,7 @@ router.get('/users/import/profiles', (req, res) => res.render('./imports/profile
 
 router.get('/users/import/graphs', (req, res) => res.render('./imports/graphs.ejs', {
     name: user.getName()
-}))
+}));
 
 // STP Listing
 router.get('/users/listReadings', ensureAuthenticated, (req, res) => res.render('./STP listings/listReadings.ejs', {

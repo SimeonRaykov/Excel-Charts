@@ -315,7 +315,6 @@ app.get('/addpost1', (req, res) => {
 
 // Insert Clients 
 app.post('/addclients', (req, res) => {
-    console.log(req.body);
     let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
@@ -393,7 +392,6 @@ async function filterHourReadings(hour_readingsAll) {
         if (currDate.includes('undefined')) {
             currDate = `${date[0].split('.')[2]}-${date[0].split('.')[1]}-${date[0].split('.')[0]}`
         }
-        console.log(currHourReading);
         let createdDate = currHourReading[5];
         for (let z = 0; z < currHourReading[4].length; z += 1) {
             if (currHourReading[4][z].currHour === '1:00' || currHourReading[4][z].currHour === '01:00' || currHourReading[4][z].currHour == 1) {
@@ -655,7 +653,6 @@ app.get('/getposts', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log(results);
         console.log('Posts fetched');
     });
 });
@@ -800,7 +797,6 @@ app.post('/api/saveProfileReadings', async (req, res) => {
         if (err) {
             throw err;
         }
-
         console.log('Hour Readings inserted');
         return res.send("Hour Readings added");
     });
@@ -1103,7 +1099,6 @@ app.post('/api/getSingleClient', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log(result);
         return res.send(JSON.stringify(result[0].id));
     });
 });
@@ -1405,6 +1400,22 @@ async function filterGraphHourReadings(allProfileHourReadings) {
 
 
 /////////////////////////////END OF GRAPHS////////////////////////
+
+
+
+/////////////////////////// STP PREDICTIONS - MONTHLY //////////////////
+app.post('/api/STP-Predictions', (req, res) => {
+    let sql = 'INSERT IGNORE INTO prediction (client_id, date, amount, type, created_date) VALUES ?';
+    db.query(sql, [req.body], (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log('STP Predictions inserted');
+        return res.send("STP Predictions added");
+    });
+});
+
+///////////////////////////END OF STP PREDICTIONS - MONTHLY ////////////
 
 
 // Update post
