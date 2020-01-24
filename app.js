@@ -388,60 +388,61 @@ async function filterHourReadings(hour_readingsAll) {
         let filteredHourReading = [];
         let currID = currHourReading[1];
         let type = currHourReading[2];
-        let date = currHourReading[3].split('/');
-        let currDate = `${date[2]}-${date[0]}-${date[1]}`;
+        let date = new Date(currHourReading[3]);
+        let currDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
         if (currDate.includes('undefined')) {
             currDate = `${date[0].split('.')[2]}-${date[0].split('.')[1]}-${date[0].split('.')[0]}`
         }
+        console.log(currHourReading);
         let createdDate = currHourReading[5];
         for (let z = 0; z < currHourReading[4].length; z += 1) {
-            if (currHourReading[4][z].currHour === '1:00' || currHourReading[4][z].currHour === '01:00') {
+            if (currHourReading[4][z].currHour === '1:00' || currHourReading[4][z].currHour === '01:00' || currHourReading[4][z].currHour == 1) {
                 hour_one = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '2:00' || currHourReading[4][z].currHour === '02:00') {
+            } else if (currHourReading[4][z].currHour === '2:00' || currHourReading[4][z].currHour === '02:00' || currHourReading[4][z].currHour == '2') {
                 hour_two = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '3:00' || currHourReading[4][z].currHour === '03:00') {
+            } else if (currHourReading[4][z].currHour === '3:00' || currHourReading[4][z].currHour === '03:00' || currHourReading[4][z].currHour == '3') {
                 hour_three = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '4:00' || currHourReading[4][z].currHour === '04:00') {
+            } else if (currHourReading[4][z].currHour === '4:00' || currHourReading[4][z].currHour === '04:00' || currHourReading[4][z].currHour == '4') {
                 hour_four = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '5:00' || currHourReading[4][z].currHour === '05:00') {
+            } else if (currHourReading[4][z].currHour === '5:00' || currHourReading[4][z].currHour === '05:00' || currHourReading[4][z].currHour == '5') {
                 hour_five = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '6:00' || currHourReading[4][z].currHour === '06:00') {
+            } else if (currHourReading[4][z].currHour === '6:00' || currHourReading[4][z].currHour === '06:00' || currHourReading[4][z].currHour == '6') {
                 hour_six = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '7:00' || currHourReading[4][z].currHour === '07:00') {
+            } else if (currHourReading[4][z].currHour === '7:00' || currHourReading[4][z].currHour === '07:00' || currHourReading[4][z].currHour == '7') {
                 hour_seven = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '8:00' || currHourReading[4][z].currHour === '08:00') {
+            } else if (currHourReading[4][z].currHour === '8:00' || currHourReading[4][z].currHour === '08:00' || currHourReading[4][z].currHour == '8') {
                 hour_eight = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '9:00' || currHourReading[4][z].currHour === '09:00') {
+            } else if (currHourReading[4][z].currHour === '9:00' || currHourReading[4][z].currHour === '09:00' || currHourReading[4][z].currHour == '9') {
                 hour_nine = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '10:00' || currHourReading[4][z].currHour === '10:00') {
+            } else if (currHourReading[4][z].currHour === '10:00' || currHourReading[4][z].currHour === '10:00' || currHourReading[4][z].currHour == '10') {
                 hour_ten = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '11:00' || currHourReading[4][z].currHour === '11:00') {
+            } else if (currHourReading[4][z].currHour === '11:00' || currHourReading[4][z].currHour === '11:00' || currHourReading[4][z].currHour == '11') {
                 hour_eleven = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '12:00' || currHourReading[4][z].currHour === '12:00') {
+            } else if (currHourReading[4][z].currHour === '12:00' || currHourReading[4][z].currHour === '12:00' || currHourReading[4][z].currHour == '12') {
                 hour_twelve = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '13:00' || currHourReading[4][z].currHour === '13:00') {
+            } else if (currHourReading[4][z].currHour === '13:00' || currHourReading[4][z].currHour === '13:00' || currHourReading[4][z].currHour == '13') {
                 hour_thirteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '14:00' || currHourReading[4][z].currHour === '14:00') {
+            } else if (currHourReading[4][z].currHour === '14:00' || currHourReading[4][z].currHour === '14:00' || currHourReading[4][z].currHour == '14') {
                 hour_fourteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '15:00' || currHourReading[4][z].currHour === '15:00') {
+            } else if (currHourReading[4][z].currHour === '15:00' || currHourReading[4][z].currHour === '15:00' || currHourReading[4][z].currHour == '15') {
                 hour_fifteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '16:00' || currHourReading[4][z].currHour === '16:00') {
+            } else if (currHourReading[4][z].currHour === '16:00' || currHourReading[4][z].currHour === '16:00' || currHourReading[4][z].currHour == '16') {
                 hour_sixteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '17:00' || currHourReading[4][z].currHour === '17:00') {
+            } else if (currHourReading[4][z].currHour === '17:00' || currHourReading[4][z].currHour === '17:00' || currHourReading[4][z].currHour == '17') {
                 hour_seventeen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '18:00' || currHourReading[4][z].currHour === '18:00') {
+            } else if (currHourReading[4][z].currHour === '18:00' || currHourReading[4][z].currHour === '18:00' || currHourReading[4][z].currHour == '18') {
                 hour_eighteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '19:00' || currHourReading[4][z].currHour === '19:00') {
+            } else if (currHourReading[4][z].currHour === '19:00' || currHourReading[4][z].currHour === '19:00' || currHourReading[4][z].currHour == '19') {
                 hour_nineteen = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '20:00' || currHourReading[4][z].currHour === '20:00') {
+            } else if (currHourReading[4][z].currHour === '20:00' || currHourReading[4][z].currHour === '20:00' || currHourReading[4][z].currHour == '20') {
                 hour_twenty = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '21:00' || currHourReading[4][z].currHour === '21:00') {
+            } else if (currHourReading[4][z].currHour === '21:00' || currHourReading[4][z].currHour === '21:00' || currHourReading[4][z].currHour == '21') {
                 hour_twentyone = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '22:00' || currHourReading[4][z].currHour === '22:00') {
+            } else if (currHourReading[4][z].currHour === '22:00' || currHourReading[4][z].currHour === '22:00' || currHourReading[4][z].currHour == '22') {
                 hour_twentytwo = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '23:00' || currHourReading[4][z].currHour === '23:00') {
+            } else if (currHourReading[4][z].currHour === '23:00' || currHourReading[4][z].currHour === '23:00' || currHourReading[4][z].currHour == '23') {
                 hour_twentythree = currHourReading[4][z].currValue;
-            } else if (currHourReading[4][z].currHour === '0:00' || currHourReading[4][z].currHour === '00:00') {
+            } else if (currHourReading[4][z].currHour === '0:00' || currHourReading[4][z].currHour === '00:00' || currHourReading[4][z].currHour == '0') {
                 hour_zero = currHourReading[4][z].currValue;
             }
         }
