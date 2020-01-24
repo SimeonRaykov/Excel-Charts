@@ -4,17 +4,19 @@ const companies = {
     CEZ: 'CEZ'
 };
 
-class GraphPrediction {
-    constructor() {
-        this.company = '';
-        this.name = '';
-        this.ERP = '';
-    }
+class STPPrediction {
+    constructor() {}
     getCompany() {
         return this.company;
     }
     getType() {
         return this.ERP;
+    }
+    getStartingIndexOfAmountValues() {
+        return this.amountIndex;
+    }
+    getIndexOfIdentCode() {
+        return this.indexID;
     }
     setCompany(company) {
         this.company = company;
@@ -24,9 +26,18 @@ class GraphPrediction {
         this.ERP = ERP;
         return this;
     }
+    setStartingIndexOfAmountValues(amountIndex) {
+        this.amountIndex = amountIndex;
+        return this;
+    }
+    setIndexOfIdentCode(indexID) {
+        this.indexID = indexID;
+        return this;
+    }
 }
 
-let graphPrediction = new GraphPrediction();
+let stpPrediction = new STPPrediction();
+
 Array.prototype.insert = function (index, item) {
     this.splice(index, 0, item);
 };
@@ -37,11 +48,11 @@ $(document).ready(function () {
 
 ($('body > div.container').click(() => {
     if ($('#energo-pro').is(':checked')) {
-        graphPrediction.setCompany('ENERGO_PRO').setType(3);
+        stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(7).setIndexOfIdentCode(3);
     } else if ($('#evn').is(':checked')) {
-        graphPrediction.setCompany('EVN').setType(1);
+        stpPrediction.setCompany('EVN').setType(1).setStartingIndexOfAmountValues(6).setIndexOfIdentCode(1);
     } else if ($('#cez').is(':checked')) {
-        graphPrediction.setCompany('CEZ').setType(2);
+        stpPrediction.setCompany('CEZ').setType(2).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2);
     }
 }));
 
@@ -52,71 +63,58 @@ function processFile(e) {
         f = files[0];
     var reader = new FileReader();
     var fileName = e.dataTransfer.files[0].name;
-    let helperDate = fileName.split('.');
-    let documentDate = `${helperDate[1]}.${helperDate[0]}.${helperDate[2]}`;
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     if (extension === 'xlsx' || extension === 'xls') {
         reader.onload = function (e) {
             fileName = fileName.replace(extension, "");
             fileName = fileName.substring(0, fileName.length - 1);
-            console.log(fileName);
             var data = new Uint8Array(e.target.result);
             var workbook = XLSX.read(data, {
                 type: 'array'
             });
             let first_sheet_name = workbook.SheetNames[0];
-            //    console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
 
             let client = [];
             let clientsAll = [];
             let clientID;
-            let allGraphHourReadings = [];
-            let graph_hour_reading = [];
-            let currHourValues = [];
-            let type = 1;
-            let ERP = graphPrediction.getType();
+            let allSTPpredictions = [];
+            let stpPredictionReading = [];
+            let type = stpPrediction.getType();
             let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
-
             validateDocument();
+
+            // ImportClients
+            let clientIdentCodeIndex = stpPrediction.getIndexOfIdentCode();
             for (let i = 1; i < arr.length; i += 1) {
-                let clientName = arr[i][0];
-                let clientIdentCode = arr[i][1];
+                let clientIdentCode = arr[i][clientIdentCodeIndex];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, clientName, clientIdentCode, new Date());
+                    client.push(0, 'NULL', clientIdentCode, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
             }
             saveClientsToDB(clientsAll);
-            let date = new Date(documentDate);
-            console.log(date);
+
+            // ImportSTP Predictions
+            let startingIndexOfLoadValues = stpPrediction.getStartingIndexOfAmountValues();
             for (let i = 1; i < arr.length; i += 1) {
-                let ident_code = arr[i][1];
-                for (let y = 2; y < arr[i].length; y += 1) {
-                    let currHourHelper = arr[0][y].split(":");
-                    let currHour = currHourHelper[0] - 1;
-                    if (currHour == -1) {
-                        currHour = 23;
+                let ident_code = arr[i][clientIdentCodeIndex];
+                for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
+                    if (ident_code != '' && ident_code != undefined && ident_code != null) {
+                        clientID = getClientIDFromDB(ident_code);
+                        let dateHelper = arr[0][y].split('.');
+                        let currAmount = arr[i][y];
+                        let date = new Date(`${dateHelper[0]}.01.${dateHelper[1]}`);
+                        let createdDate = new Date();
+                        stpPredictionReading.push(clientID, date, currAmount, type, createdDate);
+                        allSTPpredictions.push(stpPredictionReading);
+                        stpPredictionReading = [];
                     }
-                    let currValue = arr[i][y];
-                    let currHourObj = {
-                        currHour,
-                        currValue
-                    }
-                    currHourValues.push(currHourObj);
-                }
-                if (ident_code != '' && ident_code != undefined && ident_code != null) {
-                    clientID = getClientIDFromDB(ident_code);
-                    let createdDate = new Date();
-                    graph_hour_reading.push(clientID, date, currHourValues, type, ERP, createdDate);
-                    allGraphHourReadings.push(graph_hour_reading);
-                    graph_hour_reading = [];
-                    currHourValues = [];
                 }
             }
-            console.log(allGraphHourReadings);
-            saveHourReadingsToDB(allGraphHourReadings);
+            console.log(allSTPpredictions);
+            saveSTPpredictionsToDB(allSTPpredictions);
             return;
         };
         reader.readAsArrayBuffer(f);
@@ -165,41 +163,6 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
     });
 };
 
-function convertClientIDsToString(clientIDs) {
-    return clientIDs.map(clientID => convertClientIDToString(clientID));
-}
-
-function convertClientIDToString(clientID) {
-    return `"${clientID}"`;
-}
-
-function filterClients(clientsAll) {
-    let filteredclientsAll = [];
-    let filteredClients = '';
-    let isFalse = false;
-
-    for (let i = 0; i <= clientsAll.length; i += 1) {
-        if (clientsAll[i] != undefined) {
-            if (clientsAll[i].length > 1) {
-                isFalse = false;
-                filteredClients = clientsAll[i].filter(el => {
-                    if (el == "") {
-                        isFalse = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (filteredClients != undefined && filteredClients != '' && filteredClients != null) {
-                    if (!isFalse) {
-                        filteredclientsAll.push(filteredClients);
-                    }
-                }
-            }
-        }
-    }
-    return filteredclientsAll;
-}
-
 function saveClientsToDB(clients) {
     notification('Loading..', 'loading');
     $.ajax({
@@ -232,7 +195,6 @@ function getClientIDFromDB(client) {
             ident_code: client
         }),
         success: function (data) {
-            console.log('Got ID');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -243,13 +205,13 @@ function getClientIDFromDB(client) {
     return retVal;
 };
 
-function saveHourReadingsToDB(readings) {
+function saveSTPpredictionsToDB(STPPredictions) {
     $.ajax({
-        url: 'http://localhost:3000/api/saveGraphHourReadings',
+        url: 'http://localhost:3000/api/STP-Predictions',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify(readings),
+        data: JSON.stringify(STPPredictions),
         success: function (data) {
             console.log('Readings saved');
         },
@@ -290,7 +252,7 @@ function notification(msg, type) {
 };
 
 function validateDocument() {
-    if (graphPrediction.getCompany() == '') {
+    if (stpPrediction.getCompany() == '') {
         notification('Избери компания', 'error');
         throw new Error('Избери компания');
     }

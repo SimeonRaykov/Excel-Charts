@@ -75,7 +75,6 @@ function processFile(e) {
                 type: 'array'
             });
             let first_sheet_name = workbook.SheetNames[0];
-
             setProfileNameAndType();
             validateDocument();
             createProfile();
