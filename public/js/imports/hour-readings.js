@@ -42,110 +42,132 @@ function processFile(e) {
 
             let cl = [];
             let clientsIDs = [];
-            let clientsAll = [];
+            let allClients = [];
             let currDaysFiltered = new Set();
             let dates = [];
             let allHourReadings = [];
             let hour_reading = [];
-
+            let currHourValues = [];
+            let currHourReading = [];
             let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
-            console.log(arr);
-            return;
-            for (let x = 1; x < arr[0].length; x += 1) {
-                let currDateHelper = `${arr[0][x]}`;
-                let currDate = new Date(currDateHelper.split(" ")[0]);
-                for (let val = 0; val < 24; val += 1) {
-                    currHourObj = {
-                        currHour: val,
-                        currValue: arr[1][x]
-                    }
-                    currHourValues.push(currHourObj);
-                    x += 1;
-                }
-                let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                if (!formattedDate.includes('NaN')) {
-                    currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-                    allProfileCoefs.push(currProfileCoef);
-                    currHourValues = [];
-                    currProfileCoef = [];
-                    currHourObj = {};
-                    x -= 1;
+            let client = [];
+            let endOfDates;
+            for (let g = 4; g < arr[0].length; g += 1) {
+                if (arr[0][g] == undefined) {
+                    endOfDates = g - 1;
+                    break;
                 }
             }
-            saveProfileReadingsToDB(allProfileCoefs);
 
-            getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
-                if (i === 0) {
-                    for (let x = 4; x <= colSize; x += 1) {
-                        if (value[x] !== undefined) {
-                            dates.push(value[x]);
-                            currDaysFiltered.add(value[x].split(" ")[0]);
+            for (let i = 1; i < arr.length; i += 1) {
+                for (let x = 4; x < endOfDates; x += 1) {
+                    let currDateHelper = `${arr[0][x]}`;
+                    let currDate = new Date(currDateHelper.split(" ")[0]);
+                    for (let val = 0; val < 24; val += 1) {
+                        currHourObj = {
+                            currHour: val,
+                            currValue: arr[i][x]
                         }
+                        currHourValues.push(currHourObj);
+                        x += 1;
                     }
-                    console.log(dates);
-                } else if (i !== 0) {
-                    let client = [];
-                    let clientName = value['0'];
-                    let clientID = value['1'].replace(/"/g, '');;
-                    let typeEnergy = value['2'];
-                    typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
-                    let hours = [];
-                    let currDate = dates[0].split(" ")[0];
-                    let j = 0;
-                    for (let y = 0; y < currDaysFiltered.size; y += 1) {
-                        while (true) {
-                            if (dates[j].split(" ")[0] != currDate) {
-                                break;
-                            }
-                            currDate = dates[j].split(" ")[0];
-
-                            let currHour = dates[j].split(" ")[1];
-                            let firstPartOfHour = `${currHour.split(":")[0]}` - 1;
-                            if (firstPartOfHour == -1) {
-                                firstPartOfHour = 0;
-                            }
-                            currHour = (`${firstPartOfHour}:00`);
-                            let currValue = value[j + 4];
-                            let currHourObj = {
-                                currHour,
-                                currValue
-                            }
-                            hours.push(currHourObj);
-                            j += 1;
-                        }
-                        hour_reading.push(clientName, clientID, typeEnergy, currDate, hours, new Date());
-                        allHourReadings.push(hour_reading);
-                        hour_reading = [];
-                        hours = [];
-                        try {
-                            currDate = dates[j + 1].split(" ")[0];
-                        } catch (Exception) {
-                            currDate = dates[dates.length - 1].split(" ")[0];
-                            let currHour = dates[dates.length - 1].split(" ")[1];
-                            let currValue = value[j + 4];
-                            let currHourObj = {
-                                currHour,
-                                currValue
-                            }
-                            hours.push(currHourObj);
-                            hour_reading.push(clientName, clientID, typeEnergy, currDate, hours, new Date());
-                            allHourReadings.push(hour_reading);
-                            hours = []
-                            hour_reading = [];
-                            break;
-                        }
+                    let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                    if (!formattedDate.includes('NaN')) {
+                        let clientName = arr[i][0];
+                        let clientID = arr[i][1];
+                        let typeEnergy = arr[i][2];
+                        typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
+                        currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
+                        client.push(0, clientName, clientID, new Date());
+                        allClients.push(client);
+                        allHourReadings.push(currHourReading);
+                        currHourValues = [];
+                        currHourReading = [];
+                        clientsIDs.push(clientID);
+                        currHourObj = {};
+                        client = [];
+                        x -= 1;
                     }
-                    client.push(0, clientName, clientID, new Date());
-                    clientsIDs.push(clientID);
-                    clientsAll.push(client);
                 }
-            });
-
-            saveClientsToDB(clientsAll);
+            }
+            console.log(allHourReadings);
+            return;
+            saveClientsToDB(allClients);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
             changeClientIdForHourReadings(allHourReadings, cl);
-            console.log(allHourReadings);
             saveHourReadingsToDB(allHourReadings);
+            /*     getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
+                     if (i === 0) {
+                         for (let x = 4; x <= colSize; x += 1) {
+                             if (value[x] !== undefined) {
+                                 dates.push(value[x]);
+                                 currDaysFiltered.add(value[x].split(" ")[0]);
+                             }
+                         }
+                         console.log(dates);
+                     } else if (i !== 0) {
+                         let client = [];
+                         let clientName = value['0'];
+                         let clientID = value['1'].replace(/"/g, '');;
+                         let typeEnergy = value['2'];
+                         typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
+                         let hours = [];
+                         let currDate = dates[0].split(" ")[0];
+                         let j = 0;
+                         for (let y = 0; y < currDaysFiltered.size; y += 1) {
+                             while (true) {
+                                 if (dates[j].split(" ")[0] != currDate) {
+                                     break;
+                                 }
+                                 currDate = dates[j].split(" ")[0];
+
+                                 let currHour = dates[j].split(" ")[1];
+                                 let firstPartOfHour = `${currHour.split(":")[0]}` - 1;
+                                 if (firstPartOfHour == -1) {
+                                     firstPartOfHour = 0;
+                                 }
+                                 currHour = (`${firstPartOfHour}:00`);
+                                 let currValue = value[j + 4];
+                                 let currHourObj = {
+                                     currHour,
+                                     currValue
+                                 }
+                                 hours.push(currHourObj);
+                                 j += 1;
+                             }
+                             hour_reading.push(clientName, clientID, typeEnergy, currDate, hours, new Date());
+                             allHourReadings.push(hour_reading);
+                             hour_reading = [];
+                             hours = [];
+                             try {
+                                 currDate = dates[j + 1].split(" ")[0];
+                             } catch (Exception) {
+                                 currDate = dates[dates.length - 1].split(" ")[0];
+                                 let currHour = dates[dates.length - 1].split(" ")[1];
+                                 let currValue = value[j + 4];
+                                 let currHourObj = {
+                                     currHour,
+                                     currValue
+                                 }
+                                 hours.push(currHourObj);
+                                 hour_reading.push(clientName, clientID, typeEnergy, currDate, hours, new Date());
+                                 allHourReadings.push(hour_reading);
+                                 hours = []
+                                 hour_reading = [];
+                                 break;
+                             }
+                         }
+                         client.push(0, clientName, clientID, new Date());
+                         clientsIDs.push(clientID);
+                         allClients.push(client);
+                     }
+                 });
+
+                 saveClientsToDB(allClients);
+                 cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
+                 changeClientIdForHourReadings(allHourReadings, cl);
+                 console.log(allHourReadings);
+                 saveHourReadingsToDB(allHourReadings); */
         };
         reader.readAsArrayBuffer(f);
     } else {

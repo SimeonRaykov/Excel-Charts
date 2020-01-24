@@ -36,6 +36,8 @@ function processFile(e) {
     var files = e.dataTransfer.files,
         f = '';
     let allHourReadings = [];
+    let clientIDs = [];
+    let clientsALL = [];
     for (let z = 0; z < files.length; z += 1) {
         f = files[z];
         var reader = new FileReader();
@@ -58,8 +60,7 @@ function processFile(e) {
                 // console.log(Object.keys(workbook['Sheets']['Sheet1']));
                 let clientName;
                 let clientID;
-                let clientIDs = [];
-                let clientsALL = [];
+
                 let colSize = getCols(workbook['Sheets'][`${first_sheet_name}`])[0].length;
                 if (Object.values(companies).indexOf(company.getCompany()) < 0) {
                     notification('Избери компания', 'error');
@@ -72,42 +73,61 @@ function processFile(e) {
                         clientID = (worksheet['A2'].v).split(" ")[2];
                     }
                     validateDocument(clientID, clientName, colSize);
+                    console.log(clientID, clientName);
                     // let colSize = getRows(workbook['Sheets'][`${first_sheet_name}`])[0].length;
                     let arr = getRows(workbook['Sheets'][`${first_sheet_name}`]);
                     let allDates = [];
                     let currDaysFiltered = new Set();
                     let allActiveEnergyValues = [];
                     let allReactiveEnergyValues = [];
-                    let allProfileCoefs = [];
-                    let currHourValues = [];
-                    let currProfileCoef = [];
+                    let currActiveEnergyValues = [];
+                    let currReactiveEnergyValues = [];
+                    let currHourReadingActive = [];
+                    let currHourReadingReactive = [];
 
                     for (let x = 4; x < arr[0].length; x += 1) {
                         let currDateHelper = `${arr[0][x]}`;
-                        let currDate = new Date(currDateHelper.split(" ")[0]);
+                        let splitHelper = currDateHelper.split(" ")[0].split('.');
+                        let currDate = new Date(`${splitHelper[1]}.${splitHelper[0]}.${splitHelper[2]}`);
                         for (let val = 0; val < 24; val += 1) {
-                            currHourObj = {
+                            currHourActiveEnergyObj = {
                                 currHour: val,
                                 currValue: arr[1][x]
                             }
-                            currHourValues.push(currHourObj);
+                            currReactiveEnergyObj = {
+                                currHour: val,
+                                currValue: arr[2][x] == '' || arr[2][x] == undefined ? 0 : arr[2][x]
+                            }
+                            currActiveEnergyValues.push(currHourActiveEnergyObj);
+                            currReactiveEnergyValues.push(currReactiveEnergyObj);
                             x += 1;
                         }
                         let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
                         if (!formattedDate.includes('NaN')) {
-                            currProfileCoef.push(clientID, formattedDate, currHourValues, new Date());
-                            allProfileCoefs.push(currProfileCoef);
-                            currHourValues = [];
-                            currProfileCoef = [];
-                            currHourObj = {};
+
+                            currHourReadingActive.push(clientName, clientID, 0, formattedDate, currActiveEnergyValues, new Date());
+                            currHourReadingReactive.push(clientName, clientID, 1, formattedDate, currReactiveEnergyValues, new Date());
+
+                            allHourReadings.push(currHourReadingActive);
+                            allHourReadings.push(currHourReadingReactive);
+
+                            currHourReadingActive = [];
+                            currHourReadingReactive = [];
+
+                            currActiveEnergyValues = [];
+                            currReactiveEnergyValues = [];
+
+                            currHourActiveEnergyObj = {};
+                            currReactiveEnergyObj = {};
                             x -= 1;
                         }
                     }
+                    let client = [];
+                    clientIDs.push(clientID);
+
                     client.push(0, clientName, clientID, new Date());
                     clientsALL.push(client);
-                    clientIDs.push(clientID);
-                    saveProfileReadingsToDB(allProfileCoefs);
-
+                    //   console.log(allHourReadings);
                     /*
                                         arr.forEach(function (value, i) {
                                             // Remove for Reac energy
@@ -223,7 +243,6 @@ function processFile(e) {
                         let cl;
                         cl = getClientsFromDB(convertClientIDsToString(clientIDs));
                         changeClientIdForHourReadings(allHourReadings, cl);
-                        console.log(allHourReadings);
                         saveHourReadingsToDB(allHourReadings);
                     }
                 };
