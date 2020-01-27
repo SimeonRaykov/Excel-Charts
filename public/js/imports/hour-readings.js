@@ -9,6 +9,10 @@ function processFile(e) {
     let cl;
     let clientIds = [];
 
+    const meteringType = 1; // Hour-Reading
+    const profileID = 0;
+    const isManufacturer = 0;
+
     e.stopPropagation();
     e.preventDefault();
     var files = e.dataTransfer.files,
@@ -78,7 +82,7 @@ function processFile(e) {
                         let typeEnergy = arr[i][2];
                         typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
                         currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
-                        client.push(0, clientName, clientID, new Date());
+                        client.push(0, clientName, clientID, meteringType, profileID, isManufacturer, new Date());
                         allClients.push(client);
                         allHourReadings.push(currHourReading);
                         currHourValues = [];

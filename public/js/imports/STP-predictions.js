@@ -56,9 +56,10 @@ $(document).ready(function () {
     }
 }));
 
-function processFile(e) {
+async function processFile(e) {
     e.stopPropagation();
     e.preventDefault();
+    await notification('Loading..', 'loading');
     var files = e.dataTransfer.files,
         f = files[0];
     var reader = new FileReader();
@@ -75,6 +76,11 @@ function processFile(e) {
             });
             let first_sheet_name = workbook.SheetNames[0];
 
+            const profileID = 0;
+            const meteringType = 1; // Hour-Reading
+            const isManufacturer = 0;
+
+
             let client = [];
             let clientsAll = [];
             let clientID;
@@ -89,11 +95,12 @@ function processFile(e) {
             for (let i = 1; i < arr.length; i += 1) {
                 let clientIdentCode = arr[i][clientIdentCodeIndex];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, 'NULL', clientIdentCode, new Date());
+                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
             }
+            notification('Loading..', 'loading');
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
@@ -113,7 +120,7 @@ function processFile(e) {
                     }
                 }
             }
-            console.log(allSTPpredictions);
+            notification('Loading..', 'loading');
             saveSTPpredictionsToDB(allSTPpredictions);
             return;
         };
@@ -164,7 +171,6 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
 };
 
 function saveClientsToDB(clients) {
-    notification('Loading..', 'loading');
     $.ajax({
         url: 'http://localhost:3000/addclients',
         method: 'POST',
@@ -183,7 +189,6 @@ function saveClientsToDB(clients) {
 };
 
 function getClientIDFromDB(client) {
-    notification('Loading..', 'loading');
     let retVal;
     $.ajax({
         url: 'http://localhost:3000/api/getSingleClient',

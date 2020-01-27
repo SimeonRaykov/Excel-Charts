@@ -48,6 +48,12 @@ $(document).ready(function () {
 function processFile(e) {
     e.stopPropagation();
     e.preventDefault();
+
+    const meteringType = 1; // Hour-Reading
+    const profileID = 0;
+    const isManufacturer = 0;
+
+
     var files = e.dataTransfer.files,
         f = files[0];
     var reader = new FileReader();
@@ -60,7 +66,6 @@ function processFile(e) {
         reader.onload = function (e) {
             fileName = fileName.replace(extension, "");
             fileName = fileName.substring(0, fileName.length - 1);
-            console.log(fileName);
             var data = new Uint8Array(e.target.result);
             var workbook = XLSX.read(data, {
                 type: 'array'
@@ -83,14 +88,13 @@ function processFile(e) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, clientName, clientIdentCode, new Date());
+                    client.push(0, clientName, clientIdentCode, meteringType, profileID, isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
             }
             saveClientsToDB(clientsAll);
             let date = new Date(documentDate);
-            console.log(date);
             for (let i = 1; i < arr.length; i += 1) {
                 let ident_code = arr[i][1];
                 for (let y = 2; y < arr[i].length; y += 1) {
@@ -115,7 +119,6 @@ function processFile(e) {
                     currHourValues = [];
                 }
             }
-            console.log(allGraphHourReadings);
             saveHourReadingsToDB(allGraphHourReadings);
             return;
         };
@@ -232,7 +235,6 @@ function getClientIDFromDB(client) {
             ident_code: client
         }),
         success: function (data) {
-            console.log('Got ID');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {

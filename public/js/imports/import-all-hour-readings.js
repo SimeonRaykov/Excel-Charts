@@ -31,6 +31,11 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
+
+    const meteringType = 1; // Hour-Reading
+    const profileID = 0;
+    const isManufacturer = 0;
+
     e.stopPropagation();
     e.preventDefault();
     var files = e.dataTransfer.files,
@@ -116,7 +121,7 @@ function processFile(e) {
 
                             currActiveEnergyValues = [];
                             currReactiveEnergyValues = [];
-
+ 
                             currHourActiveEnergyObj = {};
                             currReactiveEnergyObj = {};
                             x -= 1;
@@ -125,7 +130,7 @@ function processFile(e) {
                     let client = [];
                     clientIDs.push(clientID);
 
-                    client.push(0, clientName, clientID, new Date());
+                    client.push(0, clientName, clientID, meteringType, profileID, isManufacturer, new Date());
                     clientsALL.push(client);
                     //   console.log(allHourReadings);
                     /*

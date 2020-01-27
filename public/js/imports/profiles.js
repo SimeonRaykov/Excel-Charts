@@ -59,6 +59,7 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
+
     notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
@@ -106,7 +107,7 @@ function processFile(e) {
                     currHourObj = {};
                     x -= 1;
                 }
-                console.log(allProfileCoefs);
+
                 saveProfileReadingsToDB(allProfileCoefs);
                 /*    while (true) {
                     if (arr[0][i] != '' && arr[0][i] != undefined && arr[2][i] != '' && arr[2][i] != undefined) {
