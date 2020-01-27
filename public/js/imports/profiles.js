@@ -252,7 +252,7 @@ function createProfile() {
 
     notification('Loading..', 'loading');
     $.ajax({
-        url: 'http://localhost:3000/api/createProfile',
+        url: '/api/createProfile',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -283,7 +283,7 @@ function getProfileID() {
     notification('Loading..', 'loading');
     let id = '';
     $.ajax({
-        url: 'http://localhost:3000/api/getProfileID',
+        url: '/api/getProfileID',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -304,7 +304,7 @@ function getProfileID() {
 
 function saveProfileReadingsToDB(readings) {
     $.ajax({
-        url: 'http://localhost:3000/api/saveProfileReadings',
+        url: '/api/saveProfileReadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',

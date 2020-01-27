@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
+    var calendarEl = document.getElementById('calendar-hourly');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         eventLimit: true,
         eventLimit: 1,
@@ -20,17 +20,59 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar-imbalance');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        eventLimit: true,
+        eventLimit: 1,
+        eventLimitText: 'Има небанс',
+        eventLimitClick: 'day',
+        allDaySlot: false,
+        eventOrder: 'groupId',
+        events: getImbalances(),
+        plugins: ['dayGrid', 'timeGrid'],
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'prev, dayGridMonth,timeGridDay, next',
+
+        }
+    });
+    calendar.render();
+});
+
+
 function getHourReadingsByID() {
     let url = window.location.href;
     let clientID = url.substr(49);
     let dataArr = [];
     $.ajax({
-        url: `http://localhost:3000/api/hour-readings/getClient/${clientID}`,
+        url: `/api/hour-readings/getClient/${clientID}`,
         method: 'GET',
         dataType: 'json',
         async: false,
         success: function (data) {
-            dataArr = [...processData(data)];
+            dataArr = [...processDataHourly(data)];
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+    return dataArr;
+}
+
+
+function getImbalances() {
+    let url = window.location.href;
+    let clientID = url.substr(49);
+    let dataArr = [];
+    $.ajax({
+        url: `/api/imbalances/getClient/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            dataArr = [...processDataImbalances(data)];
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -44,9 +86,9 @@ const colors = {
     red: '#ff4d4d'
 }
 
-function processData(data) {
+
+function processDataHourly(data) {
     writeHourReadingsHeader(data);
-    console.log(data);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -89,6 +131,40 @@ function processData(data) {
     return dataArr;
 }
 
+
+function processDataImbalances(data) {
+    writeImbalancesHeader(data);
+    let dataArr = [];
+    let currHourReading = [];
+    for (let el in data) {
+        currHourReading = [];
+        let currHourDate = new Date(data[el].date);
+        let currHourReadingVal = 2;
+        let currHourPredictionVal = 26;
+        let objVals = Object.values(data[el]);
+        let iterator = 0;
+
+        for (let val of objVals) {
+            if (iterator >= 2 && iterator < 26) {
+                const currImbalance = objVals[currHourPredictionVal] - objVals[currHourReadingVal];
+                currHourReading = {
+                    id: iterator,
+                    title: currImbalance,
+                    start: Number(currHourDate),
+                    end: Number(currHourDate) + 3600000,
+                    backgroundColor: colors.blue
+                }
+                dataArr.push(currHourReading);
+                incrementHoursOne(currHourDate);
+                currHourReadingVal += 1;
+                currHourPredictionVal += 1;
+            }
+            iterator += 1;
+        }
+    }
+    return dataArr;
+}
+
 function incrementHoursOne(date) {
     return date.setHours(date.getHours() + 1);
 }
@@ -98,7 +174,11 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsHeader(data) {
-    $('body > div > h1').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
+    $('#hour-readings > h1').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
+}
+
+function writeImbalancesHeader(data) {
+    $('#imbalance > h1').text(`Небаланси за клиент: ${data[0].ident_code}`)
 }
 
 function findGetParameter(name, url) {

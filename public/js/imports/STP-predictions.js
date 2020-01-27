@@ -172,7 +172,7 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
 
 function saveClientsToDB(clients) {
     $.ajax({
-        url: 'http://localhost:3000/addclients',
+        url: '/addclients',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -191,7 +191,7 @@ function saveClientsToDB(clients) {
 function getClientIDFromDB(client) {
     let retVal;
     $.ajax({
-        url: 'http://localhost:3000/api/getSingleClient',
+        url: '/api/getSingleClient',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -212,7 +212,7 @@ function getClientIDFromDB(client) {
 
 function saveSTPpredictionsToDB(STPPredictions) {
     $.ajax({
-        url: 'http://localhost:3000/api/STP-Predictions',
+        url: '/api/STP-Predictions',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',

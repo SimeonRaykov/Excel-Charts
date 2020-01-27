@@ -54,7 +54,7 @@ $(document).ready(function () {
 
 function getDataListing() {
     $.ajax({
-        url: 'http://localhost:3000/getAllClientIDs&Names',
+        url: '/getAllClientIDs&Names',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -127,7 +127,7 @@ function listAllReadings(arr) {
     }
     notification('Loading...', 'loading');
     $.ajax({
-        url: `http://localhost:3000/api/filterData`,
+        url: `/api/filterData`,
         method: 'POST',
         data: {
             date_from: fromDate,

@@ -49,7 +49,7 @@ $(document).ready(function () {
 
 function getDataListing() {
     $.ajax({
-        url: 'http://localhost:3000/getAllClientIDs&Names',
+        url: '/getAllClientIDs&Names',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -110,7 +110,7 @@ function listAllHourReadings(arr) {
     }
     notification('Loading...', 'loading');
     $.ajax({
-        url: `http://localhost:3000/api/filter/getAllHourReadingsTable`,
+        url: `/api/filter/getAllHourReadingsTable`,
         method: 'POST',
         data: {
             date,

@@ -206,7 +206,7 @@ function filterClients(clientsAll) {
 function saveClientsToDB(clients) {
     notification('Loading..', 'loading');
     $.ajax({
-        url: 'http://localhost:3000/addclients',
+        url: '/addclients',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -226,7 +226,7 @@ function getClientIDFromDB(client) {
     notification('Loading..', 'loading');
     let retVal;
     $.ajax({
-        url: 'http://localhost:3000/api/getSingleClient',
+        url: '/api/getSingleClient',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -247,7 +247,7 @@ function getClientIDFromDB(client) {
 
 function saveHourReadingsToDB(readings) {
     $.ajax({
-        url: 'http://localhost:3000/api/saveGraphHourReadings',
+        url: '/api/saveGraphHourReadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',

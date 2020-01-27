@@ -461,7 +461,7 @@ function filterClients(clientsAll) {
 function saveClientsToDB(clients) {
     notification('Loading..', 'loading');
     $.ajax({
-        url: 'http://localhost:3000/addclients',
+        url: '/addclients',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -481,7 +481,7 @@ function getClientsFromDB(clients) {
     notification('Loading..', 'loading');
     let retVal;
     $.ajax({
-        url: 'http://localhost:3000/getClient',
+        url: '/getClient',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
@@ -517,7 +517,7 @@ function mapClientsIDsToGetIdentCodeCorrectly(clientIds) {
 
 function saveReadingsToDB(readings) {
     $.ajax({
-        url: 'http://localhost:3000/addreadings',
+        url: '/addreadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',

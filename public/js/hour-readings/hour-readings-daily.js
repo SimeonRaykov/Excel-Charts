@@ -28,7 +28,7 @@ function getHourReadingsByID() {
         currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `http://localhost:3000/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,

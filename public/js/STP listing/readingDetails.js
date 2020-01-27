@@ -7,7 +7,7 @@ $(document).ready(function () {
 
 function getReadingData(readingNum) {
     $.ajax({
-        url: `http://localhost:3000/getReadingDetails/${readingNum}`,
+        url: `/getReadingDetails/${readingNum}`,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
