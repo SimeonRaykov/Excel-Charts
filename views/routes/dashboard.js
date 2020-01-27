@@ -67,7 +67,7 @@ router.get('/users/listClients-STP', (req, res) => res.render('./STP listings/li
 }))
 
 // Hour-readings
-router.get('/users/listClients-hours', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients.ejs', {
+router.get('/users/listClients-hours', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
     name: user.getName()
 }));
 router.get('/users/clients/hour-reading/:id', ensureAuthenticated, (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
