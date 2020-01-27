@@ -70,8 +70,10 @@ app.use((req, res, next) => {
     next();
 });
 
-// PORT
-const PORT = process.env.PORT || 3000 || '192.168.1.114';
+let datavendPort = '192.168.1.114'
+
+// PORT 
+const PORT = process.env.PORT || 3000 || datavendPort
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
 
 // DB connection
@@ -99,6 +101,10 @@ app.use((req, res, next) => {
     next()
 })
 
+
+app.get('/users/listClients-STP', (req, res) => res.render('./STP listings/listClients.ejs', {
+    name: 123
+}))
 // Routing
 app.use('/', require('./routes/dashboard'));
 app.use('/users', require('./routes/users'));
@@ -315,7 +321,7 @@ app.get('/addpost1', (req, res) => {
 
 // Insert Clients 
 app.post('/addclients', (req, res) => {
-    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, date_created) VALUES ?';
+    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, is_manufacturer ,date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
@@ -333,7 +339,6 @@ app.post('/addreadings', (req, res) => {
         if (err) {
             throw err;
         }
-
         console.log('Readings inserted');
         return res.send("Readings added");
     });
