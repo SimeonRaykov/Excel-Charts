@@ -1,7 +1,15 @@
 $(document).ready(function () {
     // Type = 2 STP 
+    let url = `/api/getAllClients/2`;
+
+    // User friendly get params
+    if (location.search.match('ERP')) {
+        let erpValue = location.search.match('ERP').input.substr(6);
+        url = `/api/filterSTPClientsByERP/${erpValue}`
+    }
+
     $.ajax({
-        url: `/api/getAllClients/2`,
+        url,
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -49,6 +57,7 @@ function visualizeDataTable(data) {
                 erpValue = radios[i].value === 'CEZ' ? 2 : radios[i].value === 'EVN' ? 1 : 3;
             }
         }
+        window.history.replaceState(null, null, `listClients-STP?&ERP=${erpValue}`)
         if (erpValue != undefined) {
             getFilteredClientsByERP(erpValue);
         }
