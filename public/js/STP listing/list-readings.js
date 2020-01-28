@@ -38,7 +38,7 @@ function getAllListings(data) {
 
 }
 
-function callback(data) {
+function visualizeDataTable(data) {
     getAllListings(data);
 }
 
@@ -138,7 +138,7 @@ function listAllReadings(arr) {
         },
         dataType: 'json',
         success: function (data) {
-            callback(data);
+            visualizeDataTable(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);

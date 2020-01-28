@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     calendar.render();
+    $('body > div.container.mt-3 > ul > li.active.mr-5 > a').click();
 });
 
 
@@ -36,11 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
             center: 'title',
             right: 'prev, dayGridMonth,timeGridDay, next',
 
-        }
+        },
+        contentHeight:'auto'
     });
     calendar.render();
 });
-
 
 function getHourReadingsByID() {
     let url = window.location.href;

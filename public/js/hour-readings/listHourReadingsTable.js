@@ -32,13 +32,10 @@ function getAllHourListings(data) {
     });
     $('#tBody').addClass('text-center');
     $('#list-readings > thead').addClass('text-center');
-
 }
-
 function callback(data) {
     getAllHourListings(data);
 }
-
 $(document).ready(function () {
     getDataListing();
     findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));

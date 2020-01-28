@@ -88,22 +88,17 @@ function processData(data) {
             i += 1;
         }
     }
-
     return dataArr;
 }
-
 function incrementHoursOne(date) {
     return date.setHours(date.getHours() + 1);
 }
-
 function decrementHoursBy23(date) {
     return date.setHours(date.getHours() - 23);
 }
-
 function writeHourReadingsHeader(data) {
     $('body > div > h1').text(`Мерения по часове за id: ${data[0].id}`);
 }
-
 function findGetParameter(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -113,13 +108,11 @@ function findGetParameter(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
-
 function fixDateForFullCallendar(date) {
     let splittedDate = date.split('-');
     let currYear = splittedDate[0];
     let currMonth = splittedDate[1];
     let currDate = splittedDate[2];
-
     if (currMonth < 10) {
         currMonth = `0${currMonth}`
     }
