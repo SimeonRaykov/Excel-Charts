@@ -100,15 +100,15 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
     next()
 })
-
-
-app.get('/users/listClients-STP', (req, res) => res.render('./STP listings/listClients-STP.ejs', {
+ app.get('/users/listClients-STP', ensureAuthenticated,(req, res) => res.render('./STP listings/listClients-STP.ejs', {
     name: 123
-}))
-
+})) 
 app.get('/users/listClients-hours', (req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
     name: 123
 }));
+app.get('/users/clients/STP-Details/:id', (req, res) => res.render('./STP listings/listSTPClientDetails.ejs', {
+    name: 123
+}))
 
 // Routing
 app.use('/', require('./routes/dashboard'));
@@ -1449,6 +1449,50 @@ app.post('/api/STP-Predictions', (req, res) => {
 ///////////////////////////END OF STP PREDICTIONS - MONTHLY ////////////
 
 
+////////////////////////// STP LISTING DETAILS ////////////////////////
+
+app.get('/api/getClientSTP/details/:id', (req, res) => {
+    let clientID = req.params.id;
+    let sql = `SELECT * FROM clients WHERE clients.metering_type = 2 AND clients.id = ${clientID}`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result[0]);
+    });
+});
+
+app.post('/api/saveClientSTPChanges/details/:id', (req, res) => {
+    const profileID = req.body.profileID;
+    const isManufacturer = req.body.isManufacturer;
+    const clientID = req.params.id;
+    let sql = `UPDATE clients SET profile_id = ${profileID}, is_manufacturer= ${isManufacturer} WHERE id=${clientID}`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+});
+
+////////////////////////// STP LISTING DETAILS /////////////////////////////
+
+
+////////////////////////// STP FILTER CLIENTS BY ERP ///////////////////////
+app.get('/api/filterSTPClientsByERP/:value', (req, res) => {
+    // metering type = 2 STP!
+    let erpValue = req.params.value;
+    let sql = `SELECT DISTINCT clients.ident_code, clients.client_name, clients.id FROM clients 
+    INNER JOIN readings ON readings.client_id = clients.id
+    WHERE operator = ${erpValue} AND metering_type = 2;`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.send(result);
+    });
+});
+////////////////////////// STP FILTER CLIENTS BY ERP ///////////////////////
 // Update post
 app.get('/updatepost/:id', (req, res) => {
     let newTitle = 'new title';

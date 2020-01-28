@@ -85,7 +85,4 @@ router.get('/users/clients/hour-reading/daily/s/', (req, res) => res.render('./h
 router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
     name: user.getName()
 }));
-
-
-
 module.exports = router;
