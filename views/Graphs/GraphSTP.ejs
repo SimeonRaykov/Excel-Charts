@@ -17,35 +17,29 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <link rel="stylesheet" href="../../../../css/listSTPClients.css">
+    <script src="../../../js/datatables/datatables.js"></script>
     <title>Document</title>
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="text-center">Избери компания</h1>
-        <h2 class="text-center my-3">Форматирай клетките за дата във формат - "мм.гггг"</h2>
-        <label class="container">EVN
-            <input type="radio" id="evn" name="radio">
-            <span class="checkmark"></span>
-        </label>
-        <label class="container">CEZ
-            <input type="radio" id="cez" name="radio">
-            <span class="checkmark"></span>
-        </label>
-        <label class="container">Energo-pro
-            <input type="radio" id="energo-pro" name="radio">
-            <span class="checkmark"></span>
-        </label>
+    <h1 class="text-center mb-5">График - по СТП</h1>
+    <div class="container clients text-center mb-5">
+        <table id="clients" class="display">
+            <thead>
+                <tr>
+                    <th>ID на клиент</th>
+                    <th>Идентификационен код</th>
+                    <th>Име на клиент</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+            </tbody>
+        </table>
     </div>
-
-    <body>
-        <div class="form-group" id="input-excel">
-            <label for="exampleFormControlTextarea1">Example textarea</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-        </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
-        <script src="../../../../js/imports/STP-predictions.js"></script>
-    </body>
-
+    <script src="../../../../js/graphs/graphSTP.js"></script>
+</body>
 </html>

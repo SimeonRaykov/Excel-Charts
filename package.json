@@ -31,7 +31,8 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "sync-mysql": "^3.0.1",
-    "toastr": "^2.1.4"
+    "toastr": "^2.1.4",
+    "watch": "^1.0.2"
   },
   "devDependencies": {}
 }

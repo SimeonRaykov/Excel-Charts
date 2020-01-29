@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
     });
 });
 
-
 class User {
     constructor() {
         this.name = '';
@@ -23,9 +22,7 @@ class User {
     setName(name) {
         this.name = name;
     }
-
 }
-
 let user = new User();
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => res.render('../public/AdminLTE-master/index.ejs', {
@@ -34,30 +31,33 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => res.render('../publi
     password: req.user.password
 
 }, user.setName(req.user.name)));
-
+router.get('/users/listClients-hours', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
+    name: user.getName()
+}));
 // Imports
 router.get('/users/import/STP/Readings', ensureAuthenticated, (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));
-
-router.get('/users/import/STP/HourPredictions', (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
+router.get('/users/import/STP/HourPredictions', ensureAuthenticated, (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
+    name: user.getName()
+}));
+router.get('/users/import/hour-readings/CEZ', ensureAuthenticated, (req, res) => res.render('./imports/hour_readings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/import/profiles/evnOrEnergoPRO', ensureAuthenticated, (req, res) => res.render('./imports/profiles', {
     name: user.getName()
 }))
-
-router.get('/users/import/hour-readings/CEZ', (req, res) => res.render('./imports/hour_readings.ejs', {
-    name: user.getName()
-}));
-router.get('/users/import/hour-readings/evnORenergoPRO', (req, res) => res.render('./imports/hour_readingsMultiImport.ejs', {
+router.get('/users/import/hour-readings/evnORenergoPRO', ensureAuthenticated, (req, res) => res.render('./imports/hour_readingsMultiImport.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/import/profiles', (req, res) => res.render('./imports/profiles.ejs', {
+router.get('/users/import/profiles', ensureAuthenticated, (req, res) => res.render('./imports/profiles.ejs', {
+    name: user.getName()
+}));
+router.get('/users/import/graphs', ensureAuthenticated, (req, res) => res.render('./imports/graphs.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/import/graphs', (req, res) => res.render('./imports/graphs.ejs', {
-    name: user.getName()
-}));
 
 // STP Listing
 router.get('/users/listReadings', ensureAuthenticated, (req, res) => res.render('./STP listings/listReadings.ejs', {
@@ -70,19 +70,32 @@ router.get('/users/reading/:id', ensureAuthenticated, (req, res) => res.render('
     name: user.getName()
 }));
 
+router.get('/users/listClients-STP', ensureAuthenticated, (req, res) => res.render('./STP listings/listClients-STP.ejs', {
+    name: user.getName()
+}));
+router.get('/users/clients/STP-Details/:id', (req, res) => res.render('./STP listings/listSTPClientDetails.ejs', {
+    name: user.getName()
+}));
+
 // Hour-readings
-router.get('/users/listClients', ensureAuthenticated, (req, res) => res.render('./hour-readings/listClients.ejs', {
+
+router.get('/users/clients/hour-reading/:id', ensureAuthenticated, (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/clients/hour-reading/daily/s', ensureAuthenticated, (req, res) => res.render('./hour-readings/hour-readings-daily.ejs', {
     name: user.getName()
 }));
 router.get('/users/listHourReadings', ensureAuthenticated, (req, res) => res.render('./hour-readings/listHourReadingsTable.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/clients/hour-reading/daily/s/', (req, res) => res.render('./hour-readings/hour-readings-daily', {
+// Graphs
+router.get('/users/graphs/STP', (req, res) => res.render('./Graphs/GraphSTP.ejs', {
     name: user.getName()
-}));
+}))
 
-router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
+router.get('/users/graphs/STP/:id', (req, res) => res.render('./Graphs/GraphSTP-Client.ejs', {
     name: user.getName()
-}));
+}))
+
 module.exports = router;

@@ -100,15 +100,7 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
     next()
 })
- app.get('/users/listClients-STP', ensureAuthenticated,(req, res) => res.render('./STP listings/listClients-STP.ejs', {
-    name: 123
-})) 
-app.get('/users/listClients-hours', (req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
-    name: 123
-}));
-app.get('/users/clients/STP-Details/:id', (req, res) => res.render('./STP listings/listSTPClientDetails.ejs', {
-    name: 123
-}))
+
 
 // Routing
 app.use('/', require('./routes/dashboard'));
@@ -1437,13 +1429,14 @@ async function filterGraphHourReadings(allProfileHourReadings) {
 /////////////////////////// STP PREDICTIONS - MONTHLY //////////////////
 app.post('/api/STP-Predictions', (req, res) => {
     let sql = 'INSERT IGNORE INTO prediction (client_id, date, amount, type, created_date) VALUES ?';
-    db.query(sql, [req.body], (err, result) => {
+    let query = db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
         }
-        console.log('STP Predictions inserted');
-        return res.send("STP Predictions added");
     });
+    // console.log(query.sql);  
+    console.log('STP Predictions inserted');
+    return res.send("STP Predictions added");
 });
 
 ///////////////////////////END OF STP PREDICTIONS - MONTHLY ////////////
@@ -1493,6 +1486,38 @@ app.get('/api/filterSTPClientsByERP/:value', (req, res) => {
     });
 });
 ////////////////////////// STP FILTER CLIENTS BY ERP ///////////////////////
+
+
+///////////////////////// Graph - STP //////////////////////////////////////
+
+app.get('/api/graph-STP/getAllClients', (req, res) => {
+    let sql = `SELECT * FROM clients 
+    WHERE clients.profile_id != 0`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.send(result);
+    });
+});
+
+app.get('/api/graph-STP/getInfoForSingleClient/:id', (req, res) => {
+    let id = req.params.id;
+    let sql = `SELECT profile_coef.date AS profileDate ,clients.ident_code, profile_coef.hour_zero AS'hr0', profile_coef.hour_one AS'hr1',profile_coef.hour_two AS'hr2',profile_coef.hour_three AS'hr3',profile_coef.hour_four AS'hr4',profile_coef.hour_five AS'hr5',profile_coef.hour_six AS'hr6',profile_coef.hour_seven AS'hr7',profile_coef.hour_eight AS'hr8',profile_coef.hour_nine AS'hr9',profile_coef.hour_ten AS'hr10',profile_coef.hour_eleven AS'hr11',profile_coef.hour_twelve AS'hr12',profile_coef.hour_thirteen AS'hr13',profile_coef.hour_fourteen AS'hr14',profile_coef.hour_fifteen AS'hr15',profile_coef.hour_sixteen AS'hr16',profile_coef.hour_seventeen AS'hr17',profile_coef.hour_eighteen AS'hr18',profile_coef.hour_nineteen AS'hr19',profile_coef.hour_twentyone AS'hr20',profile_coef.hour_twentyone AS'hr21',profile_coef.hour_twentytwo AS'hr22',profile_coef.hour_twentythree AS'hr23', prediction.amount FROM clients 
+    INNER JOIN prediction on clients.id = prediction.client_id
+    INNER JOIN profile_coef on profile_coef.profile_id = clients.profile_id
+    WHERE clients.id = ${id}
+    AND MONTH(profile_coef.date) = MONTH(prediction.date)
+    AND YEAR(profile_coef.date) = YEAR(prediction.date)`
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        res.send(result);
+    });
+})
+
+//////////////////////// Graph - STP ///////////////////////////////////////
 // Update post
 app.get('/updatepost/:id', (req, res) => {
     let newTitle = 'new title';
