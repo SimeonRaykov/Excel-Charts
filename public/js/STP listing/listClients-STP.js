@@ -7,7 +7,10 @@ $(document).ready(function () {
         let erpValue = location.search.match('ERP').input.substr(6);
         url = `/api/filterSTPClientsByERP/${erpValue}`
     }
+    getInitialData(url);
+});
 
+function getInitialData(url) {
     $.ajax({
         url,
         method: 'GET',
@@ -19,7 +22,7 @@ $(document).ready(function () {
             console.log(errorThrown);
         }
     });
-});
+}
 
 function visualizeDataTable(data) {
     let i = 0;

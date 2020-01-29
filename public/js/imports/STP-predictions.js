@@ -112,9 +112,10 @@ async function processFile(e) {
                         clientID = getClientIDFromDB(ident_code);
                         let dateHelper = arr[0][y].split('.');
                         let currAmount = arr[i][y];
-                        let date = new Date(`${dateHelper[0]}.01.${dateHelper[1]}`);
+                        let date = `${dateHelper[1]}-${dateHelper[0]}-01`;
+                        console.log(date);
                         let createdDate = new Date();
-                        stpPredictionReading.push(clientID, date, currAmount, type, createdDate);
+                        stpPredictionReading.push(clientID, `${date}`, currAmount, type, createdDate);
                         allSTPpredictions.push(stpPredictionReading);
                         stpPredictionReading = [];
                     }
