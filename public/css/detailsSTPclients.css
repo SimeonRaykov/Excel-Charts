@@ -83,3 +83,7 @@ body > div.container.mt-3 > header > div.row > div > label{
 body > div.container.mt-3 > header > div.row{
     margin-left:70%
 }
+
+input::-webkit-calendar-picker-indicator {
+    display: none;
+  }
