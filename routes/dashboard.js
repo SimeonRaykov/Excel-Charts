@@ -98,4 +98,10 @@ router.get('/users/graphs/STP/:id', (req, res) => res.render('./Graphs/GraphSTP-
     name: user.getName()
 }))
 
+
+// Exports
+router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
+    name: user.getName()
+}))
+
 module.exports = router;

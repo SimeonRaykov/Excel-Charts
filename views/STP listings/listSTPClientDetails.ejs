@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Detail</title>
+    <title>Детайли за СТП на клиент</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="../../../../css/detailsSTPclients.css">
@@ -26,9 +26,10 @@
             </div>
             <div class="row">
                 <label class="col-md-4">Профил ID</label>
-                <input type="text" class="col-md-8">
+                <input list="profilesID" name="profileID" class="col-md-8"/>
+                <datalist id="profilesID">
+                </datalist>
             </div>
-
         </div>
         <div class="row">
             Производител

@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 3 | Dashboard</title>
+    <meta http-equiv="X-UA-Compatible" name="description"
+        content="Graph Project for importing and exporting excel data, load datatable client info, make predictions and charts.">
+    <title>Graph Project</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
@@ -38,6 +39,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
     <link rel="stylesheet" href="../../../../AdminLTE-master/css/layout.css">
+    <link rel="shortcut icon" href="../../../AdminLTE-master/images/favicons/favicon.ico" type="image/x-icon">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -131,13 +133,13 @@
                                         <li class="nav-item">
                                             <a href="/users/import/hour-readings/CEZ" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p>CEZ</p>
+                                                <p>ЧЕЗ</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="/users/import/hour-readings/evnORenergoPRO" class="nav-link">
                                                 <i class="far fa-circle nav-icon"></i>
-                                                <p>EVN / EnergoPRO</p>
+                                                <p>ИВН / ЕнергоПРО</p>
                                             </a>
                                         </li>
                                     </ul>
@@ -191,8 +193,13 @@
                         </a>
                     </li>
                     <li class="nav-item"> <a href="/users/graphs/STP" class="nav-link">
-                        <i class="fas fa-signal"></i>
+                            <i class="fas fa-signal"></i>
                             <p class="ml-2">Графици - по СТП</p>
+                        </a>
+                    </li>
+                    <li class="nav-item"> <a href="/users/inquiry" class="nav-link">
+                            <i class="fas fa-file-export"></i>
+                            <p class="ml-2">Справка</p>
                         </a>
                     </li>
                     </ul>

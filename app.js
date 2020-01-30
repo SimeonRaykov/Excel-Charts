@@ -1446,7 +1446,9 @@ app.post('/api/STP-Predictions', (req, res) => {
 
 app.get('/api/getClientSTP/details/:id', (req, res) => {
     let clientID = req.params.id;
-    let sql = `SELECT * FROM clients WHERE clients.metering_type = 2 AND clients.id = ${clientID}`;
+    let sql = `SELECT DISTINCT client_name, ident_code, profile_id, is_manufacturer ,operator FROM clients 
+    INNER JOIN readings on readings.client_id = clients.id
+    WHERE clients.metering_type = 2 AND clients.id = ${clientID}`;
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -1454,6 +1456,19 @@ app.get('/api/getClientSTP/details/:id', (req, res) => {
         return res.send(result[0]);
     });
 });
+
+app.get('/api/getClientSTP/details/datalist/:operator', (req, res) => {
+    let operator = req.params.operator;
+    let sql = `SELECT * FROM stp_profiles WHERE type = ${operator}`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(result);
+    });
+});
+
+
 
 app.post('/api/saveClientSTPChanges/details/:id', (req, res) => {
     const profileID = req.body.profileID;
