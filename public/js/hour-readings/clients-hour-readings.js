@@ -38,14 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
             right: 'prev, dayGridMonth,timeGridDay, next',
 
         },
-        contentHeight:'auto'
+        contentHeight: 'auto'
     });
     calendar.render();
 });
 
 function getHourReadingsByID() {
-    let url = window.location.href;
-    let clientID = url.substr(49);
+    let clientID = getClientID();
     let dataArr = [];
     $.ajax({
         url: `/api/hour-readings/getClient/${clientID}`,
@@ -62,10 +61,8 @@ function getHourReadingsByID() {
     return dataArr;
 }
 
-
 function getImbalances() {
-    let url = window.location.href;
-    let clientID = url.substr(49);
+    let clientID = getClientID();
     let dataArr = [];
     $.ajax({
         url: `/api/imbalances/getClient/${clientID}`,
@@ -80,6 +77,11 @@ function getImbalances() {
         }
     });
     return dataArr;
+}
+
+function getClientID() {
+    let lastIndexOfIncline = window.location.href.lastIndexOf('/');
+    return window.location.href.substr(lastIndexOfIncline + 1);
 }
 
 const colors = {

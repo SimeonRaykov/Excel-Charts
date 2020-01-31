@@ -19,9 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 });
 
+function getClientID() {
+    let lastIndexOfIncline = window.location.href.lastIndexOf('/');
+    return window.location.href.substr(lastIndexOfIncline + 1)
+}
+
 function getGraphSTP() {
-    let url = window.location.href;
-    let clientID = url.substr(39);
+    let clientID = getClientID();
     let dataArr = [];
     $.ajax({
         url: `/api/graph-STP/getInfoForSingleClient/${clientID}`,

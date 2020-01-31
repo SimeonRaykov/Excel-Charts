@@ -1,8 +1,8 @@
 ;
 $(document).ready(function () {
     let url = location.href;
-
-    let clientNum = url.substring(url.indexOf('?') + 37);
+    let clientNum = url.substring(url.lastIndexOf('/') + 1);
+    console.log(clientNum);
     getReadingData(clientNum);
 });
 

@@ -9,7 +9,8 @@ $(document).ready(function () {
 }());
 
 function getSTPClientID() {
-    return clientID = window.location.href.substr(48);
+    console.log(window.location.href.substr(52));
+    return clientID = window.location.href.substr(52);
 }
 
 function getInputVals() {
