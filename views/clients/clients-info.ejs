@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href='../../../AdminLTE-master/plugins/fullcalendar/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.css' rel='stylesheet' />
+
+    <script src='../../../AdminLTE-master/plugins/fullcalendar/main.js'></script>
+    <script src='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.js'></script>
+    <script src="../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
+    <link rel="stylesheet" href="../../../AdminLTE-master/css/custom-calendar.css">
+    <link rel="stylesheet" href="../../../../css/clients-info.css">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <ul class="nav nav-tabs row justify-content-between text-center">
+        <li><a class="nav-link" data-toggle="tab" href="#info">Информация</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#hour-readings">Мерения по часове</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#graph">График</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#imbalance">Небаланси</a></li>
+    </ul>
+
+    <div class="tab-content">
+
+        <div id="info" class="tab-pane fade">
+            <div class="container">
+                <h1 class="text-center mb-5">Детайли на клиент</h1>
+                <div class="row">
+                    <label class="col-md-4">Име на клиент</label>
+                    <input type="text" class="col-md-8" disabled>
+                </div>
+                <div class="row">
+                    <label class="col-md-4">Идентификационен код</label>
+                    <input type="text" class="col-md-8" disabled>
+                </div>
+                <div class="row">
+                    <label class="col-md-4">Профил ID</label>
+                    <input list="profilesID" name="profileID" class="col-md-8" disabled />
+                </div>
+                <div class="row">
+                    <label class="col-md-4">Тип мерене</label>
+                    <input name="metering_type" class="col-md-8" disabled />
+                </div>
+                <div class="row">
+                    <label class="col-md-4">ЕРП Тип</label>
+                    <input list="profilesID" name="erp_type" class="col-md-8" disabled />
+                </div>
+
+            </div>
+            <div class="row justify-content-center">
+                <label class="col-md-4 ml-2">Производител</label>
+                <div class="squaredThree">
+                    <input type="checkbox" value="None" id="squaredThree" disabled name="check" />
+                    <label for="squaredThree"></label>
+                </div>
+            </div>
+        </div>
+
+        <div id="hour-readings" class="tab-pane fade">
+            <h1 class="text-center mb-5">Мерения по часове за клиент: </h1>
+            <div class="row">
+                <div id="calendar-hourly" class="col-md-10">
+                </div>
+
+                <div id="legend" class="col-md-2">
+                    <h2 class="text-center mb-3"><i class="fas fa-tags"></i>Легенда</h2>
+                    <ul>
+                        <li class="text-primary mb-3">Синъо: Настоящи мерения</li>
+                        <li class="text-danger">Червено: Нови мерения</li>
+                    </ul>
+                </div>
+
+
+                <canvas id="hour-readings-chart" class="mb-5" width="400" height="400"></canvas>
+            </div>
+            
+
+            <div class="card card-secondary">
+            </div>
+            <div class="bootstrap-switch-null bootstrap-switch-undefined bootstrap-switch-undefined bootstrap-switch-undefined bootstrap-switch-undefined bootstrap-switch-undefined bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-focused bootstrap-switch-animate"
+                style="width: 88px;">
+                <div class="bootstrap-switch-container" style="width: 129px; margin-left: 0px;"><span
+                        class="bootstrap-switch-handle-on bootstrap-switch-success" style="width: 43px;">ON</span><span
+                        class="bootstrap-switch-label" style="width: 43px;">&nbsp;</span><span
+                        class="bootstrap-switch-handle-off bootstrap-switch-danger" style="width: 43px;"></span><input
+                        type="checkbox" name="my-checkbox" checked="" data-bootstrap-switch="" data-off-color="danger"
+                        data-on-color="success"></div>
+            </div>
+        </div>
+
+        <div id="graph" class="tab-pane fade">
+            <h1 class="text-center mb-5">График</h1>
+            <div class="row">
+                <div id="" class="col-md-12">
+                </div>
+            </div>
+        </div>
+
+        <div id="imbalance" class="tab-pane fade">
+            <h1 class="text-center mb-5">Небаланси</h1>
+            <div class="row">
+                <div id="calendar-imbalance" class="col-md-12">
+                </div>
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+        <script src="../../../../js/clients/clients-info.js">
+        </script>
+</body>
+
+</html>

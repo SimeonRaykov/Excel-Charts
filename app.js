@@ -73,8 +73,8 @@ app.use((req, res, next) => {
 let datavendPort = '192.168.1.114'
 
 // PORT 
-const PORT = process.env.PORT || 3000 || datavendPort
-app.listen(PORT, console.log(`Server started on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, datavendPort, console.log(`Server started on port ${PORT}`));
 
 // DB connection
 const db = mysql.createConnection({
@@ -101,7 +101,6 @@ app.use((req, res, next) => {
     next()
 })
 
-
 // Routing
 app.use('/', require('./routes/dashboard'));
 app.use('/users', require('./routes/users'));
@@ -125,11 +124,11 @@ app.get('/createDB', (req, res) => {
 
 app.get('/listReadings', (req, res) => {
 
-    let sql = `SELECT  clients.id AS clients_id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.id AS reading_id,client_number, ident_code, period_from, readings.time_zone, period_to, value_bgn, type
-        FROM readings
+    let sql = `SELECT  clients.id AS clients_id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.id AS reading_id,client_number, ident_code, period_from, invoicing.time_zone, period_to, value_bgn, type
+        FROM invoicing
         INNER JOIN clients
-        ON readings.client_id = clients.id
-        ORDER BY readings.id;`
+        ON invoicing.client_id = clients.id
+        ORDER BY invoicing.id;`
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -142,18 +141,18 @@ app.get('/listReadings', (req, res) => {
 app.get('/listReadings/:date_from/:to_date', (req, res) => {
     let date_from = req.params.date_from;
     let to_date = req.params.to_date;
-    let sql = `SELECT clients.id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.time_zone, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
-    FROM readings
+    let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM invoicing
     INNER JOIN clients
-    ON readings.client_id = clients.id`;
+    ON invoicing.client_id = clients.id`;
     if (date_from != 'null' && to_date != 'null') {
-        sql += ` WHERE readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'`
+        sql += ` WHERE invoicing.period_from >= '${date_from}' AND invoicing.period_to <= '${to_date}'`
     } else if (date_from != 'null') {
-        sql += ` WHERE readings.period_from >= '${date_from}'`
+        sql += ` WHERE invoicing.period_from >= '${date_from}'`
     } else if (to_date != 'null') {
-        sql += ` WHERE readings.period_to <= '${to_date}'`
+        sql += ` WHERE invoicing.period_to <= '${to_date}'`
     }
-    sql += ' ORDER BY readings.id';
+    sql += ' ORDER BY invoicing.id';
 
     db.query(sql, (err, result) => {
         if (err) {
@@ -168,10 +167,10 @@ app.get('/listReadings/:date_from/:to_date', (req, res) => {
 // Get Client Details
 app.get('/getClientDetails/:id', (req, res) => {
     let client_id = req.params.id;
-    let sql = `SELECT clients.id, clients.client_name, readings.operator AS operator, readings.time_zone, readings.id AS reading_id, period_from, period_to, value_bgn, type
-    FROM readings
+    let sql = `SELECT clients.id, clients.client_name, invoicing.operator AS operator, invoicing.time_zone, invoicing.id AS reading_id, period_from, period_to, value_bgn, type
+    FROM invoicing
     INNER JOIN clients
-    ON readings.client_id = clients.id
+    ON invoicing.client_id = clients.id
     WHERE client_id = '${client_id}';`;
 
     db.query(sql, (err, result) => {
@@ -217,10 +216,10 @@ app.post('/api/filterData', (req, res) => {
         ERP
     } = req.body;
 
-    let sql = `SELECT clients.id, readings.operator AS operator, clients.ident_code, clients.client_name, readings.time_zone, readings.id AS reading_id,client_number, ident_code, period_from, period_to, value_bgn, type
-    FROM readings
+    let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS invoicing_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    FROM invoicing
     INNER JOIN clients
-    ON readings.client_id = clients.id`;
+    ON invoicing.client_id = clients.id`;
 
     let ifFirst = true;
 
@@ -235,13 +234,13 @@ app.post('/api/filterData', (req, res) => {
 
     if (date_from != '' && to_date != '') {
         checkIfFirstWhereSQL();
-        sql += ` readings.period_from >= '${date_from}' AND readings.period_to <= '${to_date}'`
+        sql += ` invoicing.period_from >= '${date_from}' AND invoicing.period_to <= '${to_date}'`
     } else if (date_from != '') {
         checkIfFirstWhereSQL();
-        sql += ` readings.period_from >= '${date_from}'`
+        sql += ` invoicing.period_from >= '${date_from}'`
     } else if (to_date != '') {
         checkIfFirstWhereSQL();
-        sql += ` readings.period_to <= '${to_date}'`
+        sql += ` invoicing.period_to <= '${to_date}'`
     }
     if (name != '') {
         checkIfFirstWhereSQL();
@@ -253,15 +252,15 @@ app.post('/api/filterData', (req, res) => {
     }
     if (ERP === 'CEZ') {
         checkIfFirstWhereSQL();
-        sql += ` readings.operator = '2'`;
+        sql += ` invoicing.operator = '2'`;
     } else if (ERP === 'EVN') {
         checkIfFirstWhereSQL();
-        sql += ` readings.operator = '1'`;
+        sql += ` invoicing.operator = '1'`;
     } else if (ERP === 'EnergoPRO') {
         checkIfFirstWhereSQL();
-        sql += ` readings.operator = '3'`;
+        sql += ` invoicing.operator = '3'`;
     }
-    sql += ' ORDER BY readings.id';
+    sql += ' ORDER BY invoicing.id';
     console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {
@@ -276,7 +275,7 @@ app.post('/api/filterData', (req, res) => {
 
 app.get('/getReadingDetails/:id', (req, res) => {
     let reading_id = req.params.id;
-    let sql = `SELECT * FROM readings WHERE id ='${reading_id}';`;
+    let sql = `SELECT * FROM invoicing WHERE id ='${reading_id}';`;
 
     db.query(sql, (err, result) => {
         if (err) {
@@ -318,7 +317,7 @@ app.get('/addpost1', (req, res) => {
 
 // Insert Clients 
 app.post('/addclients', (req, res) => {
-    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, is_manufacturer ,date_created) VALUES ?';
+    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, erp_type, is_manufacturer ,date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
@@ -331,7 +330,7 @@ app.post('/addclients', (req, res) => {
 // Insert Readings
 app.post('/addreadings', (req, res) => {
 
-    let sql = 'INSERT INTO readings (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
+    let sql = 'INSERT INTO invoicing (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
@@ -1121,7 +1120,8 @@ app.post('/api/getSingleClient', (req, res) => {
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
-        }
+        }  
+        console.log(result);     
         return res.send(JSON.stringify(result[0].id));
     });
 });
@@ -1447,7 +1447,7 @@ app.post('/api/STP-Predictions', (req, res) => {
 app.get('/api/getClientSTP/details/:id', (req, res) => {
     let clientID = req.params.id;
     let sql = `SELECT DISTINCT client_name, ident_code, profile_id, is_manufacturer ,operator FROM clients 
-    INNER JOIN readings on readings.client_id = clients.id
+    INNER JOIN invoicing on invoicing.client_id = clients.id
     WHERE clients.metering_type = 2 AND clients.id = ${clientID}`;
     db.query(sql, (err, result) => {
         if (err) {
@@ -1491,7 +1491,7 @@ app.get('/api/filterSTPClientsByERP/:value', (req, res) => {
     // metering type = 2 STP!
     let erpValue = req.params.value;
     let sql = `SELECT DISTINCT clients.ident_code, clients.client_name, clients.id FROM clients 
-    INNER JOIN readings ON readings.client_id = clients.id
+    INNER JOIN invoicing ON invoicing.client_id = clients.id
     WHERE operator = ${erpValue} AND metering_type = 2;`;
     db.query(sql, (err, result) => {
         if (err) {
@@ -1556,8 +1556,75 @@ app.get('/deletepost/:id', (req, res) => {
         res.send('Post deleted');
         console.log(result);
     });
-})
+});
 
+
+//  Clients
+app.get('/api/getAllClients', (req, res) => {
+    let sql = `SELECT clients.id, client_name, ident_code, metering_type FROM clients`;
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(query.sql);
+        res.send(result);
+    });
+});
+
+
+app.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
+    let erpType = req.params.erp_type;
+    let meteringType = req.params.metering_type;
+
+    let sql = `SELECT clients.id, client_name, ident_code, metering_type, erp_type FROM clients
+    WHERE 1=1 `;
+
+    if (erpType != 'all') {
+        if (erpType.length == 1) {
+            sql += ` AND erp_type = ${erpType}`;
+        } else {
+            let splitted = erpType.split(',');
+            for (let i = 0; i < splitted.length; i += 1) {
+                if (i == 0) {
+                    sql += ` AND erp_type = ${splitted[i]}`;
+                } else {
+                    sql += ` OR erp_type = ${splitted[i]}`;
+                }
+            }
+        }
+
+    }
+    if (meteringType != 'all') {
+        if (meteringType.split(",").length != 2) {
+            sql += ` AND metering_type = ${meteringType}`;
+        }
+    }
+
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(query.sql);
+        res.send(result);
+    });
+});
+
+
+app.get('/api/getClientInfo/:id', (req, res) => {
+    let clientID = req.params.id;
+    let sql = `SELECT clients.id, client_name, ident_code, metering_type, is_manufacturer, profile_id, erp_type FROM clients
+    WHERE id = ${clientID}`;
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(query.sql);
+        res.send(result[0]);
+    });
+});
+
+
+  
 // Connect to DB
 db.connect((err) => {
     if (err) {
@@ -1565,6 +1632,8 @@ db.connect((err) => {
     }
     console.log('Mysql connected');
 });
+
+
 
 exports.db = db;
 exports.dbSync = dbSync;

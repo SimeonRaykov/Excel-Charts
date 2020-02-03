@@ -20,27 +20,37 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
-    <link rel="stylesheet" href="../../../../css/listSTPClients.css">
     <script src="../../../js/datatables/datatables.js"></script>
     <title>Document</title>
 </head>
 
 <body>
-    <h1 class="text-center mb-5">Клиенти - по СТП</h1>
+    <h1 class="text-center mb-5">Клиенти</h1>
     <div class="container clients text-center mb-5">
-        <div class="row justify-content-end">
-            <span class="mr-2 mt-5">Вид ЕРП:</span>
-            <label class="radio">
-                <input type="radio" name="ERP" value="EVN">
+        <div class="row justify-content-center">
+
+            <span class="mr-2">Вид ЕРП:</span>
+            <label class="checkbox">
+                <input type="checkbox" name="erp_type" value="evn" checked>
                 <span>ИВН</span>
             </label>
-            <label class="radio">
-                <input type="radio" name="ERP" value="CEZ">
+            <label class="checkbox">
+                <input type="checkbox" name="erp_type" value="cez" checked>
                 <span>ЧЕЗ</span>
             </label>
-            <label class="radio">
-                <input type="radio" name="ERP" value="EnergoPRO">
-                <span>EnergoPRO</span>
+            <label class="checkbox">
+                <input type="checkbox" name="erp_type" value="energoPRO" checked>
+                <span>ЕнергоПРО</span>
+            </label>
+
+            <span class="mr-2 ml-5">Вид мерене:</span>
+            <label class="checkbox">
+                <input type="checkbox" name="metering_type" value="stp" checked>
+                <span>По СТП</span>
+            </label>
+            <label class="checkbox">
+                <input type="checkbox" name="metering_type" value="hourly" checked>
+                <span>По часови</span>
             </label>
         </div>
         <table id="clients" class="display">
@@ -49,12 +59,15 @@
                     <th>ID на клиент</th>
                     <th>Идентификационен код</th>
                     <th>Име на клиент</th>
+                    <th>Вид ЕРП</th>
+                    <th>Вид мерене</th> 
                 </tr>
             </thead>
             <tbody id="tBody">
             </tbody>
         </table>
     </div>
-    <script src="../../../../js/STP listing/listClients-STP.js"></script>
+    <script src="../../../../js/clients/clients.js"></script>
 </body>
+
 </html>
