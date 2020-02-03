@@ -2,6 +2,7 @@
 
 function getAllListings(data) {
     let i = 0;
+    console.log(data);
     for (let el in data) {
 
         let currRow = $('<tr>').attr('role', 'row');
@@ -12,7 +13,7 @@ function getAllListings(data) {
         }
         i += 1;
         currRow
-            .append('<td>' + data[el]['reading_id'] + '</td>')
+            .append('<td>' + data[el]['invoicing_id'] + '</td>')
             .append($('<td>' + data[el]['client_number'] + '</td>'))
             .append($(`<td><a href=clients/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))

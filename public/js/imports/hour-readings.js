@@ -8,7 +8,7 @@ $(document).ready(function () {
 function processFile(e) {
     let cl;
     let clientIds = [];
-
+    const operator = 2;
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
@@ -82,7 +82,7 @@ function processFile(e) {
                         let typeEnergy = arr[i][2];
                         typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
                         currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
-                        client.push(0, clientName, clientID, meteringType, profileID, isManufacturer, new Date());
+                        client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
                         allClients.push(client);
                         allHourReadings.push(currHourReading);
                         currHourValues = [];

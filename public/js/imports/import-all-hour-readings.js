@@ -6,20 +6,29 @@ const companies = {
 class Company {
     constructor() {
         this.company = '';
+        this.erpType = '';
     }
     getCompany() {
         return this.company;
     }
+    getErpType() {
+        return this.erpType;
+    }
     setCompany(company) {
         this.company = company;
+        return this;
+    }
+    setErpType(type) {
+        this.erpType = type;
+        return this;
     }
 }
 let company = new Company();
 ($('body > div.container').click(() => {
     if ($('#energo-pro').is(':checked')) {
-        company.setCompany('ENERGO_PRO');
+        company.setCompany('ENERGO_PRO').setErpType(3);
     } else if ($('#evn').is(':checked')) {
-        company.setCompany('EVN');
+        company.setCompany('EVN').setErpType(1);
     }
 }));
 
@@ -35,12 +44,11 @@ function processFile(e) {
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
-
     e.stopPropagation();
     e.preventDefault();
     var files = e.dataTransfer.files,
         f = '';
-    let allHourReadings = [];
+    let allHourReadings = []; 
     let clientIDs = [];
     let clientsALL = [];
     for (let z = 0; z < files.length; z += 1) {
@@ -89,7 +97,7 @@ function processFile(e) {
                     let currReactiveEnergyValues = [];
                     let currHourReadingActive = [];
                     let currHourReadingReactive = [];
-
+                    const operator = company.getErpType();
                     for (let x = 4; x < arr[0].length; x += 1) {
                         let currDateHelper = `${arr[0][x]}`;
                         let splitHelper = currDateHelper.split(" ")[0].split('.');
@@ -121,7 +129,7 @@ function processFile(e) {
 
                             currActiveEnergyValues = [];
                             currReactiveEnergyValues = [];
- 
+
                             currHourActiveEnergyObj = {};
                             currReactiveEnergyObj = {};
                             x -= 1;
@@ -130,7 +138,7 @@ function processFile(e) {
                     let client = [];
                     clientIDs.push(clientID);
 
-                    client.push(0, clientName, clientID, meteringType, profileID, isManufacturer, new Date());
+                    client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
                     clientsALL.push(client);
                     //   console.log(allHourReadings);
                     /*

@@ -4,10 +4,40 @@ $(document).ready(function () {
     let url = `/api/getAllClients`;
 
     // User friendly get params
-    if (location.search.match('ERP')) {
-        let erpValue = location.search.match('ERP').input.substr(6);
-        url = `/api/filterSTPClientsByERP/${erpValue}`
+    if (findGetParameter('erpType') || findGetParameter('meteringType')) {
+        let meteringType = findGetParameter('meteringType')
+        let erpType = findGetParameter('erpType');
+        console.log(erpType);
+        if (erpType == '' || meteringType == '') {
+            erpType = 0;
+            url = `/api/filterClients/0/0`
+            if (erpType == '') {
+                disableAllERPCheckbox();
+            }
+            if (meteringType == '') {
+                disableMeteringTypeCheckbox();
+            }
+        } else {
+            if (meteringType == 1 || meteringType == 2) {
+                url = `/api/filterClients/${erpType}/${meteringType}`
+                if (meteringType == 1) {
+                    disableSTPCheckbox();
+                } else if (meteringType == 2) {
+                    disableHourlyCheckbox();
+                }
+            }
+            if (!erpType.includes('1')) {
+                disableEVNCheckBox();
+            }
+            if (!erpType.includes('2')) {
+                disableCEZCheckbox();
+            }
+            if (!erpType.includes('3')) {
+                disableEnergoPROCheckbox();
+            }
+        }
     }
+
     getInitialData(url);
 });
 
@@ -26,7 +56,6 @@ function getInitialData(url) {
 }
 
 function visualizeDataTable(data) {
-    console.log(data);
     let i = 0;
     for (let el in data) {
         let currRow = $('<tr>').attr('role', 'row');
@@ -37,11 +66,13 @@ function visualizeDataTable(data) {
         }
         i += 1;
         const meteringType = data[el]['metering_type'];
+        const erpType = data[el]['erp_type'];
         currRow
             .append($('<td>' + data[el]['id'] + '</td>'))
-            .append($(`<td><a href=/users/clients/STP-Details/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
+            .append($(`<td><a href=/users/clients/info/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + (meteringType === 1 ? 'СТП' : 'По часови') + '</td>'))
+            .append($('<td>' + (erpType === 1 ? 'ИВН' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))
+            .append($('<td>' + (meteringType === 2 ? 'СТП' : 'По часови') + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }
@@ -55,29 +86,42 @@ function visualizeDataTable(data) {
     });
 };
 
-(function addEventListenerToRadioERP() {
+(function addEventListenerToCheckboxes() {
     $('input[type=checkbox]').click(() => {
-        const checkboxes = document.getElementsByName('metering_type');
+        const checkboxesMeteringType = document.getElementsByName('metering_type');
+        const checkboxesERPType = document.getElementsByName('erp_type');
         let meteringValue = [];
-        for (let i = 0, length = checkboxes.length; i < length; i++) {
-            if (checkboxes[i].checked) {
-                meteringValue.push(checkboxes[i].value === 'stp' ? 2 : 1);
+        let erpTypeValue = [];
+        for (let i = 0, length = checkboxesMeteringType.length; i < length; i++) {
+            if (checkboxesMeteringType[i].checked) {
+                meteringValue.push(checkboxesMeteringType[i].value === 'stp' ? 2 : 1);
             }
         }
-        window.history.replaceState(null, null, `listClients-STP?&ERP=${meteringValue}`)
-        if (meteringValue != undefined) {
-            filterClientsByMeteringType(meteringValue);
+        for (let i = 0, length = checkboxesERPType.length; i < length; i++) {
+            if (checkboxesERPType[i].checked) {
+                erpTypeValue.push(checkboxesERPType[i].value === 'evn' ? 1 : checkboxesERPType[i].value === 'cez' ? 2 : 3);
+            }
         }
+        window.history.replaceState(null, null, `clients?erpType=${erpTypeValue}&meteringType=${meteringValue}`)
+        filterClients(erpTypeValue, meteringValue);
     })
 })();
 
-function filterClientsByMeteringType(erpValue) {
-    let url = `/api/filterClientsByMeteringType/${erpValue[0]}`;
-    if (erpValue.length === 2) {
-        url = `/api/getAllClients`;
-    } else if (erpValue.length === 0) {
-        url = `/api/filterClientsByMeteringType/3`;
+function filterClients(erpValue, meteringValue) {
+    if (meteringValue == 0 || erpValue == 0) {
+        erpValue = 0;
+        meteringValue = 0;
     }
+    if (erpValue.length === 3) {
+        erpValue = 'all';
+    } else if (erpValue.length === 0) {
+        meteringValue = 0;
+    }
+    if (meteringValue.length === 2) {
+        meteringValue = 'all';
+    }
+    let url = `/api/filterClients/${erpValue}/${meteringValue}`;
+
     $.ajax({
         url,
         method: 'GET',
@@ -94,4 +138,45 @@ function filterClientsByMeteringType(erpValue) {
 function redrawDataTable(data) {
     dataTable.clear().destroy();
     visualizeDataTable(data);
+}
+
+function findGetParameter(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function disableAllERPCheckbox() {
+    disableEVNCheckBox();
+    disableCEZCheckbox();
+    disableEnergoPROCheckbox();
+}
+
+function disableMeteringTypeCheckbox() {
+    disableSTPCheckbox();
+    disableHourlyCheckbox();
+}
+
+function disableEVNCheckBox() {
+    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(2) > input[type=checkbox]').prop('checked', false);
+}
+
+function disableCEZCheckbox() {
+    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(3) > input[type=checkbox]').prop('checked', false);
+}
+
+function disableEnergoPROCheckbox() {
+    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+}
+
+function disableSTPCheckbox() {
+    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(6) > input[type=checkbox]').prop('checked', false);
+}
+
+function disableHourlyCheckbox() {
+    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(7) > input[type=checkbox]').prop('checked', false);
 }
