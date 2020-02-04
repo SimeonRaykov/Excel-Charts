@@ -1,49 +1,128 @@
 $(document).ready(function () {
+    defaultInputDatesForSearchGraphBtn()
     getClientInfo();
+    getHourReadingsFilterData(getLastWeek(), new Date(), getClientID());
     showHourReadingChart();
 });
 
-function showHourReadingChart() {
+$('#searchBtnHourlyGraph').on('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const fromDate = document.querySelector('input[name=fromDate]').value;
+    const toDate = document.querySelector('input[name=toDate]').value;
+    getHourReadingsFilterData(fromDate, toDate, getClientID());
+})
+
+function getHourReadingsFilterData(fromDate, toDate, clientID) {
+    if (fromDate == '') {
+        fromDate = -1;
+    }
+    if (toDate == '') {
+        toDate = -1;
+    }
+    $.ajax({
+        url: `/api/hour-readings/${fromDate}/${toDate}/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            showHourReadingChart(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function showHourReadingChart(data) {
+    let labels = [];
+    let chartData = [];
+    let index = 0;
+    let dataIterator = 0;
+    if (data != undefined) {
+        if (data.length == 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                        labels.push(`${t.getHours()} ч.`);
+                    }
+                    index += 1;
+                }
+                index = 0;
+            }
+        } else if (data.length != 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
+                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
+                }
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                    }
+                    index += 1;
+                }
+                index = 0;
+                dataIterator += 1;
+            }
+        }
+    }
     var ctx = document.getElementById('hour-readings-chart').getContext('2d');
-    var myChart = new Chart(ctx, {
+    console.log(chartData);
+    var config = {
         type: 'line',
         data: {
-          labels: [new Date("2015-3-15 13:3").toLocaleString(), new Date("2015-3-25 13:2").toLocaleString(), new Date("2015-4-25 14:12").toLocaleString()],
-          datasets: [{
-            label: 'Demo',
-            data: [{
-                t: new Date("2015-3-15 13:3"),
-                y: 12
-              },
-              {
-                t: new Date("2015-3-25 13:2"),
-                y: 21
-              },
-              {
-                t: new Date("2015-4-25 14:12"),
-                y: 32
-              }
-            ],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-              'rgba(255,99,132,1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-          }]
+            labels,
+            datasets: [{
+                label: 'Hour-Reading',
+                data: chartData,
+                borderWidth: 2,
+                backgroundColor: "rgb(255,99,132)",
+                borderColor: "#ac3f21"
+
+            }],
+        },
+        /*
+        options: {
+            scales: {
+              xAxes: [{
+                ticks: {
+                  maxRotation: 50,
+                  minRotation: 30,
+                  padding: 10,
+                  autoSkip: false,
+                  fontSize: 10
+                }
+              }]
+            }
+          }
+          */
+    }
+    var myChart = new Chart(ctx, config);
+
+    $('#hour-readings > div.hour-readings-graph-div.visible > form > div > div:nth-child(4) > label > input').click((e) => {
+        myChart.destroy();
+        var temp = jQuery.extend(true, {}, config);
+        if (myChart.config.type == 'line') {
+            temp.type = 'bar';
+        } else {
+            temp.type = 'line';
         }
-      });
+
+        myChart = new Chart(ctx, temp);
+    })
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -69,7 +148,6 @@ document.addEventListener('DOMContentLoaded', function () {
     $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
 
 });
-
 
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar-imbalance');
@@ -249,7 +327,7 @@ function processDataImbalances(data) {
 }
 
 function incrementHoursOne(date) {
-    return date.setHours(date.getHours() + 1);
+    return new Date(date.setHours(date.getHours() + 1));
 }
 
 function decrementHoursBy23(date) {
@@ -264,6 +342,12 @@ function writeImbalancesHeader(data) {
     $('#imbalance > h1').text(`Небаланси за клиент: ${data[0].ident_code}`)
 }
 
+function getLastWeek() {
+    var today = new Date();
+    var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+    return lastWeek;
+}
+
 function findGetParameter(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -272,4 +356,23 @@ function findGetParameter(name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+(function addSwitchEvent() {
+    $('#hour-readings > label > span.switch-label').on('click', () => {
+        if ($('#hour-readings > div.row').is(':visible')) {
+            $('#hour-readings > div.row').hide();
+            $('.invisible').removeClass('invisible').addClass('visible');
+        } else {
+            $('#hour-readings > div.row').show();
+            $('.visible').addClass('invisible').removeClass('visible');
+        }
+    })
+}());
+
+function defaultInputDatesForSearchGraphBtn() {
+    const lastWeekDate = getLastWeek();
+    const today = new Date();
+    $('#hour-readings > div:nth-child(4) > form > div > div.col-md-3.offset-2 > input[type=date]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
+    $('#hour-readings > div:nth-child(4) > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
 }
