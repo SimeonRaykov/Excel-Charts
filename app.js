@@ -1120,8 +1120,8 @@ app.post('/api/getSingleClient', (req, res) => {
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
-        }  
-        console.log(result);     
+        }
+        console.log(result);
         return res.send(JSON.stringify(result[0].id));
     });
 });
@@ -1623,8 +1623,32 @@ app.get('/api/getClientInfo/:id', (req, res) => {
     });
 });
 
+ 
+app.get('/api/hour-readings/:fromDate/:toDate/:clientID', (req, res) => {
+    const fromDate = req.params.fromDate;
+    const toDate = req.params.toDate;
+    const clientID = req.params.clientID;
+    let sql = `SELECT clients.ident_code, hour_readings.date, hour_readings.hour_one AS 'hr1',  hour_readings.hour_two AS 'hr2', hour_readings.hour_three AS 'hr3', hour_readings.hour_four AS 'hr4', hour_readings.hour_five AS 'hr5', hour_readings.hour_six AS 'hr6', hour_readings.hour_seven AS 'hr7', hour_readings.hour_eight AS 'hr8', hour_readings.hour_nine AS 'hr9', hour_readings.hour_ten AS 'hr10', hour_readings.hour_eleven AS 'hr11', hour_readings.hour_twelve AS 'hr12', hour_readings.hour_thirteen AS 'hr13', hour_readings.hour_fourteen AS 'hr14', hour_readings.hour_fifteen AS 'hr15', hour_readings.hour_sixteen AS 'hr16', hour_readings.hour_seventeen AS 'hr17', hour_readings.hour_eighteen AS 'hr18', hour_readings.hour_nineteen AS 'hr19', hour_readings.hour_twenty AS 'hr20', hour_readings.hour_twentyone AS 'hr21', hour_readings.hour_twentytwo AS 'hr22', hour_readings.hour_twentythree AS 'hr23', hour_readings.hour_zero AS 'hr24'FROM clients
+    INNER JOIN hour_readings on clients.id = hour_readings.client_id
+    WHERE clients.id = '${clientID}' `;
+    if (fromDate != -1 && toDate != -1) {
+        sql += `AND date>='${fromDate}' AND date<= '${toDate}' `;
+    } else if (fromDate != -1 && toDate == -1) {
+        sql += `AND date>='${fromDate}' `;
+    } else if (toDate != -1 && fromDate == -1) {
+        sql += `AND date<='${toDate}' `;
+    }
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(query.sql);
+        res.send(result);
+    });
+});
 
-  
+
+
 // Connect to DB
 db.connect((err) => {
     if (err) {
