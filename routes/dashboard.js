@@ -31,27 +31,27 @@ router.get('/dashboard', (req, res) => res.render('../public/AdminLTE-master/ind
     password: req.user.password
 
 }, user.setName(req.user.name)));
-router.get('/users/listClients-hours',(req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
+router.get('/users/listClients-hours', (req, res) => res.render('./hour-readings/listClients-Hourly.ejs', {
     name: user.getName()
 }));
 // Imports
-router.get('/users/import/STP/Readings',  (req, res) => res.render('./imports/importSTP.ejs', {
+router.get('/users/import/STP/Readings', (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));
-router.get('/users/import/STP/HourPredictions',  (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
+router.get('/users/import/STP/HourPredictions', (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
     name: user.getName()
 }));
 router.get('/users/import/hour-readings/CEZ', (req, res) => res.render('./imports/hour_readings.ejs', {
     name: user.getName()
 }));
-router.get('/users/import/profiles/evnOrEnergoPRO',  (req, res) => res.render('./imports/profiles', {
+router.get('/users/import/profiles/evnOrEnergoPRO', (req, res) => res.render('./imports/profiles', {
     name: user.getName()
 }))
 router.get('/users/import/hour-readings/evnORenergoPRO', (req, res) => res.render('./imports/hour_readingsMultiImport.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/import/profiles',  (req, res) => res.render('./imports/profiles.ejs', {
+router.get('/users/import/profiles', (req, res) => res.render('./imports/profiles.ejs', {
     name: user.getName()
 }));
 router.get('/users/import/graphs', (req, res) => res.render('./imports/graphs.ejs', {
@@ -60,17 +60,17 @@ router.get('/users/import/graphs', (req, res) => res.render('./imports/graphs.ej
 
 
 // STP Listing
-router.get('/users/listReadings',  (req, res) => res.render('./STP listings/listReadings.ejs', {
+router.get('/users/listReadings', (req, res) => res.render('./STP listings/listReadings.ejs', {
     name: user.getName()
 }));
-router.get('/users/clients/:id',  (req, res) => res.render('./STP listings/clients.ejs', {
+router.get('/users/clients/:id', (req, res) => res.render('./STP listings/clients.ejs', {
     name: user.getName()
 }));
 router.get('/users/reading/:id', (req, res) => res.render('./STP listings/readingDetails.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/listClients-STP',  (req, res) => res.render('./STP listings/listClients-STP.ejs', {
+router.get('/users/listClients-STP', (req, res) => res.render('./STP listings/listClients-STP.ejs', {
     name: user.getName()
 }));
 router.get('/users/clients/STP-Details/:id', (req, res) => res.render('./STP listings/listSTPClientDetails.ejs', {
@@ -111,6 +111,11 @@ router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
 }));
 
 router.get('/users/clients/info/:id', (req, res) => res.render('./clients/clients-info.ejs', { //./hour-readings/clients-hour-readings.ejs'
+    name: user.getName()
+}));
+
+// Invoicing
+router.get('/users/invoicing', (req, res) => res.render('./STP listings/listReadings.ejs', {
     name: user.getName()
 }));
 

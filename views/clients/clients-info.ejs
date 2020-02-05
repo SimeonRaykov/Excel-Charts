@@ -78,7 +78,6 @@
             </div>
         </div>
 
-
         <!-- Hour-Readings -->
         <div id="hour-readings" class="tab-pane fade">
             <h1 class="text-center mb-5">Мерения по часове за клиент: </h1>
@@ -102,7 +101,7 @@
                 </div>
             </div>
 
-            <div class="invisible hour-readings-graph-div">
+            <div class="hour-readings-graph-div">
                 <form action="submit">
                     <div class="row my-5">
                         <div class="offset-1 col-md-3">
@@ -132,21 +131,87 @@
 
         <!-- Graphs -->
         <div id="graph" class="tab-pane fade">
-            <h1 class="text-center mb-5">График</h1>
-            <div class="row">
-                <div id="" class="col-md-12">
+            <h1 class="text-center mb-5 graphHeading">График</h1>
+
+            <label class="switch">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="graphRow-calendar">
+                <div id="calendar-prediction">
                 </div>
             </div>
+
+            <div class="graph-prediction-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateGraphPrediction" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateGraphPrediction" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphPrediction"
+                                class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="graph-prediction-chart" class="mb-5" width="400" height="400"></canvas>
+            </div>
+
         </div>
 
 
         <!-- Imbalances -->
         <div id="imbalance" class="tab-pane fade">
             <h1 class="text-center mb-5">Небаланси</h1>
+
+            <label class="switch">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
             <div class="row">
                 <div id="calendar-imbalance" class="col-md-12">
                 </div>
-                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+            <div class="imbalance-graph-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateImbalanceGraph" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateImbalanceGraph" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphImbalance" class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="imbalance-chart" class="mb-5" width="400" height="400"></canvas>
             </div>
         </div>
     </div>
