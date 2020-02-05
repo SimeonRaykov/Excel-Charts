@@ -80,7 +80,6 @@ async function processFile(e) {
             const meteringType = 1; // Hour-Reading
             const isManufacturer = 0;
 
-
             let client = [];
             let clientsAll = [];
             let clientID;
@@ -95,7 +94,7 @@ async function processFile(e) {
             for (let i = 1; i < arr.length; i += 1) {
                 let clientIdentCode = arr[i][clientIdentCodeIndex];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, isManufacturer, new Date());
+                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, stpPrediction.getType(), isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];
                 }

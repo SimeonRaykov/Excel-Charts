@@ -23,7 +23,7 @@ function getAllListings(data) {
             .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
             .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
             .append($('<td>' + (data[el]['operator'] == 2 ? 'ЧЕЗ' : data[el]['operator'] == 1 ? 'EVN' : 'EnergoPRO') + '</td>'))
-            .append($(`<td><a href="reading/${data[el]['reading_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['reading_id']}">Детайли на мерене</button></a></td>`))
+            .append($(`<td><a href="reading/${data[el]['invoicing_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['invoicing_id']}">Детайли на мерене</button></a></td>`))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }

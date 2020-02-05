@@ -1,19 +1,65 @@
 $(document).ready(function () {
-    defaultInputDatesForSearchGraphBtn()
+    const lastWeekDate = getLastWeek();
+    const today = new Date();
     getClientInfo();
-    getHourReadingsFilterData(getLastWeek(), new Date(), getClientID());
-    showHourReadingChart();
+    hideGraphs();
+    visualizeDefaultInputsForHourReadingsGraph(lastWeekDate, today);
+    getHourReadingsChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+    getGraphPredictionsFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+    getImbalancesChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+    visualizeDefaultInputsForGraphPrediction(lastWeekDate, today);
+    visualizeDefaultInputForImbalanceGraph(lastWeekDate, today);
 });
 
-$('#searchBtnHourlyGraph').on('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const fromDate = document.querySelector('input[name=fromDate]').value;
-    const toDate = document.querySelector('input[name=toDate]').value;
-    getHourReadingsFilterData(fromDate, toDate, getClientID());
-})
+(function addSearchEventToGraphHourReading() {
+    $('#searchBtnHourlyGraph').on('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const fromDate = document.querySelector('input[name=fromDate]').value;
+        const toDate = document.querySelector('input[name=toDate]').value;
+        getHourReadingsChartFilterData(fromDate, toDate, getClientID());
+    })
+}());
 
-function getHourReadingsFilterData(fromDate, toDate, clientID) {
+(function addSearchEventToGraphPredictions() {
+    $('#searchBtnGraphPrediction').on('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const fromDate = document.querySelector('input[name=fromDateGraphPrediction]').value;
+        const toDate = document.querySelector('input[name=toDateGraphPrediction]').value;
+        getGraphPredictionsFilterData(fromDate, toDate, getClientID());
+    })
+}());
+
+(function addSearchEventToImbalances() {
+    $('#searchBtnGraphImbalance').on('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const fromDate = document.querySelector('input[name=fromDateImbalanceGraph]').value;
+        const toDate = document.querySelector('input[name=toDateImbalanceGraph]').value;
+        getImbalancesChartFilterData(fromDate, toDate, getClientID());
+    });
+}());
+
+function getClientInfo() {
+    let clientID = getClientID();
+    let dataArr = [];
+    $.ajax({
+        url: `/api/getClientInfo/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            visualizeClientInfo(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+    return dataArr;
+}
+
+function getHourReadingsChartFilterData(fromDate, toDate, clientID) {
     if (fromDate == '') {
         fromDate = -1;
     }
@@ -27,6 +73,48 @@ function getHourReadingsFilterData(fromDate, toDate, clientID) {
         async: false,
         success: function (data) {
             showHourReadingChart(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function getGraphPredictionsFilterData(fromDate, toDate, clientID) {
+    if (fromDate == '') {
+        fromDate = -1;
+    }
+    if (toDate == '') {
+        toDate = -1;
+    }
+    $.ajax({
+        url: `/api/graph-predictions/${fromDate}/${toDate}/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            showGraphPredictionChart(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function getImbalancesChartFilterData(fromDate, toDate, clientID) {
+    if (fromDate == '') {
+        fromDate = -1;
+    }
+    if (toDate == '') {
+        toDate = -1;
+    }
+    $.ajax({
+        url: `/api/imbalances/getClient/${fromDate}/${toDate}/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            showImbalanceChart(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -80,13 +168,12 @@ function showHourReadingChart(data) {
         }
     }
     var ctx = document.getElementById('hour-readings-chart').getContext('2d');
-    console.log(chartData);
     var config = {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                label: 'Hour-Reading',
+                label: 'Почасово мерене',
                 data: chartData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
@@ -112,7 +199,7 @@ function showHourReadingChart(data) {
     }
     var myChart = new Chart(ctx, config);
 
-    $('#hour-readings > div.hour-readings-graph-div.visible > form > div > div:nth-child(4) > label > input').click((e) => {
+    $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
         myChart.destroy();
         var temp = jQuery.extend(true, {}, config);
         if (myChart.config.type == 'line') {
@@ -125,51 +212,221 @@ function showHourReadingChart(data) {
     })
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar-hourly');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        eventLimit: true,
-        eventLimit: 1,
-        eventLimitText: 'Има мерене',
-        eventLimitClick: 'day',
-        allDaySlot: false,
-        eventOrder: 'groupId',
-        events: getHourReadingsByID(),
-        plugins: ['dayGrid', 'timeGrid'],
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next',
-
+function showGraphPredictionChart(data) {
+    let labels = [];
+    let chartData = [];
+    let index = 0;
+    let dataIterator = 0;
+    if (data != undefined) {
+        if (data.length == 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                        labels.push(`${t.getHours()} ч.`);
+                    }
+                    index += 1;
+                }
+                index = 0;
+            }
+        } else if (data.length != 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
+                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
+                }
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                    }
+                    index += 1;
+                }
+                index = 0;
+                dataIterator += 1;
+            }
+        }
+    }
+    var ctx = document.getElementById('graph-prediction-chart').getContext('2d');
+    var config = {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Прогноза',
+                data: chartData,
+                borderWidth: 2,
+                backgroundColor: "rgb(255,99,132)",
+                borderColor: "#ac3f21"
+            }],
         },
-        contentHeight: 'auto',
-    });
-    calendar.render();
-    $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
+    }
+    var myChart = new Chart(ctx, config);
 
-});
+    $('#graph > div.graph-prediction-div > form > div > div:nth-child(4) > label > input').click((e) => {
+        myChart.destroy();
+        var temp = jQuery.extend(true, {}, config);
+        if (myChart.config.type == 'line') {
+            temp.type = 'bar';
+        } else {
+            temp.type = 'line';
+        }
 
-document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar-imbalance');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        eventLimit: true,
-        eventLimit: 1,
-        eventLimitText: 'Има небанс',
-        eventLimitClick: 'day',
-        allDaySlot: false,
-        eventOrder: 'groupId',
-        events: getImbalances(),
-        plugins: ['dayGrid', 'timeGrid'],
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next',
+        myChart = new Chart(ctx, temp);
+    })
+}
 
+function showImbalanceChart(data) {
+    let labels = [];
+    let chartData = [];
+    let index = 0;
+    let dataIterator = 0;
+    if (data != undefined) {
+        if (data.length == 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                        labels.push(`${t.getHours()} ч.`);
+                    }
+                    index += 1;
+                }
+                index = 0;
+            }
+        } else if (data.length != 1) {
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
+                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
+                }
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let hourObj = {
+                            t,
+                            y: data[el][hr]
+                        }
+                        chartData.push(hourObj);
+                    }
+                    index += 1;
+                }
+                index = 0;
+                dataIterator += 1;
+            }
+        }
+    }
+    var ctx = document.getElementById('imbalance-chart').getContext('2d');
+    var config = {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Небаланс',
+                data: chartData,
+                borderWidth: 2,
+                backgroundColor: "rgb(255,99,132)",
+                borderColor: "#ac3f21"
+            }],
         },
-        contentHeight: 'auto'
+    }
+    var myChart = new Chart(ctx, config);
+
+    $('#imbalance > div.imbalance-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
+        myChart.destroy();
+        var temp = jQuery.extend(true, {}, config);
+        if (myChart.config.type == 'line') {
+            temp.type = 'bar';
+        } else {
+            temp.type = 'line';
+        }
+        myChart = new Chart(ctx, temp);
+    })
+}
+
+(function addFullCalendars() {
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar-hourly');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            eventLimit: true,
+            eventLimit: 1,
+            eventLimitText: 'Има мерене',
+            eventLimitClick: 'day',
+            allDaySlot: false,
+            eventOrder: 'groupId',
+            events: getHourReadingsByID(),
+            plugins: ['dayGrid', 'timeGrid'],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'prev, dayGridMonth,timeGridDay, next',
+
+            },
+            contentHeight: 'auto',
+        });
+        calendar.render();
+        $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
     });
-    calendar.render();
-});
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar-prediction');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            eventLimit: true,
+            eventLimit: 1,
+            eventLimitText: 'Има график',
+            eventLimitClick: 'day',
+            allDaySlot: false,
+            eventOrder: 'groupId',
+            events: getGraphPredictions(),
+            plugins: ['dayGrid', 'timeGrid'],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'prev, dayGridMonth,timeGridDay, next',
+
+            },
+            contentHeight: 'auto',
+        });
+        calendar.render();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar-imbalance');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            eventLimit: true,
+            eventLimit: 1,
+            eventLimitText: 'Има небанс',
+            eventLimitClick: 'day',
+            allDaySlot: false,
+            eventOrder: 'groupId',
+            events: getImbalances(),
+            plugins: ['dayGrid', 'timeGrid'],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'prev, dayGridMonth,timeGridDay, next',
+
+            },
+            contentHeight: 'auto'
+        });
+        calendar.render();
+    });
+}())
 
 function getHourReadingsByID() {
     let clientID = getClientID();
@@ -189,6 +446,24 @@ function getHourReadingsByID() {
     return dataArr;
 }
 
+function getGraphPredictions() {
+    let clientID = getClientID();
+    let dataArr = [];
+    $.ajax({
+        url: `/api/graph-predictions/getClient/${clientID}`,
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            dataArr = [...processDataGraphPredictions(data)];
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+    return dataArr;
+}
+
 function getImbalances() {
     let clientID = getClientID();
     let dataArr = [];
@@ -198,6 +473,7 @@ function getImbalances() {
         dataType: 'json',
         async: false,
         success: function (data) {
+
             dataArr = [...processDataImbalances(data)];
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -207,26 +483,7 @@ function getImbalances() {
     return dataArr;
 }
 
-function getClientInfo() {
-    let clientID = getClientID();
-    let dataArr = [];
-    $.ajax({
-        url: `/api/getClientInfo/${clientID}`,
-        method: 'GET',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            visualizeClientInfo(data);
-        },
-        error: function (jqXhr, textStatus, errorThrown) {
-            console.log(errorThrown);
-        }
-    });
-    return dataArr;
-}
-
 function visualizeClientInfo(data) {
-    console.log(data);
     $('#info > div.container > div:nth-child(2) > input').val(data['client_name']);
     $('#info > div.container > div:nth-child(3) > input').val(data['ident_code']);
     $('#info > div.container > div:nth-child(4) > input').val(data['profile_id']);
@@ -247,23 +504,23 @@ const colors = {
     red: '#ff4d4d'
 }
 
-
 function processDataHourly(data) {
-    writeHourReadingsHeader(data);
+    writeHourReadingsDailyHeader(data);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
-        let id = data[el][0];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
         let type = data[el].type;
         let i = 0;
+        const startIndexHourReadings = 11;
+        const endIndexHourReadings = 34;
         for (let [key, value] of Object.entries(data[el])) {
-            if (i >= 7 && i <= 29) {
-                // 3 600 000 - FullCalendar one hour
-                // 72 000 - One Hour
-                incrementHoursOne(currHourDate);
+            if (i > endIndexHourReadings) {
+                break;
+            }
+            if (i >= startIndexHourReadings && i <= endIndexHourReadings) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
@@ -272,26 +529,52 @@ function processDataHourly(data) {
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
                 }
-            } else if (i === 30) {
-                decrementHoursBy23(currHourDate);
-                currHourReading = {
-
-                };
-                currHourReading.backgroundColor = diff === 0 ? colors.blue : colors.red
-                currHourReading.start = Number(currHourDate);
-                currHourReading.end = Number(currHourDate) + 3600000;
-                currHourReading.title = value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`;
-                dataArr.push(currHourReading);
-                break;
+                incrementHoursOne(currHourDate);
             }
             dataArr.push(currHourReading);
             i += 1;
         }
+        i = 0;
     }
 
     return dataArr;
 }
 
+function processDataGraphPredictions(data) {
+    writeHourReadingsDailyHeader(data);
+    console.log(data);
+    let dataArr = [];
+    let currHourReading = [];
+    for (let el in data) {
+        currHourReading = [];
+        let currHourDate = new Date(data[el].date);
+        const startIndexGraphPrediction = 11;
+        const endIndexGraphPrediction = 34;
+        let diff = data[el].diff;
+        let i = 0;
+        for (let [key, value] of Object.entries(data[el])) {
+            if (i > endIndexGraphPrediction) {
+                break;
+            }
+            if (i >= startIndexGraphPrediction && i <= endIndexGraphPrediction) {
+                currHourReading = {
+                    groupId: diff,
+                    id: key,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
+                    start: Number(currHourDate),
+                    end: Number(currHourDate) + 3600000,
+                    backgroundColor: colors.blue
+                }
+                incrementHoursOne(currHourDate);
+            }
+            dataArr.push(currHourReading);
+            i += 1;
+        }
+        i = 0;
+    }
+
+    return dataArr;
+}
 
 function processDataImbalances(data) {
     writeImbalancesHeader(data);
@@ -334,7 +617,7 @@ function decrementHoursBy23(date) {
     return date.setHours(date.getHours() - 23);
 }
 
-function writeHourReadingsHeader(data) {
+function writeHourReadingsDailyHeader(data) {
     $('#hour-readings > h1').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
 }
 
@@ -342,10 +625,76 @@ function writeImbalancesHeader(data) {
     $('#imbalance > h1').text(`Небаланси за клиент: ${data[0].ident_code}`)
 }
 
-function getLastWeek() {
-    var today = new Date();
-    var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-    return lastWeek;
+(function switchHourReadingCalendarAndGraph() {
+    $('#hour-readings > label > span.switch-label').on('click', () => {
+        if ($('.hour-readings-graph-div').css('display') == 'none') {
+            $('#hour-readings > div.row').css('display', 'none');
+            $('.hour-readings-graph-div').css('display', 'block');
+        } else {
+            $('#hour-readings > div.row').css('display', 'flex');
+            $('.hour-readings-graph-div').css('display', 'none');
+        }
+    })
+}());
+
+(function switchGraphPredictionCalendarAndGraph() {
+    $('#graph > label > span.switch-label').on('click', () => {
+        if ($('.graph-prediction-div').css('display') == 'block') {
+            $('.graph-prediction-div').css("display", "none");
+            $('.graphRow-calendar').css("display", "block");
+        } else {
+            $(".graph-prediction-div").css("display", "block");
+            $('.graphRow-calendar').css("display", "none");
+        }
+    })
+}());
+
+(function switchImbalanceCalendarAndGraph() {
+    $('#imbalance > label > input').on('click', () => {
+        if ($('#imbalance > div.row').css('display') == 'flex') {
+            $('#imbalance > div.row').css("display", "none");
+            $('#imbalance > div.imbalance-graph-div').css("display", "block");
+        } else {
+            $("#imbalance > div.row").css("display", "flex");
+            $('#imbalance > div.imbalance-graph-div').css("display", "none");
+        }
+    })
+})();
+
+function visualizeDefaultInputForGraphs() {
+    const lastWeekDate = getLastWeek();
+    const today = new Date();
+    $('#hour-readings > div.hour-readings-graph-div > form > div > div.offset-1.col-md-3 > input[type=date]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
+    $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
+}
+
+function formatTodayDate() {
+    return `${new Date().getFullYear()}-${(new Date().getMonth()+1)<10?`0${new Date().getMonth()+1}`:new Date().getMonth()+1}-${new Date().getDate()<10?`0${new Date().getDate()}`:new Date().getDate()}`
+}
+
+function formatLastWeekDate() {
+    return `${getLastWeek().getFullYear()}-${(getLastWeek().getMonth()+1)<10?`0${getLastWeek().getMonth()+1}`:getLastWeek().getMonth()+1}-${getLastWeek().getDate()<10?`0${getLastWeek().getDate()}`:getLastWeek().getDate()}`
+}
+
+function visualizeDefaultInputsForHourReadingsGraph(lastWeekDate, today) {
+    $('#hour-readings > div.hour-readings-graph-div > form > div > div.offset-1.col-md-3 > input[type=date]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
+    $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
+}
+
+function visualizeDefaultInputsForGraphPrediction(lastWeekDate, today) {
+    $('input[name=fromDateGraphPrediction]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
+    $('input[name=toDateGraphPrediction]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
+}
+
+function visualizeDefaultInputForImbalanceGraph(lastWeekDate, today) {
+    $('input[name=fromDateImbalanceGraph]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
+    $('input[name=toDateImbalanceGraph]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
+}
+
+function hideGraphs() {
+    $('.hour-readings-graph-div').css('display', 'none');
+    $('.graph-prediction-div').css('display', 'none');
+    $('#imbalance > div.imbalance-graph-div').css('display', 'none');
 }
 
 function findGetParameter(name, url) {
@@ -358,21 +707,8 @@ function findGetParameter(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-(function addSwitchEvent() {
-    $('#hour-readings > label > span.switch-label').on('click', () => {
-        if ($('#hour-readings > div.row').is(':visible')) {
-            $('#hour-readings > div.row').hide();
-            $('.invisible').removeClass('invisible').addClass('visible');
-        } else {
-            $('#hour-readings > div.row').show();
-            $('.visible').addClass('invisible').removeClass('visible');
-        }
-    })
-}());
-
-function defaultInputDatesForSearchGraphBtn() {
-    const lastWeekDate = getLastWeek();
-    const today = new Date();
-    $('#hour-readings > div:nth-child(4) > form > div > div.col-md-3.offset-2 > input[type=date]').val(`${lastWeekDate.getFullYear()}-${lastWeekDate.getMonth()+1<10?`0${lastWeekDate.getMonth()+1}`:lastWeekDate.getMonth()+1}-${lastWeekDate.getDate()<10?`0${lastWeekDate.getDate()}`:lastWeekDate.getDate()}`);
-    $('#hour-readings > div:nth-child(4) > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
+function getLastWeek() {
+    var today = new Date();
+    var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+    return lastWeek;
 }

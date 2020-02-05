@@ -48,22 +48,22 @@ const colors = {
 }
 
 function processData(data) {
-    console.log(data);
-    writeHourReadingsHeader(data);
+    writeHourReadingsDailyHeader([data[0]['hrID'], data[0]['ident_code']]);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
-        let id = data[el][0];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
         let type = data[el].type;
         let i = 0;
+        const startIndex = 3;
+        const endIndex = 26;
         for (let [key, value] of Object.entries(data[el])) {
-            if (i >= 3 && i <= 25) {
-                // 3 600 000 - FullCalendar one hour
-                // 72 000 - One Hour
-                incrementHoursOne(currHourDate);
+            if (i > endIndex) {
+                break;
+            }
+            if (i >= startIndex && i <= endIndex) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
@@ -72,33 +72,29 @@ function processData(data) {
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
                 }
-            } else if (i === 26) {
-                decrementHoursBy23(currHourDate);
-                currHourReading = {
-
-                };
-                currHourReading.backgroundColor = diff === 0 ? colors.blue : colors.red
-                currHourReading.start = Number(currHourDate);
-                currHourReading.end = Number(currHourDate) + 3600000;
-                currHourReading.title = value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`;
-                dataArr.push(currHourReading);
-                break;
+                incrementHoursOne(currHourDate);
             }
             dataArr.push(currHourReading);
             i += 1;
         }
+        i = 0;
     }
     return dataArr;
 }
+
 function incrementHoursOne(date) {
     return date.setHours(date.getHours() + 1);
 }
+
 function decrementHoursBy23(date) {
     return date.setHours(date.getHours() - 23);
 }
-function writeHourReadingsHeader(data) {
-    $('body > div > h1').text(`Мерения по часове за id: ${data[0].id}`);
+
+function writeHourReadingsDailyHeader(data) {
+    $('h1').text(`Мерения по часове за id: ${data[0]}`);
+  //  $('h2').text(`Клиентско id : ${data[1]}`);
 }
+
 function findGetParameter(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -108,6 +104,7 @@ function findGetParameter(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
 function fixDateForFullCallendar(date) {
     let splittedDate = date.split('-');
     let currYear = splittedDate[0];

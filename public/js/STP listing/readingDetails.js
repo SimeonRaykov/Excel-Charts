@@ -1,7 +1,7 @@
 ;
 $(document).ready(function () {
     let url = location.href;
-    let readingNum = url.substring(url.indexOf('?') + 37);
+    let readingNum = url.substring(url.lastIndexOf('/') + 1);
     getReadingData(readingNum);
 });
 

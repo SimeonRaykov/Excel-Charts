@@ -109,6 +109,14 @@ a.fc-more::after {
     padding: 10px
 }
 
+.graphRow-calendar a.fc-more::after {
+    content: 'Има график';
+}
+
+#calendar-imbalance a.fc-more::after{
+    content: 'Има небаланс';
+}
+
 .btn-primary {
     padding: 5px 10px;
 }

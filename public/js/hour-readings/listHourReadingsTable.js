@@ -1,12 +1,22 @@
 ;
+$(document).ready(function () {
+    getDataListing();
+    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
+    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
+    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
+    findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
+    listAllHourReadings();
+});
 
 function getAllHourListings(data) {
+    console.log(data);
     let i = 0;
     for (let el in data) {
-        let date = data[el]['date'];
-        let fullDate = new Date(date);
-        let fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-
+        const date = data[el]['date'];
+        const fullDate = new Date(date);
+        const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+        const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
+        const amount = data[el]['amount'];
         let currRow = $('<tr>').attr('role', 'row');
         if (i % 2 == 1) {
             currRow.addClass('even');
@@ -16,10 +26,11 @@ function getAllHourListings(data) {
         i += 1;
         currRow
             .append(`<td><a href=/users/clients/hour-reading/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
-            .append($(`<td><a href=/users/clients/hour-reading/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
+            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
             .append($('<td>' + fixedDate + '</td>'))
-            .append($('<td>' + fixedDate + '</td>'))
+            .append($('<td>' + erpType + '</td>'))
+            .append($('<td>' + amount + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }
@@ -33,16 +44,6 @@ function getAllHourListings(data) {
     $('#tBody').addClass('text-center');
     $('#list-readings > thead').addClass('text-center');
 }
-function callback(data) {
-    getAllHourListings(data);
-}
-$(document).ready(function () {
-    getDataListing();
-    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
-    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
-    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
-    listAllHourReadings();
-});
 
 function getDataListing() {
     $.ajax({
@@ -90,7 +91,8 @@ $('#searchBtn').on('click', (event) => {
     let date = $('#date').val();
     let nameOfClient = $('#name').val();
     let clientID = $('#clientID').val();
-    listAllHourReadings([date, nameOfClient, clientID]);
+    let erp = $('#erp').val();
+    listAllHourReadings([date, nameOfClient, clientID, erp]);
 });
 
 function listAllHourReadings(arr) {
@@ -98,11 +100,13 @@ function listAllHourReadings(arr) {
         var name = findGetParameter('name');
         var date = findGetParameter('date');
         var clientID = findGetParameter('clientID');
+        var erp = findGetParameter('erp') == 'CEZ' ? 2 : findGetParameter('erp') == 'EnergoPRO' ? 3 : 1;
     } else {
         var [
             date,
             name,
-            clientID
+            clientID,
+            erp
         ] = arr;
     }
     notification('Loading...', 'loading');
@@ -112,11 +116,12 @@ function listAllHourReadings(arr) {
         data: {
             date,
             name,
-            ident_code: clientID
+            ident_code: clientID,
+            erp
         },
         dataType: 'json',
         success: function (data) {
-            callback(data);
+            getAllHourListings(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
