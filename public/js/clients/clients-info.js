@@ -136,7 +136,7 @@ function showHourReadingChart(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: data[el][hr],
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -178,7 +178,6 @@ function showHourReadingChart(data) {
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
-
             }],
         },
         /*
@@ -288,22 +287,47 @@ function showGraphPredictionChart(data) {
 
 function showImbalanceChart(data) {
     let labels = [];
-    let chartData = [];
+    let actualHourData = [];
+    let predictionData = [];
+    let imbalancesData = [];
     let index = 0;
     let dataIterator = 0;
+    const startingIndexActualHourData = 2;
+    let indexActualData = 2;
+    let indexPrediction = 26;
+    const endIndexPrediction = 49;
+    const finalIndex = 25;
     if (data != undefined) {
         if (data.length == 1) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                for (let hr in data[el]) {
-                    if (index >= 2) {
-                        let t = index == 2 ? date : incrementHoursOne(date)
-                        let hourObj = {
-                            t,
-                            y: data[el][hr]
+                let valuesData = Object.values(data[el]);
+                for (let val of valuesData) {
+                    if (index >= startingIndexActualHourData && index <= endIndexPrediction) {
+                        if (index > finalIndex) {
+                            break;
                         }
-                        chartData.push(hourObj);
+                        let t = index == 2 ? date : incrementHoursOne(date)
+                        let actualHourObj = {
+                            t,
+                            y: valuesData[indexActualData]
+                        }
+                        let predictionObj = {
+                            t,
+                            y: valuesData[indexPrediction]
+                        }
+                        let imbalanceData = {
+                            t,
+                            y: valuesData[indexPrediction] - valuesData[indexActualData]
+                        }
+
+                        actualHourData.push(actualHourObj);
+                        predictionData.push(predictionObj);
+                        imbalancesData.push(imbalanceData);
                         labels.push(`${t.getHours()} ч.`);
+
+                        indexActualData += 1;
+                        indexPrediction += 1;
                     }
                     index += 1;
                 }
@@ -322,7 +346,7 @@ function showImbalanceChart(data) {
                             t,
                             y: data[el][hr]
                         }
-                        chartData.push(hourObj);
+                        actualHourData.push(hourObj);
                     }
                     index += 1;
                 }
@@ -337,11 +361,24 @@ function showImbalanceChart(data) {
         data: {
             labels,
             datasets: [{
-                label: 'Небаланс',
-                data: chartData,
+                label: 'Настоящи',
+                data: actualHourData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
+            }, {
+                label: 'Прогнози',
+                data: predictionData,
+                borderWidth: 2,
+                backgroundColor: "#9c1de7",
+                borderColor: "#9c1de7"
+            }, {
+                label: 'Небаланс',
+                data: imbalancesData,
+                borderWidth: 2,
+                backgroundColor: "#f3f169",
+                borderColor: "#f3f169",
+                hidden: true
             }],
         },
     }

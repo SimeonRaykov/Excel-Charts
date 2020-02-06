@@ -18,7 +18,13 @@ $(document).ready(function () {
         if (!$('.nav-item').hasClass("active")) {
             $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
         }
+    } else {
+        if (!$('.nav-item').hasClass("active")) {
+            $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
+        }
     }
+
+
 });
 
 function nth_occurrence(string, char, nth) {
