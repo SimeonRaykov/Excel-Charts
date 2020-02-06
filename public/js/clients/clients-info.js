@@ -1,14 +1,8 @@
 $(document).ready(function () {
-    const lastWeekDate = getLastWeek();
-    const today = new Date();
     getClientInfo();
     hideGraphs();
-    visualizeDefaultInputsForHourReadingsGraph(lastWeekDate, today);
-    getHourReadingsChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
-    getGraphPredictionsFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
-    getImbalancesChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
-    visualizeDefaultInputsForGraphPrediction(lastWeekDate, today);
-    visualizeDefaultInputForImbalanceGraph(lastWeekDate, today);
+    getAllCharts();
+    visualizeAllDefaultInputs()
 });
 
 (function addSearchEventToGraphHourReading() {
@@ -21,7 +15,7 @@ $(document).ready(function () {
     })
 }());
 
-(function addSearchEventToGraphPredictions() {
+(function addSearchBTNEventToGraphPredictions() {
     $('#searchBtnGraphPrediction').on('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -31,7 +25,7 @@ $(document).ready(function () {
     })
 }());
 
-(function addSearchEventToImbalances() {
+(function addSearchBTNEventToImbalances() {
     $('#searchBtnGraphImbalance').on('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -40,6 +34,74 @@ $(document).ready(function () {
         getImbalancesChartFilterData(fromDate, toDate, getClientID());
     });
 }());
+
+(function updateBTNEvent() {
+    $('#info > button.btn-lg.btn-warning.pull-right.mr-5').on('click', () => {
+        saveChangesForSTPClient();
+    });
+}());
+
+function getInputValsForInfoPage() {
+    const name = $('#info > div.container > div:nth-child(2) > input').val();
+    const profileName = $('#info > div.container > div:nth-child(4) > input').val();
+    const isManufacturer = $('#squaredThree').prop('checked') === true ? 1 : 0;
+    return {
+        name,
+        profileName,
+        isManufacturer
+    };
+}
+
+function getDatalistingOptions(operator) {
+    $.ajax({
+        url: `/api/getClientSTP/details/datalist/${operator}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeDataListings(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeDataListings(data) {
+    for (let el in data) {
+        if (data[el]['profile_name'] != undefined && data[el]['profile_name'] != null && data[el]['profile_name'] != '') {
+            const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">`)
+            curr.appendTo('#profilesID');
+        }
+    }
+}
+
+function saveChangesForSTPClient() {
+    let clientID = getClientID()
+    setTimeout(function () {
+        let {
+            name,
+            isManufacturer,
+            profileName
+        } = getInputValsForInfoPage();
+        validateProfileName(profileName)
+        $.ajax({
+            url: `/api/saveClientSTPChanges/details/${clientID}`,
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                isManufacturer,
+                profileName,
+                name
+            },
+            success: function () {
+                refreshURL()
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    }, 0);
+}
 
 function getClientInfo() {
     let clientID = getClientID();
@@ -50,7 +112,9 @@ function getClientInfo() {
         dataType: 'json',
         async: false,
         success: function (data) {
+            console.log(data);
             visualizeClientInfo(data);
+            getDatalistingOptions(data['erp_type']);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -371,14 +435,14 @@ function showImbalanceChart(data) {
                 data: predictionData,
                 borderWidth: 2,
                 backgroundColor: "#9c1de7",
-                borderColor: "#9c1de7"
+                borderColor: "#1e2a78",
+                hidden: true
             }, {
                 label: 'Небаланс',
                 data: imbalancesData,
                 borderWidth: 2,
                 backgroundColor: "#f3f169",
-                borderColor: "#f3f169",
-                hidden: true
+                borderColor: "#ffd615",
             }],
         },
     }
@@ -406,7 +470,7 @@ function showImbalanceChart(data) {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            events: getHourReadingsByID(),
+            events: getHourReadingsDailyData(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
                 left: 'prev,next today',
@@ -465,7 +529,7 @@ function showImbalanceChart(data) {
     });
 }())
 
-function getHourReadingsByID() {
+function getHourReadingsDailyData() {
     let clientID = getClientID();
     let dataArr = [];
     $.ajax({
@@ -523,7 +587,7 @@ function getImbalances() {
 function visualizeClientInfo(data) {
     $('#info > div.container > div:nth-child(2) > input').val(data['client_name']);
     $('#info > div.container > div:nth-child(3) > input').val(data['ident_code']);
-    $('#info > div.container > div:nth-child(4) > input').val(data['profile_id']);
+    $('#info > div.container > div:nth-child(4) > input').val(data['profile_name'] == undefined ? '0' : data['profile_name']);
     $('#info > div.container > div:nth-child(5) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
     $('#info > div.container > div:nth-child(6) > input').val(data['erp_type'] == 1 ? 'ИВН' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
     if (data['is_manufacturer']) {
@@ -579,7 +643,6 @@ function processDataHourly(data) {
 
 function processDataGraphPredictions(data) {
     writeHourReadingsDailyHeader(data);
-    console.log(data);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -748,4 +811,61 @@ function getLastWeek() {
     var today = new Date();
     var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
     return lastWeek;
+}
+
+function refreshURL() {
+    location.reload();
+}
+
+function getAllCharts() {
+    getHourReadingsChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+    getGraphPredictionsFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+    getImbalancesChartFilterData(formatLastWeekDate(), formatTodayDate(), getClientID());
+}
+
+function visualizeAllDefaultInputs() {
+    const lastWeekDate = getLastWeek();
+    const today = new Date();
+    visualizeDefaultInputsForHourReadingsGraph(lastWeekDate, today);
+    visualizeDefaultInputsForGraphPrediction(lastWeekDate, today);
+    visualizeDefaultInputForImbalanceGraph(lastWeekDate, today);
+}
+
+function goBack() {
+    window.history.back();
+}
+
+function notification(msg, type) {
+    toastr.clear();
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    if (type == 'error') {
+        toastr.error(msg);
+    } else if (type == 'success') {
+        toastr.success(msg);
+    } else if (type == 'loading') {
+        toastr.info(msg);
+    }
+};
+
+function validateProfileName(profileName) {
+    if (profileName == undefined || profileName == '') {
+        notification('Избери профил', 'error');
+        throw new Error('Избери профил');
+    }
 }
