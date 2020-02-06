@@ -26,12 +26,17 @@
     <script src="../../../../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
     <link rel="stylesheet" href="../../../../../AdminLTE-master/css/custom-calendar.css">
     <link rel="stylesheet" href="../../../../css/hour-readings-daily.css">
+    <link rel="stylesheet" href="../../../../css/clients-info.css">
     <title>Document</title>
 </head>
-
 <body>
     <h1 class="text-center">Мерения по часове за id:</h1>
-    <div class="row">
+    <label class="switch">
+        <input class="switch-input" type="checkbox" checked />
+        <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+        <span class="switch-handle"></span>
+    </label>
+    <div class="row calendar-daily">
         <div id="calendar" class="col-md-10">
         </div>
         <div id="legend" class="col-md-2">
@@ -41,6 +46,14 @@
                 <li class="text-danger">Червено: Нови мерения</li>
             </ul>
         </div>
+    </div>
+    <div class="row chart-daily">
+        <label class="switch ml-3">
+            <input class="switch-input" type="checkbox" checked />
+            <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+            <span class="switch-handle"></span>
+        </label>
+        <canvas id="daily-hour-readings-chart" class="mb-5" width="400" height="400"></canvas>
     </div>
     <script src="../../../../js/hour-readings/hour-readings-daily.js">
     </script>

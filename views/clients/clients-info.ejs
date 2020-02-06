@@ -49,16 +49,18 @@
                 <h1 class="text-center mb-5">Детайли на клиент</h1>
                 <div class="row">
                     <label class="col-md-4">Име на клиент</label>
-                    <input type="text" class="col-md-8" disabled>
+                    <input type="text" class="col-md-8">
                 </div>
                 <div class="row">
                     <label class="col-md-4">Идентификационен код</label>
                     <input type="text" class="col-md-8" disabled>
                 </div>
                 <div class="row">
-                    <label class="col-md-4">Профил ID</label>
-                    <input list="profilesID" name="profileID" class="col-md-8" disabled />
-                </div>
+                    <label class="col-md-4">Име на профил</label>
+                    <input list="profilesID" name="profileID" class="col-md-8" />
+                    <datalist id="profilesID">
+                    </datalist>
+                </div> 
                 <div class="row">
                     <label class="col-md-4">Тип мерене</label>
                     <input name="metering_type" class="col-md-8" disabled />
@@ -71,11 +73,14 @@
             </div>
             <div class="row justify-content-center">
                 <label class="col-md-4 ml-2">Производител</label>
+
                 <div class="squaredThree">
-                    <input type="checkbox" value="None" id="squaredThree" disabled name="check" />
+                    <input type="checkbox" value="None" id="squaredThree" name="check" />
                     <label for="squaredThree"></label>
                 </div>
             </div>
+            <button onclick="goBack()" class="btn-lg btn-success pull-right ">Върни се</button>
+            <button class="btn-lg btn-warning pull-right mr-5">Запази</button>
         </div>
 
         <!-- Hour-Readings -->
