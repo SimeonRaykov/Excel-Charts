@@ -57,7 +57,9 @@ router.get('/users/import/profiles', (req, res) => res.render('./imports/profile
 router.get('/users/import/graphs', (req, res) => res.render('./imports/graphs.ejs', {
     name: user.getName()
 }));
-
+router.get('/users/import/stp-hour-readings', (req, res) => res.render('./imports/stp_hour_readings.ejs', {
+    name: user.getName()
+}));
 
 // STP Listing
 router.get('/users/listReadings', (req, res) => res.render('./STP listings/listReadings.ejs', {
@@ -115,7 +117,12 @@ router.get('/users/clients/info/:id', (req, res) => res.render('./clients/client
 }));
 
 // Invoicing
-router.get('/users/invoicing', (req, res) => res.render('./STP listings/listReadings.ejs', {
+router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readings-stp.ejs', {
+    name: user.getName()
+}));
+
+// Readings menu - STP Hour - readings
+router.get('/users/clients/stp-hour-reading/daily/s', (req, res) => res.render('./readings-menu/list-readings-stp.ejs', {
     name: user.getName()
 }));
 

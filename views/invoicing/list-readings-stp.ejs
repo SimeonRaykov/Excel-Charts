@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <script src="../../../js/datatables/datatables.js"></script>
+    <link rel="stylesheet" href="../../css/checkboxes.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-5 text-center">Импортирани Мерения - СТП</h1>
+        <form action="" method="GET">
+            <div class="row justify-content-around">
+                <div><span class="text-heading"> От дата</span> <input id="fromDate" name="fromDate" class="ml-2"
+                        type="date" type="search"></input>
+                </div>
+                <div><span class="text-heading"> До дата </span><input id="toDate" name="toDate" class="ml-2"
+                        type="date" type="search"></input>
+                </div>
+                <span class="text-heading mt-3"> Вид ЕРП:</span>
+                <label class="checkbox">
+                    <input type="checkbox" name="erp_type" value="evn" checked>
+                    <span>ИВН</span>
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" name="erp_type" value="cez" checked>
+                    <span>ЧЕЗ</span>
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" name="erp_type" value="energoPRO" checked>
+                    <span>ЕнергоПРО</span>
+                </label>
+            </div>
+            <div class="row justify-content-between my-3">
+                <div><span class="text-heading"> Име на клиент </span><input id="nameOfClient" list="names"
+                        name="clientNames" class="ml-2" type="search"></input>
+                    <datalist id="names">
+                    </datalist>
+                </div>
+                <div><span class="text-heading"> Идентификационен код </span><input id="clientID" name="clientID"
+                        class="ml-2" list="idList" type="search"></input>
+                    <datalist id="idList">
+                    </datalist>
+                </div>
+                <div><button type="submit" class="btn-primary btn-lg ml-3">Търсене</button></div>
+            </div>
+        </form>
+    </div>
+
+    <table id="list-readings" class="display">
+        <thead>
+            <tr>
+                <th>ID на отчет</th>
+                <th>Клиентски номер</th>
+                <th>Идентификационен код</th>
+                <th>Име на клиент</th>
+                <th>Период на отчетност от</th>
+                <th>Период на отчетност до</th>
+                <th>Часова зона</th>
+                <th>Стойност в лв.</th>
+                <th>Тип на документа</th>
+                <th>ЕРП</th>
+                <th>Детайли</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+        </tbody>
+        </div>
+        </div>
+    </table>
+    <script src="../js/STP listing/list-readings.js"></script>
+</body>
+
+</html>
