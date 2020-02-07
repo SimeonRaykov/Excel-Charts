@@ -7,7 +7,8 @@ $(document).ready(function () {
 
 const companies = {
     ENERGO_PRO: 'ENERGO_PRO',
-    EVN: 'EVN'
+    EVN: 'EVN',
+    CEZ: 'CEZ'
 };
 
 class Company {
@@ -61,61 +62,114 @@ function processFile(e) {
             var workbook = XLSX.read(data, {
                 type: 'array'
             });
-            let first_sheet_name = workbook.SheetNames[0];
-            //var address_of_cell = 'A139';
-            /* Get worksheet */
-            var worksheet = workbook.Sheets[first_sheet_name];
-            /* Find desired cell */
-            //var desired_cell = worksheet[address_of_cell];
-            /* Get the value */
-            //var desired_value = (desired_cell ? desired_cell.v : undefined);
-            // console.log(Object.keys(workbook['Sheets']['Sheet1']));
-            //console.log(desired_value);
 
-            //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
             let cl = [];
             let clientsIDs = [];
             let allClients = [];
             let allSTPHourReadings = [];
             let currHourValues = [];
             let currSTPHourReading = [];
-            let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
-            let client = [];
-            for (let i = 1; i < arr.length; i += 1) {
-                let clientName = arr[i][0];
-                let clientID = arr[i][1];
-                let typeEnergy = arr[i][2];
-                for (let y = 4; y < arr[i].length; y += 1) {
-                    let currDateHelper = `${arr[0][y]}`;
-                    let currDate = new Date(currDateHelper.split(" ")[0]);
-                    for (let val = 0; val < 24; val += 1) {
-                        currHourObj = {
-                            currHour: val,
-                            currValue: arr[i][y]
+
+            if (company.getCompany() === companies.CEZ) {
+                let first_sheet_name = workbook.SheetNames[0];
+                //var address_of_cell = 'A139';
+                /* Get worksheet */
+                var worksheet = workbook.Sheets[first_sheet_name];
+                /* Find desired cell */
+                //var desired_cell = worksheet[address_of_cell];
+                /* Get the value */
+                //var desired_value = (desired_cell ? desired_cell.v : undefined);
+                // console.log(Object.keys(workbook['Sheets']['Sheet1']));
+                //console.log(desired_value);
+
+                //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
+                let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
+                let client = [];
+                for (let i = 1; i < arr.length; i += 1) {
+                    let clientName = arr[i][0];
+                    let clientID = arr[i][1];
+                    let typeEnergy = arr[i][2];
+                    for (let y = 4; y < arr[i].length; y += 1) {
+                        let currDateHelper = `${arr[0][y]}`;
+                        let currDate = new Date(currDateHelper.split(" ")[0]);
+                        for (let val = 0; val < 24; val += 1) {
+                            currHourObj = {
+                                currHour: val,
+                                currValue: arr[i][y]
+                            }
+                            currHourValues.push(currHourObj);
+                            y += 1;
                         }
-                        currHourValues.push(currHourObj);
-                        y += 1;
+                        let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                        if (!formattedDate.includes('NaN')) {
+                            typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
+                            currSTPHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, company.getErpType(), new Date());
+                            allSTPHourReadings.push(currSTPHourReading);
+                            currHourValues = [];
+                            currSTPHourReading = [];
+                            clientsIDs.push(clientID);
+                            currHourObj = {};
+                            client = [];
+                            y -= 1;
+                        }
                     }
-                    let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                    if (!formattedDate.includes('NaN')) {
-                        typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
-                        currSTPHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, company.getErpType(), new Date());
-                        allSTPHourReadings.push(currSTPHourReading);
-                        currHourValues = [];
-                        currSTPHourReading = [];
-                        clientsIDs.push(clientID);
-                        currHourObj = {};
-                        client = [];
-                        y -= 1;
+                    client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, new Date());
+                    allClients.push(client);
+                }
+                console.log(allSTPHourReadings);
+                saveClientsToDB(allClients);
+                cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
+                changeClientIdForHourReadings(allSTPHourReadings, cl);
+                notification('loading', 'loading');
+                saveSTPHourReadingsToDB(allSTPHourReadings);
+            } else if (company.getCompany() === companies.ENERGO_PRO) {
+                for (let i = 0; i < workbook.SheetNames.length; i += 1) {
+                    let currentSheetName = workbook.SheetNames[i];
+                    let arr = getCols(workbook['Sheets'][currentSheetName]);
+                    if (arr[1] == '' || arr[1] == undefined || arr[1] == null) {
+                        continue;
+                    } else {
+                        for (let x = 1; x < arr.length; x += 1) {
+                            currHourValues = [];
+                            const clientName = arr[x][0];
+                            const clientIdentCode = arr[x][1];
+                            const typeEnergy = 0;
+                            for (let y = 3; y <= arr[x].length; y += 1) {
+                                let currDateHelper = `${arr[0][y]}`;
+                                let currDate = new Date(currDateHelper.split(" ")[0]);
+                                for (let val = 0; val < 24; val += 1) {
+                                    currHourObj = {
+                                        currHour: val,
+                                        currValue: arr[x][y]
+                                    }
+                                    currHourValues.push(currHourObj);
+                                    y += 1;
+                                }
+                                let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                                if (!formattedDate.includes('NaN')) {
+                                    currSTPHourReading.push(clientName, clientIdentCode, typeEnergy, formattedDate, currHourValues, company.getErpType(), new Date());
+                                    allSTPHourReadings.push(currSTPHourReading);
+                                    currHourValues = [];
+                                    currSTPHourReading = [];
+                                    clientsIDs.push(clientIdentCode);
+                                    currHourObj = {};
+                                    client = [];
+                                    y -= 1;
+                                }
+                            }
+                            client.push(0, clientName, clientIdentCode, meteringType, profileID, erp_type, isManufacturer, new Date());
+                            allClients.push(client);
+                        }
                     }
                 }
-                client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, new Date());
-                allClients.push(client);
+                saveClientsToDB(allClients);
+                cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
+                changeClientIdForHourReadings(allSTPHourReadings, cl);
+                notification('loading', 'loading');
+                saveSTPHourReadingsToDB(allSTPHourReadings);
+            } else if (company.getCompany() === companies.EVN) {
+
             }
-            saveClientsToDB(allClients);
-            cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
-            changeClientIdForHourReadings(allSTPHourReadings, cl);
-            saveSTPHourReadingsToDB(allSTPHourReadings);
         };
         reader.readAsArrayBuffer(f);
     } else {

@@ -1,10 +1,7 @@
 ;
 $(document).ready(function () {
+    visualizeAllInputFromGetParams();
     getDataListing();
-    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
-    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
-    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
-    findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
     listAllHourReadings();
 });
 
@@ -100,7 +97,17 @@ function listAllHourReadings(arr) {
         var name = findGetParameter('name');
         var date = findGetParameter('date');
         var clientID = findGetParameter('clientID');
-        var erp = findGetParameter('erp') == 'CEZ' ? 2 : findGetParameter('erp') == 'EnergoPRO' ? 3 : 1;
+        var erp = []
+        if (window.location.href.includes('energoPRO')) {
+            erp.push(3);
+        }
+        if (window.location.href.includes('cez')) {
+            erp.push(2);
+        }
+        if (window.location.href.includes('evn')) {
+            erp.push(1);
+        }
+
     } else {
         var [
             date,
@@ -185,3 +192,28 @@ function notification(msg, type) {
         toastr.info(msg);
     }
 };
+
+function visualizeAllInputFromGetParams() {
+    visualizeCheckboxesFromHistoryLocation();
+    visualizeInputFromGetParams();
+}
+
+function visualizeInputFromGetParams() {
+    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
+    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
+    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
+    findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
+}
+
+function visualizeCheckboxesFromHistoryLocation() {
+    const location = window.location.href;
+    if (!location.includes('energoPRO')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(5) > input[type=checkbox]').prop('checked', false);
+    }
+    if (!location.includes('cez')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+    }
+    if (!location.includes('evn')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(3) > input[type=checkbox]').prop('checked', false);
+    }
+}

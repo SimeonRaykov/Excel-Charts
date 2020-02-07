@@ -1,15 +1,19 @@
 ;
 $(document).ready(function () {
+    visualizeAllInputFromGetParams();
     getDataListing();
-    visualizeHistoryParams();
-    listAllReadings();
+    listAllSTPHourReadings();
 });
 
-function getAllListings(data) {
-    let i = 0;
+function getAllSTPHourListings(data) {
     console.log(data);
+    let i = 0;
     for (let el in data) {
-
+        const date = data[el]['date'];
+        const fullDate = new Date(date);
+        const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+        const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
+        const amount = data[el]['amount'];
         let currRow = $('<tr>').attr('role', 'row');
         if (i % 2 == 1) {
             currRow.addClass('even');
@@ -18,34 +22,24 @@ function getAllListings(data) {
         }
         i += 1;
         currRow
-            .append('<td>' + data[el]['invoicing_id'] + '</td>')
-            .append($('<td>' + data[el]['client_number'] + '</td>'))
-            .append($(`<td><a href=clients/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
+            .append(`<td><a href=/users/clients/stp-hour-reading/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
+            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
-            .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
-            .append($('<td>' + (data[el]['time_zone'] == '' ? '' : data[el]['time_zone']) + '</td>'))
-            .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
-            .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
-            .append($('<td>' + (data[el]['operator'] == 2 ? 'ЧЕЗ' : data[el]['operator'] == 1 ? 'EVN' : 'EnergoPRO') + '</td>'))
-            .append($(`<td><a href="reading/${data[el]['invoicing_id']}"><button type="button" class="btn btn-success" data-id="${data[el]['invoicing_id']}">Детайли на мерене</button></a></td>`))
+            .append($('<td>' + fixedDate + '</td>'))
+            .append($('<td>' + erpType + '</td>'))
+            .append($('<td>' + amount + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }
     // Order DESC
-    dataTable = $('#list-readings').DataTable({
+    dataTable = $('#hour-readings-table').DataTable({
         "order": [
-            [0, "desc"]
+            [0, "asc"]
         ],
         retrieve: true
     });
     $('#tBody').addClass('text-center');
     $('#list-readings > thead').addClass('text-center');
-
-}
-
-function visualizeDataTable(data) {
-    getAllListings(data);
 }
 
 function getDataListing() {
@@ -71,7 +65,7 @@ function convertDataToSet(data) {
     }
     let uniqueClientNames = removeDuplicatesFromArr(clientNames);
 
-    VisualiseDataListings([uniqueClientNames, clientIDs]);
+    //  VisualiseDataListings([uniqueClientNames, clientIDs]);
 }
 
 function VisualiseDataListings(arr) {
@@ -87,64 +81,54 @@ function VisualiseDataListings(arr) {
     }
 }
 
-$('body > div > form > div > button').on('click', (event) => {
+$('#searchBtn').on('click', (event) => {
     event.preventDefault();
     dataTable.clear().destroy();
     dataTable;
-    let fromDate = $('#fromDate').val();
-    let toDate = $('#toDate').val();
-    let nameOfClient = $('#nameOfClient').val();
+    let date = $('#date').val();
+    let nameOfClient = $('#name').val();
     let clientID = $('#clientID').val();
-    let ERP = $('#ERP').val();
-
-    listAllReadings([fromDate, toDate, nameOfClient, clientID, ERP]);
+    let erp = $('#erp').val();
+    listAllSTPHourReadings([date, nameOfClient, clientID, erp]);
 });
 
-function listAllReadings(arr) {
+function listAllSTPHourReadings(arr) {
     if (!arr) {
-        var fromDate = findGetParameter('fromDate');
-        var toDate = findGetParameter('toDate');
-        var nameOfClient = findGetParameter('clientNames');
+        var name = findGetParameter('name');
+        var date = findGetParameter('date');
         var clientID = findGetParameter('clientID');
-        var ERP = [];
-        if (window.location.href.includes('cez')) {
-            ERP.push(2);
-        }
+        var erp = []
         if (window.location.href.includes('energoPRO')) {
-            ERP.push(3);
+            erp.push(3);
+        }
+        if (window.location.href.includes('cez')) {
+            erp.push(2);
         }
         if (window.location.href.includes('evn')) {
-            ERP.push(1);
+            erp.push(1);
         }
 
     } else {
         var [
-            fromDate,
-            toDate,
-            nameOfClient,
+            date,
+            name,
             clientID,
-            ERP
+            erp
         ] = arr;
-    }
-    if (fromDate === null && toDate === null) {
-        let dates = getThisAndLastMonthDates();
-        fromDate = dates[1];
-        toDate = dates[0];
     }
     notification('Loading...', 'loading');
     $.ajax({
-        url: `/api/filterData`,
+        url: `/api/filter/getAllSTPHourReadingsTable`,
         method: 'POST',
         data: {
-            date_from: fromDate,
-            to_date: toDate,
-            name: nameOfClient,
-            ERP,
-            id: clientID
+            date,
+            name,
+            ident_code: clientID,
+            erp
         },
         dataType: 'json',
         success: function (data) {
-            visualizeDataTable(data);
+            getAllSTPHourListings(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -161,20 +145,6 @@ function findGetParameter(name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
-function getJsDate(isoFormatDateString) {
-    let dateParts = isoFormatDateString.split("-");
-    let days = Number(dateParts[2].substr(0, 2)) + 1
-    let months = dateParts[1];
-    if (days == 32) {
-        dateParts[1] += 1;
-        days -= 31;
-        months = Number(months) + 1;
-    };
-    let jsDate = `${dateParts[0]}-${months}-${days}`;
-
-    return jsDate;
 }
 
 function getThisAndLastMonthDates() {
@@ -223,19 +193,27 @@ function notification(msg, type) {
     }
 };
 
-function visualizeHistoryParams() {
-    findGetParameter('toDate') === null ? '' : $('#toDate').val(findGetParameter('toDate'));
-    findGetParameter('fromDate') === null ? '' : $('#fromDate').val(findGetParameter('fromDate'));
-    findGetParameter('clientNames') === null ? '' : $('#nameOfClient').val(findGetParameter('clientNames'));
-    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
+function visualizeAllInputFromGetParams() {
+    visualizeCheckboxesFromHistoryLocation();
+    visualizeInputFromGetParams();
+}
 
-    if (!window.location.href.includes('cez')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(5) > input[type=checkbox]').prop('checked', false);
+function visualizeInputFromGetParams() {
+    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
+    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
+    findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
+    findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
+}
+
+function visualizeCheckboxesFromHistoryLocation() {
+    const location = window.location.href;
+    if (!location.includes('energoPRO')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(5) > input[type=checkbox]').prop('checked', false);
     }
-    if (!window.location.href.includes('energoPRO')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(6) > input[type=checkbox]').prop('checked', false);
+    if (!location.includes('cez')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
     }
-    if (!window.location.href.includes('evn')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+    if (!location.includes('evn')) {
+        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(3) > input[type=checkbox]').prop('checked', false);
     }
 }
