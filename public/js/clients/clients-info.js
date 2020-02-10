@@ -36,14 +36,14 @@ $(document).ready(function () {
 }());
 
 (function updateBTNEvent() {
-    $('#info > button.btn-lg.btn-warning.pull-right.mr-5').on('click', () => {
+    $('#info > div > div.card-body > button.btn-lg.btn-warning.pull-right.mr-5.mb-2').on('click', () => {
         saveChangesForSTPClient();
     });
 }());
 
 function getInputValsForInfoPage() {
-    const name = $('#info > div.container > div:nth-child(2) > input').val();
-    const profileName = $('#info > div.container > div:nth-child(4) > input').val();
+    const name = $('#info div:nth-child(1) > input').val();
+    const profileName = $('#input-profile-name').val();
     const isManufacturer = $('#squaredThree').prop('checked') === true ? 1 : 0;
     return {
         name,
@@ -67,10 +67,13 @@ function getDatalistingOptions(operator) {
 }
 
 function visualizeDataListings(data) {
+    const profileName = document.querySelectorAll('select')[0].value;
     for (let el in data) {
         if (data[el]['profile_name'] != undefined && data[el]['profile_name'] != null && data[el]['profile_name'] != '') {
-            const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">`)
-            curr.appendTo('#profilesID');
+            if (data[el]['profile_name'] != profileName) {
+                const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">${data[el]['profile_name']}</option>`)
+                curr.appendTo('#input-profile-name');
+            }
         }
     }
 }
@@ -244,6 +247,10 @@ function showHourReadingChart(data) {
                 borderColor: "#ac3f21"
             }],
         },
+        options: {
+            maintainAspectRatio: false,
+            responsive: false
+        }
         /*
         options: {
             scales: {
@@ -333,6 +340,10 @@ function showGraphPredictionChart(data) {
                 borderColor: "#ac3f21"
             }],
         },
+        options: {
+            maintainAspectRatio: false,
+            responsive: false
+        }
     }
     var myChart = new Chart(ctx, config);
 
@@ -384,7 +395,6 @@ function showImbalanceChart(data) {
                             t,
                             y: valuesData[indexPrediction] - valuesData[indexActualData]
                         }
-
                         actualHourData.push(actualHourObj);
                         predictionData.push(predictionObj);
                         imbalancesData.push(imbalanceData);
@@ -445,6 +455,10 @@ function showImbalanceChart(data) {
                 borderColor: "#ffd615",
             }],
         },
+        options: {
+            maintainAspectRatio: false,
+            responsive: false
+        }
     }
     var myChart = new Chart(ctx, config);
 
@@ -585,11 +599,12 @@ function getImbalances() {
 }
 
 function visualizeClientInfo(data) {
-    $('#info > div.container > div:nth-child(2) > input').val(data['client_name']);
-    $('#info > div.container > div:nth-child(3) > input').val(data['ident_code']);
-    $('#info > div.container > div:nth-child(4) > input').val(data['profile_name'] == undefined ? '0' : data['profile_name']);
-    $('#info > div.container > div:nth-child(5) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
-    $('#info > div.container > div:nth-child(6) > input').val(data['erp_type'] == 1 ? 'ИВН' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
+    $('#info div:nth-child(1) > input').val(data['client_name']);
+    $('#info div:nth-child(2) > input').val(data['ident_code']);
+    $(`<option value="${data['profile_name'] == undefined ? '0' : data['profile_name']}">${data['profile_name'] == undefined ? '0' : data['profile_name']}</option>`).appendTo(`#input-profile-name`)
+    $('#info div:nth-child(3) > input').val(data['profile_name'] == undefined ? '0' : data['profile_name']);
+    $('#info div:nth-child(4) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
+    $('#info div:nth-child(5) > input').val(data['erp_type'] == 1 ? 'ИВН' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
     if (data['is_manufacturer']) {
         $('#squaredThree').prop('checked', true);
     }

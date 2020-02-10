@@ -129,6 +129,10 @@ function showChartDaily(data) {
                 borderColor: "#ac3f21"
             }],
         },
+        options: {
+            maintainAspectRatio: false,
+            responsive: false
+        }
     }
     var myChart = new Chart(ctx, config);
 

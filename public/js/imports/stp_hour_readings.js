@@ -70,7 +70,12 @@ function processFile(e) {
             let currHourValues = [];
             let currSTPHourReading = [];
 
+            let first_sheet_nameX = workbook.SheetNames[0];
+            let worksheetX = workbook.Sheets[first_sheet_nameX];
+            let nameOfThirdCell = worksheetX['C1'].v;
+            validateDocument(nameOfThirdCell);
             if (company.getCompany() === companies.CEZ) {
+
                 let first_sheet_name = workbook.SheetNames[0];
                 //var address_of_cell = 'A139';
                 /* Get worksheet */
@@ -313,14 +318,11 @@ function notification(msg, type) {
     }
 };
 
-function validateDocument(colSize, nameOfFirstCell) {
-    if (colSize < 50) {
-        if (nameOfFirstCell.includes('Ел Екс Корпорейшън АД')) {
-            notification(`Избрана е опция за CEZ, а е подаден документ за EVN`, 'error');
-            throw new Error(`Избрана е опция за CEZ, а е подаден документ за EVN`);
-        } else {
-            notification(`Избрана е опция за CEZ, а е подаден документ за EnergoPRO`, 'error');
-            throw new Error(`Избрана е опция за CEZ, а е подаден документ за EnergoPRO`);
+function validateDocument(nameOfThirdCell) {
+    if (company.getCompany() !== companies.CEZ) {
+        if (nameOfThirdCell.includes('Сетълмент')) {
+            notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`,'error')
+            throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`);
         }
     }
 }

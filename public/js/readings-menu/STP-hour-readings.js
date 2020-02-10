@@ -44,7 +44,7 @@ function getAllSTPHourListings(data) {
 
 function getDataListing() {
     $.ajax({
-        url: '/getAllClientIDs&Names',
+        url: '/api/data-listings/STP-Hour-Readings',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -64,16 +64,15 @@ function convertDataToSet(data) {
         clientIDs.push(data[num].ident_code);
     }
     let uniqueClientNames = removeDuplicatesFromArr(clientNames);
-
-    //  VisualiseDataListings([uniqueClientNames, clientIDs]);
+    visualizeDataListings([uniqueClientNames, clientIDs]);
 }
 
-function VisualiseDataListings(arr) {
+function visualizeDataListings(arr) {
     let clientNames = arr[0];
     let clientIds = arr[1]
 
     for (let name of clientNames) {
-        $('#names').append(`<option value=${name}>`);
+        $('#stp-hour-readings-clients').append(`<option value="${name}">`);
     }
 
     for (let ID of clientIds) {
@@ -200,7 +199,7 @@ function visualizeAllInputFromGetParams() {
 
 function visualizeInputFromGetParams() {
     findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
-    findGetParameter('name') === null ? '' : $('#name').val(findGetParameter('name'));
+    findGetParameter('name') === null ? '' : $('#nameOfClient').val(findGetParameter('name'));
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
     findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
 }

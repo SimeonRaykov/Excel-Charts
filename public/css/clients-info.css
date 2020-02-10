@@ -7,11 +7,20 @@ input:not([type='date']):not([type='search']):not([type='checkbox']) {
     box-sizing: border-box;
     margin-bottom: 20px;
     font-size: 22px;
-    color: grey;
-    background-color: lightgrey;
+    color: black;
+    background-color: white;
     text-align: center;
-
 }
+
+input:hover:not([type='date']) {
+    border: 1px solid #9c1de7 !important;
+}
+
+input[type='date']:hover {
+    border: 2px solid #ff304f !important;
+    border-radius: 5px;
+}
+
 
 
 label:not(.form-check-label):not(.custom-file-label) {
@@ -113,7 +122,7 @@ a.fc-more::after {
     content: 'Има график';
 }
 
-#calendar-imbalance a.fc-more::after{
+#calendar-imbalance a.fc-more::after {
     content: 'Има небаланс';
 }
 
