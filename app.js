@@ -674,7 +674,7 @@ app.post('/api/filter/getAllHourReadingsTable', (req, res) => {
         sql += ` AND hour_readings.date = '${date}' `
     }
     if (name != '' && name != undefined) {
-        sql += ` AND clients.client_name = '${name}'`;
+        sql += ` AND clients.client_name LIKE '%${name}%'`;
     }
     if (ident_code != '' && ident_code != undefined) {
         sql += ` AND clients.ident_code = '${ident_code}'`;
@@ -1956,7 +1956,7 @@ app.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
         sql += ` AND stp_hour_readings.date = '${date}' `
     }
     if (name != '' && name != undefined) {
-        sql += ` AND clients.client_name = '${name}'`;
+        sql += ` AND clients.client_name LIKE '%${name}%'`;
     }
     if (ident_code != '' && ident_code != undefined) {
         sql += ` AND clients.ident_code = '${ident_code}'`;
@@ -1997,7 +1997,34 @@ app.get('/api/stp-hour-readings/daily/:id/:date', (req, res) => {
         }
         return res.send(JSON.stringify(result));
     });
-})
+});
+
+app.get('/api/data-listings/Hour-Readings', (req, res) => {
+    let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
+     FROM clients
+     INNER JOIN hour_readings on hour_readings.client_id = clients.id`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
+
+
+app.get('/api/data-listings/STP-Hour-Readings', (req, res) => {
+    let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
+     FROM clients
+     INNER JOIN stp_hour_readings on stp_hour_readings.client_id = clients.id`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
 
 // Connect to DB
 db.connect((err) => {
