@@ -26,57 +26,64 @@
 </head>
 
 <body>
-    <h1 class="text-center mb-5">Мерения - СТП по часови</h1>
-
-    <form action="" method="GET">
-        <div class="row justify-content-center">
-            <div class="col-md-4"> <span class="text-heading"> Дата </span><input id="date" name="date" class="ml-2"
-                    type="date" type="search"></input>
-            </div>
-            <div class="col-md-4"><span class="text-heading">Име на клиент</span> <input id="nameOfClient" list="names"
-                    name="name" class="ml-2" type="search"></input>
-                <datalist id="STP-hour-readings-clients">
-                </datalist>
-            </div>
+    <div class="card card-default">
+        <div class="card-header">
+            <h2 class="text-center">Мерения - СТП по часови</h2>
         </div>
-        <div class="row my-3 justify-content-center">
-            <div class="col-md-5"><span class="text-heading"> Идентификационен код </span><input id="clientID"
-                    name="clientID" class="ml-2" list="idList" type="search"></input>
-                <datalist id="idList">
-                </datalist>
-            </div>
-            <span class="mt-3 text-heading">Вид ЕРП:</span>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="evn" checked>
-                <span>ИВН</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="cez" checked>
-                <span>ЧЕЗ</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="energoPRO" checked>
-                <span>ЕнергоПРО</span>
-            </label>
-            <div class="col-md-1"></div><button type="submit" class="btn-primary btn-lg ml-3">Търсене</button>
+        <div class="card-body">
+            <form action="" method="GET">
+                <div class="row justify-content-around">
+                    <div> <span class="text-heading"> Дата </span><input id="date" name="date" class="ml-2" type="date"
+                            type="search"></input>
+                    </div>
+                    <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient" list="names"
+                            name="name" class="ml-2" type="search"></input>
+                        <datalist id="STP-hour-readings-clients">
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row my-3 justify-content-around">
+                    <div><span class="text-heading mr-2"> Идентификационен код </span><input id="clientID"
+                            name="clientID" list="idList" type="search"></input>
+                        <datalist id="idList">
+                        </datalist>
+                    </div>
+                    <span class="mt-3 text-heading">Вид ЕРП:</span>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
+                        <span>ИВН</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="cez" id="cez" checked>
+                        <span>ЧЕЗ</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="energoPRO" id="energoPRO" checked>
+                        <span>ЕнергоПРО</span>
+                    </label>
+                </div>
+                <div class="row justify-content-center">
+                    <button type="submit" class="btn-primary btn-lg ml-3">Търсене</button>
+                </div>
         </div>
+        </form>
+        <div class="container clients text-center">
         </div>
-    </form>
-    <div class="container clients text-center mb-5">
-        <table id="hour-readings-table" class="display">
-            <thead>
-                <tr>
-                    <th>ID на мерене</th>
-                    <th>Идентификационен код на клиент</th>
-                    <th>Име на клиент</th>
-                    <th>Дата на мерене</th>
-                    <th>ЕРП</th>
-                    <th>Общ товар</th>
-                </tr>
-            </thead>
-            <tbody id="tBody">
-            </tbody>
-        </table>
+    </div>
+    <table id="hour-readings-table" class="display">
+        <thead>
+            <tr>
+                <th>ID на мерене</th>
+                <th>Идентификационен код на клиент</th>
+                <th>Име на клиент</th>
+                <th>Дата на мерене</th>
+                <th>ЕРП</th>
+                <th>Общ товар</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+        </tbody>
+    </table>
     </div>
     <script src="../../../../js/readings-menu/STP-hour-readings.js"></script>
 </body>

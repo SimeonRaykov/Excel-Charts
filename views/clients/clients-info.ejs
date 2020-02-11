@@ -48,7 +48,7 @@
         <div id="info" class="tab-pane fade">
             <div class="card card-default mt-2">
                 <div class="card-header">
-                    <h1 class="text-center my-2">Детайли на клиент</h1>
+                    <h2 class="text-center my-2">Детайли на клиент</h2>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -85,142 +85,141 @@
                 </div>
             </div>
         </div>
-        
-    <!-- Hour-Readings -->
-    <div id="hour-readings" class="tab-pane fade">
-        <h1 class="text-center mb-5">Мерения по часове за клиент: </h1>
 
-        <label class="switch">
-            <input class="switch-input" type="checkbox" checked />
-            <span class="switch-label" data-on="Календар" data-off="Графики"></span>
-            <span class="switch-handle"></span>
-        </label>
+        <!-- Hour-Readings -->
+        <div id="hour-readings" class="tab-pane fade">
+            <h2 class="text-center">Мерения по часове за клиент: </h2>
 
-        <div class="row">
-            <div id="calendar-hourly">
-            </div>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
 
-            <!--      <div id="legend" class="col-md-2">
+            <div class="row">
+                <div id="calendar-hourly">
+                </div>
+
+                <!--      <div id="legend" class="col-md-2">
                     <h2 class="text-center mb-3"><i class="fas fa-tags"></i>Легенда</h2>
                     <ul>
                         <li class="text-primary mb-3">Синъо: Настоящи мерения</li>
                         <li class="text-danger">Червено: Нови мерения</li>
                     </ul>
                 </div> -->
-        </div>
+            </div>
 
-        <div class="hour-readings-graph-div">
-            <form action="submit">
-                <div class="row my-5">
-                    <div class="offset-1 col-md-3">
-                        <input type="date" name="fromDate" />От дата
+            <div class="hour-readings-graph-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDate" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDate" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnHourlyGraph" class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <input type="date" name="toDate" />До дата
-                    </div>
-
-                    <div class="col-md-2">
-                        <button type="submit" id="searchBtnHourlyGraph" class="btn-lg btn-primary">Търси</button>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="switch">
-                            <input class="switch-input" type="checkbox" checked />
-                            <span class="switch-label" data-on="Линия" data-off="Бар"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                    </div>
-                </div>
-            </form>
-            <canvas id="hour-readings-chart" class="mb-5" width="1200" height="500"></canvas>
-        </div>
-    </div>
-
-
-    <!-- Graphs -->
-    <div id="graph" class="tab-pane fade">
-        <h1 class="text-center mb-5 graphHeading">График</h1>
-
-        <label class="switch">
-            <input class="switch-input" type="checkbox" checked />
-            <span class="switch-label" data-on="Календар" data-off="Графики"></span>
-            <span class="switch-handle"></span>
-        </label>
-
-        <div class="graphRow-calendar">
-            <div id="calendar-prediction">
+                </form>
+                <canvas id="hour-readings-chart" class="mb-5" width="1200" height="500"></canvas>
             </div>
         </div>
 
-        <div class="graph-prediction-div">
-            <form action="submit">
-                <div class="row my-5">
-                    <div class="offset-1 col-md-3">
-                        <input type="date" name="fromDateGraphPrediction" />От дата
-                    </div>
-                    <div class="col-md-3">
-                        <input type="date" name="toDateGraphPrediction" />До дата
-                    </div>
 
-                    <div class="col-md-2">
-                        <button type="submit" id="searchBtnGraphPrediction" class="btn-lg btn-primary">Търси</button>
-                    </div>
+        <!-- Graphs -->
+        <div id="graph" class="tab-pane fade">
+            <h2 class="text-center graphHeading">График</h2>
 
-                    <div class="col-md-2">
-                        <label class="switch">
-                            <input class="switch-input" type="checkbox" checked />
-                            <span class="switch-label" data-on="Линия" data-off="Бар"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                    </div>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="graphRow-calendar">
+                <div id="calendar-prediction">
                 </div>
-            </form>
-            <canvas id="graph-prediction-chart" class="mb-5" width="1200" height="500"></canvas>
-        </div>
+            </div>
 
-    </div>
+            <div class="graph-prediction-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateGraphPrediction" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateGraphPrediction" />До дата
+                        </div>
 
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphPrediction"
+                                class="btn-lg btn-primary">Търси</button>
+                        </div>
 
-    <!-- Imbalances -->
-    <div id="imbalance" class="tab-pane fade">
-        <h1 class="text-center mb-5">Небаланси</h1>
-
-        <label class="switch">
-            <input class="switch-input" type="checkbox" checked />
-            <span class="switch-label" data-on="Календар" data-off="Графики"></span>
-            <span class="switch-handle"></span>
-        </label>
-
-        <div class="row">
-            <div id="calendar-imbalance" class="col-md-12">
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="graph-prediction-chart" class="mb-5" width="1200" height="500"></canvas>
             </div>
         </div>
-        <div class="imbalance-graph-div">
-            <form action="submit">
-                <div class="row my-5">
-                    <div class="offset-1 col-md-3">
-                        <input type="date" name="fromDateImbalanceGraph" />От дата
-                    </div>
-                    <div class="col-md-3">
-                        <input type="date" name="toDateImbalanceGraph" />До дата
-                    </div>
 
-                    <div class="col-md-2">
-                        <button type="submit" id="searchBtnGraphImbalance" class="btn-lg btn-primary">Търси</button>
-                    </div>
+        <!-- Imbalances -->
+        <div id="imbalance" class="tab-pane fade">
+            <h2 class="text-center">Небаланси</h2>
 
-                    <div class="col-md-2">
-                        <label class="switch">
-                            <input class="switch-input" type="checkbox" checked />
-                            <span class="switch-label" data-on="Линия" data-off="Бар"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                    </div>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="row">
+                <div id="calendar-imbalance" class="col-md-12">
                 </div>
-            </form>
-            <canvas id="imbalance-chart" class="mb-5" width="1200" height="500"></canvas>
+            </div>
+            <div class="imbalance-graph-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateImbalanceGraph" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateImbalanceGraph" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphImbalance" class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="imbalance-chart" class="mb-5" width="1200" height="500"></canvas>
+            </div>
         </div>
-    </div>
     </div>
     <script src="../../../../js/clients/clients-info.js">
     </script>

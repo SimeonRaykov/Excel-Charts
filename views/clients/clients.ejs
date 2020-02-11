@@ -26,47 +26,53 @@
 </head>
 
 <body>
-    <h1 class="text-center mb-4">Клиенти</h1>
-    <div class="container clients text-center mb-5">
-        <div class="row justify-content-center">
-
-            <span class="mr-2 mt-3 text-heading">Вид ЕРП:</span>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="evn" checked>
-                <span>ИВН</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="cez" checked>
-                <span>ЧЕЗ</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="erp_type" value="energoPRO" checked>
-                <span>ЕнергоПРО</span>
-            </label>
-            <span class="mr-2 ml-5 mt-3 text-heading">Вид мерене:</span>
-            <label class="checkbox">
-                <input type="checkbox" name="metering_type" value="stp" checked>
-                <span>По СТП</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" name="metering_type" value="hourly" checked>
-                <span>По часови</span>
-            </label>
+    <div class="card card-default">
+        <div class="card-header">
+            <h2 class="text-center">Клиенти</h1>
         </div>
-        <table id="clients" class="display">
-            <thead>
-                <tr>
-                    <th>ID на клиент</th>
-                    <th>Идентификационен код</th>
-                    <th>Име на клиент</th>
-                    <th>Вид ЕРП</th>
-                    <th>Вид мерене</th>
-                </tr>
-            </thead>
-            <tbody id="tBody">
-            </tbody>
-        </table>
+        <div class="card-body">
+            <div class="container clients text-center">
+                <div class="row justify-content-center">
+
+                    <span class="mr-2 mt-3 text-heading">Вид ЕРП:</span>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
+                        <span>ИВН</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="cez" id="cez" checked>
+                        <span>ЧЕЗ</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="energoPRO" id="energoPRO" checked>
+                        <span>ЕнергоПРО</span>
+                    </label>
+                    <span class="mr-2 ml-5 mt-3 text-heading">Вид мерене:</span>
+                    <label class="checkbox">
+                        <input type="checkbox" name="metering_type" id="stp" value="stp" checked>
+                        <span>По СТП</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="metering_type" id="hourly" value="hourly" checked>
+                        <span>По часови</span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
+    <table id="clients" class="display">
+        <thead>
+            <tr>
+                <th>ID на клиент</th>
+                <th>Идентификационен код</th>
+                <th>Име на клиент</th>
+                <th>Вид ЕРП</th>
+                <th>Вид мерене</th>
+            </tr>
+        </thead>
+        <tbody id="tBody">
+        </tbody>
+    </table>
     <script src="../../../../js/clients/clients.js"></script>
 </body>
 
