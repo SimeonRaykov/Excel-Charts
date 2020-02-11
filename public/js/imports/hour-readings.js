@@ -295,7 +295,6 @@ function getClientsFromDB(clients) {
 };
 
 function saveHourReadingsToDB(readings) {
-
     $.ajax({
         url: '/api/addHourReadings',
         method: 'POST',

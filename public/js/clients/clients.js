@@ -7,7 +7,6 @@ $(document).ready(function () {
     if (findGetParameter('erpType') || findGetParameter('meteringType')) {
         let meteringType = findGetParameter('meteringType')
         let erpType = findGetParameter('erpType');
-        console.log(erpType);
         if (erpType == '' || meteringType == '') {
             erpType = 0;
             url = `/api/filterClients/0/0`
@@ -161,21 +160,21 @@ function disableMeteringTypeCheckbox() {
 }
 
 function disableEVNCheckBox() {
-    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(2) > input[type=checkbox]').prop('checked', false);
+    $('#evn').prop('checked', false);
 }
 
 function disableCEZCheckbox() {
-    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(3) > input[type=checkbox]').prop('checked', false);
+    $('#cez').prop('checked', false);
 }
 
 function disableEnergoPROCheckbox() {
-    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+    $('#energoPRO').prop('checked', false);
 }
 
 function disableSTPCheckbox() {
-    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(6) > input[type=checkbox]').prop('checked', false);
+    $('#stp').prop('checked', false);
 }
 
 function disableHourlyCheckbox() {
-    $('body > div.container.mt-3 > div > div.row.justify-content-center > label:nth-child(7) > input[type=checkbox]').prop('checked', false);
+    $('#hourly').prop('checked', false);
 }

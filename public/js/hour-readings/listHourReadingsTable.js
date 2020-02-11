@@ -1,5 +1,6 @@
 ;
 $(document).ready(function () {
+    console.log(123);
     visualizeAllInputFromGetParams();
     getDataListing();
     listAllHourReadings();
@@ -206,12 +207,12 @@ function visualizeInputFromGetParams() {
 function visualizeCheckboxesFromHistoryLocation() {
     const location = window.location.href;
     if (!location.includes('energoPRO')) {
-        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(5) > input[type=checkbox]').prop('checked', false);
+        $('#energoPRO').prop('checked', false);
     }
     if (!location.includes('cez')) {
-        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+        $('#cez').prop('checked', false);
     }
     if (!location.includes('evn')) {
-        $('body > div.container.mt-3 > form > div.row.my-3.justify-content-center > label:nth-child(3) > input[type=checkbox]').prop('checked', false);
+        $('#evn').prop('checked', false);
     }
 }

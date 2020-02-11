@@ -21,6 +21,22 @@ input[type='date']:hover {
     border-radius: 5px;
 }
 
+label.red-border {
+    border: 2px solid transparent;
+}
+
+.card-body select{
+    border:1px solid rgb(97, 80, 80);
+}
+
+.card-body input,
+.card-body select:hover {
+    border: 1px solid blue;
+}
+
+label.red-border:hover {
+    border: 2px solid #fc85ae;
+}
 
 
 label:not(.form-check-label):not(.custom-file-label) {
@@ -62,6 +78,10 @@ label:not(.form-check-label):not(.custom-file-label) {
     opacity: 0;
     -webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
+}
+
+.squaredThree label:hover::after {
+    opacity: 50%;
 }
 
 .squaredThree input[type=checkbox] {

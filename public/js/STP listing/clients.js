@@ -1,5 +1,6 @@
 ;
 $(document).ready(function () {
+    console.log('CliENTS')
     let url = location.href;
     let clientNum = url.substring(url.lastIndexOf('/') + 1);
     console.log(clientNum);

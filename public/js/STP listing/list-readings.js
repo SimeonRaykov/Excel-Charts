@@ -230,12 +230,12 @@ function visualizeHistoryParams() {
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
 
     if (!window.location.href.includes('cez')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(5) > input[type=checkbox]').prop('checked', false);
+        $('#cez').prop('checked', false);
     }
     if (!window.location.href.includes('energoPRO')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(6) > input[type=checkbox]').prop('checked', false);
+        $('#energoPRO').prop('checked', false);
     }
     if (!window.location.href.includes('evn')) {
-        $('body > div.container.mt-3 > div.container > form > div:nth-child(1) > label:nth-child(4) > input[type=checkbox]').prop('checked', false);
+        $('#evn').prop('checked', false);
     }
 }

@@ -80,6 +80,6 @@
     transform: scale(0.4);
 }
 
-span.text-heading{
-    font-weight: 700
+label:not(.form-check-label):not(.custom-file-label) {
+    font-weight: normal;
 }

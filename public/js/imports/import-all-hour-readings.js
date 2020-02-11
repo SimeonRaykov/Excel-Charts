@@ -40,7 +40,6 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
-
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
@@ -48,7 +47,7 @@ function processFile(e) {
     e.preventDefault();
     var files = e.dataTransfer.files,
         f = '';
-    let allHourReadings = []; 
+    let allHourReadings = [];
     let clientIDs = [];
     let clientsALL = [];
     for (let z = 0; z < files.length; z += 1) {
@@ -86,7 +85,6 @@ function processFile(e) {
                         clientID = (worksheet['A2'].v).split(" ")[2];
                     }
                     validateDocument(clientID, clientName, colSize);
-                    console.log(clientID, clientName);
                     // let colSize = getRows(workbook['Sheets'][`${first_sheet_name}`])[0].length;
                     let arr = getRows(workbook['Sheets'][`${first_sheet_name}`]);
                     let allDates = [];
@@ -264,30 +262,6 @@ function processFile(e) {
         } else {
             throwErrorForInvalidFileFormat();
         }
-
-        function getRows(sheet) {
-            var result = [];
-            var row;
-            var rowNum;
-            var colNum;
-            var range = XLSX.utils.decode_range(sheet['!ref']);
-            for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
-                row = [];
-                for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-                    var nextCell = sheet[
-                        XLSX.utils.encode_cell({
-                            r: rowNum,
-                            c: colNum
-                        })
-                    ];
-                    if (typeof nextCell === 'undefined') {
-                        row.push(void 0);
-                    } else row.push(nextCell.w);
-                }
-                result.push(row);
-            }
-            return result;
-        }
     }
 }
 
@@ -306,6 +280,30 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
         }
     });
 };
+
+function getRows(sheet) {
+    var result = [];
+    var row;
+    var rowNum;
+    var colNum;
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    for (colNum = range.s.c; colNum <= range.e.c; colNum++) {
+        row = [];
+        for (rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+            var nextCell = sheet[
+                XLSX.utils.encode_cell({
+                    r: rowNum,
+                    c: colNum
+                })
+            ];
+            if (typeof nextCell === 'undefined') {
+                row.push(void 0);
+            } else row.push(nextCell.w);
+        }
+        result.push(row);
+    }
+    return result;
+}
 
 function convertClientIDsToString(clientIDs) {
     return clientIDs.map(clientID => convertClientIDToString(clientID));

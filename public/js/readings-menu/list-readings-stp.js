@@ -59,7 +59,9 @@ function getHourReadingsDailyData() {
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
+       
     });
+    console.log(`/api/stp-hour-readings/daily/${currHourReadingId}/${currDate}`)
     return dataArr;
 }
 
@@ -155,6 +157,7 @@ const colors = {
 }
 
 function processCalendarData(data) {
+    console.log(1);
     writeHourReadingsDailyHeader([data[0]['hrID'], data[0]['ident_code']]);
     let dataArr = [];
     let currHourReading = [];
@@ -198,7 +201,7 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    $('h1').text(`Мерения по часове за id: ${data[0]}`);
+    $('h2').text(`Мерения по часове за id: ${data[0]}`);
     //  $('h2').text(`Клиентско id : ${data[1]}`);
 }
 

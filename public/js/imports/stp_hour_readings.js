@@ -321,7 +321,7 @@ function notification(msg, type) {
 function validateDocument(nameOfThirdCell) {
     if (company.getCompany() !== companies.CEZ) {
         if (nameOfThirdCell.includes('Сетълмент')) {
-            notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`,'error')
+            notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`, 'error')
             throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`);
         }
     }

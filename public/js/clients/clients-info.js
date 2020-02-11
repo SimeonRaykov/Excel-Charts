@@ -733,11 +733,11 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    $('#hour-readings > h1').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
+    $('#hour-readings > h2').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
 }
 
 function writeImbalancesHeader(data) {
-    $('#imbalance > h1').text(`Небаланси за клиент: ${data[0].ident_code}`)
+    $('#imbalance > h2').text(`Небаланси за клиент: ${data[0].ident_code}`)
 }
 
 (function switchHourReadingCalendarAndGraph() {

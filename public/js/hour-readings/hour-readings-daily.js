@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    console.log(2222);
     hideGraph();
 });
 
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getHourReadingsDailyData() {
     let currDate = findGetParameter('date'),
-        currHourReadingId = findGetParameter('id');
+        currHourReadingId = findGetParameter('id');;
     let dataArr = [];
     $.ajax({
         url: `/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
@@ -64,7 +65,6 @@ function getHourReadingsDailyData() {
 }
 
 function showChartDaily(data) {
-    console.log(data);
     let labels = [];
     let chartData = [];
     let index = 0;
@@ -198,6 +198,7 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
+    console.log(data);
     $('h1').text(`Мерения по часове за id: ${data[0]}`);
     //  $('h2').text(`Клиентско id : ${data[1]}`);
 }
