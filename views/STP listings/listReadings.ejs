@@ -33,18 +33,22 @@
         <div class="card-body">
             <form action="" method="GET">
                 <div class="row justify-content-around">
-                    <div> <span class="text-heading"> Дата </span><input id="date" name="date" class="ml-2" type="date"
+                    <div class="text-heading">От дата<input id="fromDate" name="fromDate" class="ml-2" type="date"
                             type="search"></input>
                     </div>
-                    <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient" list="names"
-                            name="name" class="ml-2" type="search"></input>
-                        <datalist id="STP-hour-readings-clients">
+                    <div class="text-heading">До дата<input id="toDate" name="toDate" class="ml-2" type="date"
+                            type="search"></input>
+                    </div>
+                    <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient"
+                            list="stp-hour-readings-clients" name="name" autocomplete="off" class="ml-2"
+                            type="search"></input>
+                        <datalist id="stp-hour-readings-clients">
                         </datalist>
                     </div>
                 </div>
                 <div class="row my-3 justify-content-around">
-                    <div><span class="text-heading mr-2"> Идентификационен код </span><input id="clientID"
-                            name="clientID" list="idList" type="search"></input>
+                    <div class="mt-3 text-heading mr-2"> Идентификационен код <input id="clientID" name="clientID"
+                            autocomplete="off" list="idList" type="search"></input>
                         <datalist id="idList">
                         </datalist>
                     </div>

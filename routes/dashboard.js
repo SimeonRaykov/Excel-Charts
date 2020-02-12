@@ -35,6 +35,10 @@ router.get('/users/listClients-hours', (req, res) => res.render('./hour-readings
     name: user.getName()
 }));
 // Imports
+router.get('/users/import/stp', (req, res) => res.render('./imports/stp.ejs', {
+    name: user.getName()
+}));
+
 router.get('/users/import/STP/Readings', (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));

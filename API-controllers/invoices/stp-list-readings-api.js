@@ -4,8 +4,9 @@ const {
     db
 } = require('../../db.js');
 
-router.get('/getAllClientIDs&Names', (req, res) => {
-    let sql = `SELECT DISTINCT clients.client_name, ident_code FROM clients`;
+router.get('/getInvoicingClientIDs&Names', (req, res) => {
+    let sql = `SELECT DISTINCT clients.id, clients.client_name, ident_code FROM clients
+    INNER JOIN invoicing on invoicing.client_id = clients.id;`;
 
     db.query(sql, (err, result) => {
         if (err) {
@@ -22,7 +23,6 @@ router.post('/api/filterData', (req, res) => {
         name,
         ERP
     } = req.body;
-
     let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS invoicing_id,client_number, ident_code, period_from, period_to, value_bgn, type
     FROM invoicing
     INNER JOIN clients
@@ -37,7 +37,7 @@ router.post('/api/filterData', (req, res) => {
         sql += ` AND invoicing.period_to <= '${to_date}'`
     }
     if (name != '') {
-        sql += ` AND clients.client_name = '"${name}"'`;
+        sql += ` AND clients.client_name = '${name}'`;
     }
     if (id != '') {
         sql += ` AND clients.ident_code = '${id}'`;

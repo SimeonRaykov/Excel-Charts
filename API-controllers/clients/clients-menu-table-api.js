@@ -21,8 +21,6 @@ router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
     let sql = `SELECT clients.id, client_name, ident_code, metering_type, erp_type FROM clients
     WHERE 1=1 `;
     if (erpType != 'all') {
-        console.log(2);
- 
         if (erpType.length == 1) {
             sql += ` AND erp_type = ${erpType}`;
         } else if (erpType.split(',').length == 2) {

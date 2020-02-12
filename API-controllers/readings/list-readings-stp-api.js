@@ -21,7 +21,8 @@ router.get('/api/stp-hour-readings/daily/:id/:date', (req, res) => {
 
 router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     let {
-        date,
+        fromDate,
+        toDate,
         name,
         ident_code,
         erp
@@ -30,8 +31,12 @@ router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     let sql = `SELECT stp_hour_readings.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, stp_hour_readings.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero) as amount FROM stp_hour_readings
     INNER JOIN clients ON clients.id = stp_hour_readings.client_id 
     WHERE 1=1 `;
-    if (date != '' && date != undefined) {
-        sql += ` AND stp_hour_readings.date = '${date}' `
+    if (fromDate != '' && fromDate != undefined && toDate != '' && toDate != undefined) {
+        sql += ` AND stp_hour_readings.date >= '${fromDate}' AND stp_hour_readings.date <= '${toDate}' `;
+    } else if (fromDate != '' && fromDate != undefined && (toDate == '' && toDate == undefined)) {
+        sql += ` AND stp_hour_readings.date >= '${fromDate}' `;
+    } else if (toDate != '' && toDate != undefined && (fromDate == '' && fromDate == undefined)) {
+        sql += ` AND stp_hour_readings.date <= '${toDate}' `;
     }
     if (name != '' && name != undefined) {
         sql += ` AND clients.client_name LIKE '%${name}%'`;

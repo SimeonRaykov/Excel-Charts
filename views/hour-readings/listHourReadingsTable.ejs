@@ -25,30 +25,34 @@
     <title>Document</title>
 </head>
 
-<body> 
+<body>
     <div class="card card-default mt-2">
         <div class="card-header">
-            <h2 class="text-center">11Мерения - по часови</h2>
+            <h2 class="text-center">Мерения - по часови</h2>
         </div>
         <div class="card-body">
             <form action="" method="GET">
-                <div class="row justify-content-center">
-                    <div class="col-md-4"> <span class="text-heading"> Дата </span><input id="date" name="date"
-                            class="ml-2" type="date" type="search"></input>
+                <div class="row justify-content-around">
+                    <div class="text-heading">От дата <input id="fromDate" name="fromDate" class="ml-2" type="date"
+                            type="search"></input>
                     </div>
-                    <div class="col-md-4"><span class="text-heading">Име на клиент</span> <input id="nameOfClient"
-                            list="names" name="name" class="ml-2" type="search"></input>
+                    <div class="text-heading"> До дата <input id="toDate" name="toDate" class="ml-2" type="date"
+                            type="search"></input>
+                    </div>
+                    <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient"
+                            list="hour-readings-clients" autocomplete="off" name="name" class="ml-2"
+                            type="search"></input>
                         <datalist id="hour-readings-clients">
                         </datalist>
                     </div>
                 </div>
-                <div class="row my-3 justify-content-around">
+                <div class="row mt-4 justify-content-around">
                     <div class=><span class="text-heading"> Идентификационен код </span><input id="clientID"
-                            name="clientID" list="idList" type="search"></input>
+                            name="clientID" autocomplete="off" list="idList" type="search"></input>
                         <datalist id="idList">
                         </datalist>
                     </div>
-                    <span class="mt-3 text-heading">Вид ЕРП:</span>
+                    <span class="text-heading mt-2">Вид ЕРП:</span>
                     <label class="checkbox">
                         <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
                         <span>ИВН</span>
@@ -65,18 +69,17 @@
                 <div class="row justify-content-center">
                     <button type="submit" class="btn-primary btn-lg">Търсене</button>
                 </div>
-
         </div>
-        </form>
-        <div class="container clients text-center">
-        </div>
+    </div>
+    </form>
+    <div class="container clients text-center">
     </div>
     <table id="hour-readings-table" class="display text-center">
         <thead>
             <tr>
                 <th>ID на мерене</th>
                 <th>Идентификационен код на клиент</th>
-                <th >Име на клиент</th>
+                <th>Име на клиент</th>
                 <th>Дата на мерене</th>
                 <th>ЕРП</th>
                 <th>Общ товар</th>
@@ -85,6 +88,7 @@
         <tbody id="tBody">
         </tbody>
     </table>
+    </div>
     </div>
     <script src="../../../../js/hour-readings/listHourReadingsTable.js"></script>
 </body>

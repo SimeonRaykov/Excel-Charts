@@ -1,6 +1,7 @@
 const express = require('express');
-const mysql = require('mysql');
-const mysqlSync = require('sync-mysql');
+const {
+    db
+} = require('./db');
 const bodyParser = require('body-parser');
 const app = express();
 const expressLayouts = require('express-ejs-layouts');
@@ -67,26 +68,11 @@ app.use((req, res, next) => {
     next();
 });
 
-let datavendPort = '192.168.1.114'
+const datavendPort = '192.168.1.114'
 
 // PORT 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, datavendPort, console.log(`Server started on port ${PORT}`));
-
-// DB connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'exceldata'
-});
-
-const dbSync = new mysqlSync({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'exceldata'
-})
 
 db.connect((err) => {
     if (err) {
@@ -132,4 +118,3 @@ app.use('/', require('./API-controllers/invoices/stp-list-clients-details-api'))
 app.use('/', require('./API-controllers/invoices/stp-reading-details-api'));
 
 exports.db = db;
-exports.dbSync = dbSync;
