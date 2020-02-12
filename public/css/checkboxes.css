@@ -10,21 +10,21 @@
 
 .checkbox input+span {
     line-height: 22px;
-    height: 22px;
+    /*  height: 22px; */
     padding-left: 22px;
     display: block;
     position: relative;
 }
 
 .checkbox input+span:not(:empty) {
-    margin-left: 35px;
+    margin-left: 18px;
 }
 
 .checkbox input+span:before,
 .checkbox input+span:after {
     content: '';
-    width: 22px;
-    height: 22px;
+    width: 23px;
+    height: 23px;
     display: block;
     border-radius: 50%;
     left: 0;
