@@ -18,38 +18,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="../../../css/imports-stp.css">
-    <title>Document</title>
+    <title>Импорт - СТП</title>
 </head>
 
 <body>
-    <div class="container text-center">
-        <h2 class="mb-3">Фактуриране</h2>
-        <h2>Избери ЕРП: </h2>
+    <div class="text-center">
+        <h2 class="mb-3">Импортиране на данни - Почасови</h2>
+        <h2>Избери тип:</h2>
         <div class="row justify-content-center">
-            <label class="radio mr-5">EVN
-                <input type="radio" id="evn" name="radio">
+            <label class="radio mr-5">Мерене
+                <input type="radio" id="hour-reading" name="importDataType">
                 <span class="checkmark"></span>
             </label>
-            <label class="radio mr-5">CEZ
-                <input type="radio" id="cez" name="radio">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio">Energo-pro
-                <input type="radio" id="energo-pro" name="radio">
+            <label class="radio mr-5">График
+                <input type="radio" id="graph" name="importDataType">
                 <span class="checkmark"></span>
             </label>
         </div>
-
-        <body>
-            <div class="form-group" id="input-excel">
-                <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
-                <i class="fas fa-arrow-down"></i>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                <i class="fas fa-upload"></i>
-            </div>
+        <h2>Избери ЕРП:</h2>
+        <div class="row justify-content-center">
+            <label class="radio mr-5">ИВН
+                <input type="radio" id="evn" name="data-erp">
+                <span class="checkmark"></span>
+            </label>
+            <label class="radio mr-5">ЧЕЗ
+                <input type="radio" id="cez" name="data-erp">
+                <span class="checkmark"></span>
+            </label>
+            <label class="radio">ЕнергоПРО
+                <input type="radio" id="energo-pro" name="data-erp">
+                <span class="checkmark"></span>
+            </label>
+        </div>
+        <div class="form-group" id="hourly-import">
+            <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
+            <i class="fas fa-arrow-down"></i>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <i class="fas fa-upload"></i>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
-    <script src="../../../../js/imports/importSTP.js"></script>
+    <script src="../../../../js/imports/hourly.js"></script>
 </body>
 
 </html>

@@ -39,9 +39,14 @@ router.get('/users/import/stp', (req, res) => res.render('./imports/stp.ejs', {
     name: user.getName()
 }));
 
-router.get('/users/import/STP/Readings', (req, res) => res.render('./imports/importSTP.ejs', {
+router.get('/users/import/hourly', (req, res) => res.render('./imports/hourly.ejs', {
     name: user.getName()
 }));
+
+router.get('/users/import/invoicing', (req, res) => res.render('./imports/importSTP.ejs', {
+    name: user.getName()
+}));
+
 router.get('/users/import/STP/HourPredictions', (req, res) => res.render('./imports/importSTP-Predictions.ejs', {
     name: user.getName()
 }));

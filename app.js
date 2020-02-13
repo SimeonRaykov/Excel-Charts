@@ -99,6 +99,7 @@ app.use('/users', require('./routes/dashboard'));
 //  Imports - Menu
 app.use('/', require('./API-controllers/imports/import-daily-hour-readings-api'));
 app.use('/', require('./API-controllers/imports/import-hour-readings-api'));
+app.use('/', require('./API-controllers/imports/import-stp-readings-api'));
 app.use('/', require('./API-controllers/imports/import-stp-hour-readings-api'));
 app.use('/', require('./API-controllers/imports/import-stp-hour-predictions-api'));
 app.use('/', require('./API-controllers/imports/import-graphs-api'));

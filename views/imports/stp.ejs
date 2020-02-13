@@ -29,18 +29,14 @@
 
     <div class="tab-content">
         <div id="data" class="tab-pane fade text-center">
-            <h2 class="mb-3">Импортиране на данни</h2>
+            <h2 class="mb-3">Импортиране на данни - СТП</h2>
             <h2>Избери тип:</h2>
             <div class="row justify-content-center">
-                <label class="radio mr-5">График
-                    <input type="radio" id="graph" name="importDataType">
-                    <span class="checkmark"></span>
-                </label>
                 <label class="radio mr-5">Почасово мерене
                     <input type="radio" id="hour-reading" name="importDataType">
                     <span class="checkmark"></span>
                 </label>
-                <label class="radio">Прогноза
+                <label class="radio">График
                     <input type="radio" id="prediction" name="importDataType">
                     <span class="checkmark"></span>
                 </label>
@@ -62,7 +58,9 @@
             </div>
             <div class="form-group" id="data-import">
                 <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
+                <i class="fas fa-arrow-down"></i>
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <i class="fas fa-upload"></i>
             </div>
         </div>
         <div id="profiles" class="tab-pane fade">
@@ -88,7 +86,10 @@
             </div>
             <div class="form-group text-center" id="profile-import">
                 <label for="profiles">Плъзни документа тук</label>
-                <textarea class="form-control" id="profiles" rows="3"></textarea>
+                <i class="fas fa-arrow-down"></i>
+                <textarea class="form-control" id="profiles" rows="3">
+                </textarea>
+                <i class="fas fa-upload"></i>
             </div>
         </div>
     </div>

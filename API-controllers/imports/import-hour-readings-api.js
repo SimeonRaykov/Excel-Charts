@@ -30,14 +30,18 @@ router.post('/api/getClients', (req, res) => {
 
 router.post('/api/addHourReadings', async (req, res) => {
     let readingsFiltered = await filterHourReadings(req.body);
-    let sql = 'INSERT INTO hour_readings (client_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date, diff) VALUES ?';
-    db.query(sql, [readingsFiltered], (err, result) => {
-        if (err) {
-            throw err;
-        }
-        console.log('Hour Readings inserted');
-        return res.send("Hour Readings added");
-    });
+    if (readingsFiltered != []) {
+        let sql = 'INSERT INTO hour_readings (client_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, energy_type, created_date, diff) VALUES ?';
+        db.query(sql, [readingsFiltered], (err, result) => {
+            if (err) {
+                throw err;
+            }
+            console.log('Hour Readings inserted');
+            return res.send("Hour Readings added");
+        });
+    } else {
+        return res.send('Result list exists / Error')
+    }
 });
 
 function checkIfFirstAndAddToInsertQuery(isFirst, updateQuery) {
@@ -69,7 +73,7 @@ async function filterHourReadings(hour_readingsAll) {
         if (currDate.includes('undefined')) {
             currDate = `${date[0].split('.')[2]}-${date[0].split('.')[1]}-${date[0].split('.')[0]}`
         }
-        let createdDate = currHourReading[6];
+        let createdDate = currHourReading[5];
         for (let z = 0; z < currHourReading[4].length; z += 1) {
             if (currHourReading[4][z].currHour === '1:00' || currHourReading[4][z].currHour === '01:00' || currHourReading[4][z].currHour == 1) {
                 hour_one = currHourReading[4][z].currValue;
@@ -123,7 +127,7 @@ async function filterHourReadings(hour_readingsAll) {
         }
         let selectReading = `SELECT * FROM hour_readings 
         WHERE hour_readings.date = '${currDate}'
-        AND client_id = '${currID}' AND type = '${type}'`;
+        AND client_id = '${currID}' AND energy_type = '${type}'`;
         let result = dbSync.query(selectReading);
         if (result.length != 0 && result[0] != undefined && result[0].length != 0) {
             if (result[0].hour_one != -1 && result[0].hour_two != -1 && result[0].hour_three != -1 && result[0].hour_four != -1 && result[0].hour_five != -1 && result[0].hour_six != -1 && result[0].hour_seven != -1 && result[0].hour_eight != -1 && result[0].hour_nine != -1 && result[0].hour_ten != -1 && result[0].hour_eleven != -1 && result[0].hour_twelve != -1 && result[0].hour_thirteen != -1 && result[0].hour_fourteen != -1 && result[0].hour_fifteen != -1 && result[0].hour_sixteen != -1 && result[0].hour_seventeen != -1 && result[0].hour_eighteen != -1 && result[0].hour_nineteen != -1 && result[0].hour_twenty != -1 && result[0].hour_twentyone != -1 && result[0].hour_twentytwo != -1 && result[0].hour_twentythree != -1 && result[0].hour_zero != -1) {
