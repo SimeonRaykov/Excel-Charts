@@ -113,6 +113,10 @@ app.use('/', require('./API-controllers/clients/clients-info-page-api'));
 app.use('/', require('./API-controllers/readings/list-readings-stp-api'));
 app.use('/', require('./API-controllers/readings/list-hour-readings-api'));
 
+//  Graphs - Menu
+app.use('/', require('./API-controllers/graphs/list-graph-stp-readings-api'));
+app.use('/', require('./API-controllers/graphs/list-graph-readings-api'));
+
 //  Invoices
 app.use('/', require('./API-controllers/invoices/stp-list-readings-api'));
 app.use('/', require('./API-controllers/invoices/stp-list-clients-details-api'));

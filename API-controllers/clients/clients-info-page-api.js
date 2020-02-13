@@ -163,7 +163,6 @@ router.get('/api/imbalances/getClient/:id', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
-
 router.get('/api/getClientSTP/details/:id', (req, res) => {
     let clientID = req.params.id;
     let sql = `SELECT DISTINCT client_name, ident_code, profile_id, is_manufacturer ,operator FROM clients 

@@ -192,14 +192,36 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/users/listReadings" class="nav-link">
+                                <a id="readings-stp-href" href="/users/list/readings" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>СТП</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/users/listHourReadings?date=&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO"
-                                    class="nav-link">
+                                <a id="readings-href" href="/users/list/hour-readings" class="nav-link">
+                                    <i class="fas fa-clock"></i>
+                                    <p>По часови</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <p>
+                                Графици
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a id="stp-graph-readings-href" href="/users/list/stp-graph-readings/" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>СТП</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a id="graph-readings-href" href="/users/list/graph-readings/" class="nav-link">
                                     <i class="fas fa-clock"></i>
                                     <p>По часови</p>
                                 </a>
@@ -216,8 +238,7 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="/users/invoicing?fromDate=&toDate=&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID="
-                                    class="nav-link">
+                                <a id="invoicing-readings-href" href="/users/invoicing" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>СТП</p>
                                 </a>

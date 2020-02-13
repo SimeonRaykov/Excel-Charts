@@ -33,9 +33,9 @@ router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     WHERE 1=1 `;
     if (fromDate != '' && fromDate != undefined && toDate != '' && toDate != undefined) {
         sql += ` AND stp_hour_readings.date >= '${fromDate}' AND stp_hour_readings.date <= '${toDate}' `;
-    } else if (fromDate != '' && fromDate != undefined && (toDate == '' && toDate == undefined)) {
+    } else if (fromDate != '' && fromDate != undefined && (toDate == '' || toDate == undefined)) {
         sql += ` AND stp_hour_readings.date >= '${fromDate}' `;
-    } else if (toDate != '' && toDate != undefined && (fromDate == '' && fromDate == undefined)) {
+    } else if (toDate != '' && toDate != undefined && (fromDate == '' || fromDate == undefined)) {
         sql += ` AND stp_hour_readings.date <= '${toDate}' `;
     }
     if (name != '' && name != undefined) {
