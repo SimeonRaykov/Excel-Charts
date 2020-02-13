@@ -18,7 +18,6 @@ class Company {
 let company = new Company();
 
 ($('body > div.container').click(() => {
-
     if ($('#energo-pro').is(':checked')) {
         company.setCompany('ENERGO_PRO');
     } else if ($('#cez').is(':checked')) {
@@ -82,7 +81,6 @@ function processFile(e) {
                         if (value['7'] == '') {
                             return;
                         }
-                        
 
                         let type = value['3'];
                         if (type === '"Техническа част"') {
@@ -92,7 +90,7 @@ function processFile(e) {
                         }
                         //ENERGO PRO operator 3
                         let operator = 3;
-                        let client = [value['7'], value['4'],operator, new Date()];
+                        let client = [value['7'], value['4'], operator, new Date()];
 
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
@@ -129,7 +127,7 @@ function processFile(e) {
                         if (value['7'] == '') {
                             return;
                         }
-                        
+
 
                         let type = value['3'];
                         if (type === '"Техническа част"') {
@@ -140,7 +138,7 @@ function processFile(e) {
                         //CEZ operator 2
                         let operator = 2;
 
-                        let client = [value['7'], value['4'].replace(/"/g, ''), operator,new Date()];
+                        let client = [value['7'], value['4'].replace(/"/g, ''), operator, new Date()];
 
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
@@ -176,7 +174,7 @@ function processFile(e) {
                         if (value['7'] == '') {
                             return;
                         }
-                        
+
 
                         let type = value['3'];
                         if (type === '"Техническа част"') {
@@ -186,7 +184,7 @@ function processFile(e) {
                         }
                         //EVN operator 1
                         let operator = 1;
-                        let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''),operator, new Date()];
+                        let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), operator, new Date()];
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -282,7 +280,7 @@ function processFile(e) {
                         const profileID = 0;
                         const isManufacturer = 0;
 
-                       
+
 
                         let type = value['3'];
                         if (type === '"Техническа част"') {
@@ -292,7 +290,7 @@ function processFile(e) {
                         }
                         //EVN operator 1
                         let operator = 1;
-                        let client = [clientNumber, client_name, ident_code, meteringType, profileID,operator, isManufacturer, new Date()];
+                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -339,7 +337,7 @@ function processFile(e) {
                         const profileID = 0;
                         const isManufacturer = 0;
 
-                        
+
 
                         let type = value['3'];
                         if (type == '"Техническа част"') {
@@ -349,7 +347,7 @@ function processFile(e) {
                         }
                         //CEZ operator 2
                         let operator = 2;
-                        let client = [clientNumber, client_name, ident_code, meteringType, profileID,operator, isManufacturer, new Date()];
+                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
                         let dateFromHelper = value['12'].replace(/"/g, '');
 
                         let arr = dateFromHelper.split('.');
@@ -400,7 +398,7 @@ function processFile(e) {
                     if (value['7'] == '') {
                         return;
                     }
-                    
+
 
                     let type = value['3'];
                     if (type === '"Техническа част"') {
@@ -410,7 +408,7 @@ function processFile(e) {
                     }
                     //ENERGO PRO operator 3
                     let operator = 3;
-                    let client = [clientNumber, client_name, ident_code, meteringType, profileID,operator, isManufacturer, new Date()];
+                    let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
                     let d1 = value['12'].replace(/"/g, '');
                     let arr = d1.split('.');
                     let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -520,6 +518,7 @@ function mapClientsIDsToGetIdentCodeCorrectly(clientIds) {
 }
 
 function saveReadingsToDB(readings) {
+    console.log(readings);
     $.ajax({
         url: '/addreadings',
         method: 'POST',

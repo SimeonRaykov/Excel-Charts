@@ -376,12 +376,14 @@ function showImbalanceChart(data) {
         if (data.length == 1) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
+                let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
                 for (let val of valuesData) {
                     if (index >= startingIndexActualHourData && index <= endIndexPrediction) {
                         if (index > finalIndex) {
                             break;
                         }
+                        const currImbalance = calcImbalance(isManufacturer, valuesData[indexActualData], valuesData[indexPrediction]);
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
@@ -393,7 +395,7 @@ function showImbalanceChart(data) {
                         }
                         let imbalanceData = {
                             t,
-                            y: valuesData[indexPrediction] - valuesData[indexActualData]
+                            y: currImbalance
                         }
                         actualHourData.push(actualHourObj);
                         predictionData.push(predictionObj);
@@ -702,10 +704,11 @@ function processDataImbalances(data) {
         let currHourPredictionVal = 26;
         let objVals = Object.values(data[el]);
         let iterator = 0;
+        let isManufacturer = data[el]['is_manufacturer'];
 
         for (let val of objVals) {
             if (iterator >= 2 && iterator < 26) {
-                const currImbalance = objVals[currHourPredictionVal] - objVals[currHourReadingVal];
+                const currImbalance = calcImbalance(isManufacturer, objVals[currHourPredictionVal], objVals[currHourReadingVal]);
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
@@ -722,6 +725,10 @@ function processDataImbalances(data) {
         }
     }
     return dataArr;
+}
+
+function calcImbalance(isManufacturer, actualValue, predictionVal) {
+    return isManufacturer == 0 ? predictionVal - actualValue : actualValue - predictionVal;
 }
 
 function incrementHoursOne(date) {

@@ -84,7 +84,7 @@ function processFile(e) {
                         clientName = worksheet['A1'].v;
                         clientID = (worksheet['A2'].v).split(" ")[2];
                     }
-                    validateDocument(clientID, clientName, colSize);
+                    validateDocumentForCEZFunc(clientID, clientName, colSize);
                     // let colSize = getRows(workbook['Sheets'][`${first_sheet_name}`])[0].length;
                     let arr = getRows(workbook['Sheets'][`${first_sheet_name}`]);
                     let allDates = [];
@@ -452,7 +452,7 @@ function notification(msg, type) {
     }
 };
 
-function validateDocument(clientID, clientName, colSize) {
+function validateDocumentForCEZFunc(clientID, clientName, colSize) {
     if (clientID !== undefined) {
         if (clientID.includes('Уникален номер')) {
             notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за EnergoPRO`, 'error');

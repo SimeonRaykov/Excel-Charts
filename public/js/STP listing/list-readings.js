@@ -7,7 +7,6 @@ $(document).ready(function () {
 
 function getAllListings(data) {
     let i = 0;
-    console.log(data);
     for (let el in data) {
 
         let currRow = $('<tr>').attr('role', 'row');
@@ -50,10 +49,11 @@ function visualizeDataTable(data) {
 
 function getDataListing() {
     $.ajax({
-        url: '/getAllClientIDs&Names',
+        url: '/getInvoicingClientIDs&Names',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
+            console.log(data);
             convertDataToSet(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -64,26 +64,26 @@ function getDataListing() {
 
 function convertDataToSet(data) {
     let clientNames = [];
-    let clientIDs = [];
+    let clientIdentCodes = [];
     for (let num in data) {
         clientNames.push(data[num].client_name);
-        clientIDs.push(data[num].ident_code);
+        clientIdentCodes.push(data[num].ident_code);
     }
     let uniqueClientNames = removeDuplicatesFromArr(clientNames);
 
-    VisualiseDataListings([uniqueClientNames, clientIDs]);
+    visualizeDataListings([uniqueClientNames, clientIdentCodes]);
 }
 
-function VisualiseDataListings(arr) {
+function visualizeDataListings(arr) {
     let clientNames = arr[0];
-    let clientIds = arr[1]
+    let clientIdentCodes = arr[1];
 
     for (let name of clientNames) {
-        $('#names').append(`<option value=${name}>`);
+        $('#names').append(`<option value="${name}"></option>`);
     }
 
-    for (let ID of clientIds) {
-        $('#idList').append(`<option value="${ID}">`);
+    for (let identCode of clientIdentCodes) {
+        $('#idList').append(`<option value="${identCode}"></option>`);
     }
 }
 

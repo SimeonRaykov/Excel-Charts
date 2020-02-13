@@ -16,15 +16,14 @@ $(document).ready(function () {
     const documentHistoryPathname = document.referrer.substr(indexOfThirdIncline);
     if (!$('li.has-treeview a').hasClass("active")) {
         if (!$('.nav-item').hasClass("active")) {
-            $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
-        }
-    } else {
-        if (!$('.nav-item').hasClass("active")) {
-            $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
+            $(`a[href*="${location.pathname}"]`).addClass('active');
         }
     }
-
-
+    /* else {
+           if (!$('.nav-item').hasClass("active")) {
+               $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
+           }
+       } */
 });
 
 function nth_occurrence(string, char, nth) {

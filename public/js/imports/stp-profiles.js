@@ -1,9 +1,3 @@
-const companies = {
-    ENERGO_PRO: 'ENERGO_PRO',
-    EVN: 'EVN',
-    CEZ: 'CEZ'
-};
-
 class Profile {
     constructor() {
         this.company = '';
@@ -36,11 +30,11 @@ class Profile {
 let profile = new Profile();
 
 ($('body > div.container').click(() => {
-    if ($('#energo-pro').is(':checked')) {
+    if ($('#profiles-energo-pro').is(':checked')) {
         profile.setCompany('ENERGO_PRO');
-    } else if ($('#evn').is(':checked')) {
+    } else if ($('#profiles-evn').is(':checked')) {
         profile.setCompany('EVN');
-    } else if ($('#cez').is(':checked')) {
+    } else if ($('#profiles-cez').is(':checked')) {
         profile.setCompany('CEZ');
     }
 }));
@@ -55,7 +49,7 @@ Array.prototype.insert = function (index, item) {
     this.splice(index, 0, item);
 };
 $(document).ready(function () {
-    document.getElementById('input-excel').addEventListener('drop', processFile, false);
+    document.getElementById('profile-import').addEventListener('drop', processFile, false);
 });
 
 function processFile(e) {
@@ -320,7 +314,6 @@ function saveProfileReadingsToDB(readings) {
     });
 };
 
-
 function getCols(sheet) {
     var result = [];
     var row;
@@ -393,7 +386,7 @@ function validateProfileName() {
 }
 
 function setProfileName() {
-    let profileName = $('body > div.container.mt-3 > div.container > div > input').val();
+    let profileName = $('#profile-name').val();
     profile.setName(profileName);
 }
 

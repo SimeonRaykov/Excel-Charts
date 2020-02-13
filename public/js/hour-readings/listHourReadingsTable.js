@@ -1,6 +1,5 @@
 ;
 $(document).ready(function () {
-    console.log(123);
     visualizeAllInputFromGetParams();
     getDataListing();
     listAllHourReadings();
@@ -44,7 +43,7 @@ function getAllHourListings(data) {
 
 function getDataListing() {
     $.ajax({
-        url: '/api/data-listings/Hour-Readings',
+        url: '/api/data-listings/hour-readings',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -84,17 +83,19 @@ $('#searchBtn').on('click', (event) => {
     event.preventDefault();
     dataTable.clear().destroy();
     dataTable;
-    let date = $('#date').val();
+    let fromDate = $('#fromDate').val();
+    let toDate = $('#toDate').val();
     let nameOfClient = $('#name').val();
     let clientID = $('#clientID').val();
     let erp = $('#erp').val();
-    listAllHourReadings([date, nameOfClient, clientID, erp]);
+    listAllHourReadings([fromDate, toDate, nameOfClient, clientID, erp]);
 });
 
 function listAllHourReadings(arr) {
     if (!arr) {
         var name = findGetParameter('name');
-        var date = findGetParameter('date');
+        var fromDate = findGetParameter('fromDate');
+        var toDate = findGetParameter('toDate');
         var clientID = findGetParameter('clientID');
         var erp = []
         if (window.location.href.includes('energoPRO')) {
@@ -109,7 +110,8 @@ function listAllHourReadings(arr) {
 
     } else {
         var [
-            date,
+            fromDate,
+            toDate,
             name,
             clientID,
             erp
@@ -120,7 +122,8 @@ function listAllHourReadings(arr) {
         url: `/api/filter/getAllHourReadingsTable`,
         method: 'POST',
         data: {
-            date,
+            fromDate,
+            toDate,
             name,
             ident_code: clientID,
             erp
@@ -198,7 +201,8 @@ function visualizeAllInputFromGetParams() {
 }
 
 function visualizeInputFromGetParams() {
-    findGetParameter('date') === null ? '' : $('#date').val(findGetParameter('date'));
+    findGetParameter('fromDate') === null ? '' : $('#fromDate').val(findGetParameter('fromDate'));
+    findGetParameter('toDate') === null ? '' : $('#toDate').val(findGetParameter('toDate'));
     findGetParameter('name') === null ? '' : $('#nameOfClient').val(findGetParameter('name'));
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
     findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));

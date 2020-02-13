@@ -88,7 +88,7 @@ function processFile(e) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, clientName, clientIdentCode, meteringType, profileID,graphPrediction.getType(), isManufacturer, new Date());
+                    client.push(0, clientName, clientIdentCode, meteringType, profileID, graphPrediction.getType(), isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
