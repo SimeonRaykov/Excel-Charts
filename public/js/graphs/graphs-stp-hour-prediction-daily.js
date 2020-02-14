@@ -47,7 +47,7 @@ function getHourReadingsDailyData() {
         currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `/api/graphs/stp-hour-prediction/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/graphs/hour-prediction/daily/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -200,7 +200,6 @@ function decrementHoursBy23(date) {
 function writeHourReadingsDailyHeader(data) {
     const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}-${data.getDate()<10?`0${data.getDate()}`:data.getDate()}`
     $('h2').text(`Почасов график за дата: ${currPredictionDate}`);
-    //  $('h2').text(`Клиентско id : ${data[1]}`);
 }
 
 function findGetParameter(name, url) {

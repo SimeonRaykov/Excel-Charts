@@ -15,7 +15,7 @@ function getGraphReadings(data) {
         const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
         const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
         const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
-        const amount = data[el]['amount'];
+        const amount = data[el]['amount']; 
         let currRow = $('<tr>').attr('role', 'row');
         if (i % 2 == 1) {
             currRow.addClass('even');
@@ -119,7 +119,7 @@ function listGraphReadingsFiltered(arr) {
             clientID,
             erp
         ] = arr;
-    }
+    } 
     notification('Loading...', 'loading');
     $.ajax({
         url: `/api/filter/list-readings-graph/`,

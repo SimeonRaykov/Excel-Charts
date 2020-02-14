@@ -133,7 +133,7 @@ a.fc-more::after {
     white-space: nowrap;
     border-radius: 10px;
     position: relative !important;
-    left: -25%;
+    left: -8%;
     top: -23px;
     padding: 10px
 }

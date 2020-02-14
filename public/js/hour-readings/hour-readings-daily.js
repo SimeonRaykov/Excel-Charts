@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    console.log(2222);
     hideGraph();
 });
 
@@ -155,7 +154,10 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    writeHourReadingsDailyHeader([data[0]['hrID'], data[0]['ident_code']]);
+    let readingDate = new Date(data[0]['date']);
+    let formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1}-${readingDate.getDate()}`;
+
+    writeHourReadingsDailyHeader(formattedDate);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -198,9 +200,7 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    console.log(data);
-    $('h1').text(`Мерения по часове за id: ${data[0]}`);
-    //  $('h2').text(`Клиентско id : ${data[1]}`);
+    $('h2').text(`Почасово мерене за дата: ${data}`);
 }
 
 function findGetParameter(name, url) {

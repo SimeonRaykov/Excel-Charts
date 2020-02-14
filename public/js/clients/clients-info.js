@@ -1,9 +1,25 @@
 $(document).ready(function () {
-    getClientInfo();
+    //  getClientInfo();
     hideGraphs();
     getAllCharts();
     visualizeAllDefaultInputs()
 });
+
+class Client {
+    constructor() {
+        this.meteringType = '';
+    }
+
+    getMeteringType() {
+        return this.meteringType;
+    }
+
+    setMeteringType(meteringType) {
+        return this.meteringType = meteringType;
+    }
+}
+
+client = new Client();
 
 (function addSearchEventToGraphHourReading() {
     $('#searchBtnHourlyGraph').on('click', (e) => {
@@ -115,7 +131,7 @@ function getClientInfo() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            console.log(data);
+            setMeteringType(data['metering_type']);
             visualizeClientInfo(data);
             getDatalistingOptions(data['erp_type']);
         },
@@ -126,6 +142,10 @@ function getClientInfo() {
     return dataArr;
 }
 
+function setMeteringType(data) {
+    data == 2 ? client.setMeteringType(2) : client.setMeteringType(1)
+}
+
 function getHourReadingsChartFilterData(fromDate, toDate, clientID) {
     if (fromDate == '') {
         fromDate = -1;
@@ -133,8 +153,10 @@ function getHourReadingsChartFilterData(fromDate, toDate, clientID) {
     if (toDate == '') {
         toDate = -1;
     }
+    let url = client.getMeteringType() == 2 ? `/api/stp-hour-readings/${fromDate}/${toDate}/${clientID}` :
+        `/api/hour-readings/${fromDate}/${toDate}/${clientID}`;
     $.ajax({
-        url: `/api/hour-readings/${fromDate}/${toDate}/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -476,6 +498,7 @@ function showImbalanceChart(data) {
     })
 }
 
+
 (function addFullCalendars() {
     const readingTypes = {
         HOUR_READING: 'hour-reading',
@@ -568,13 +591,17 @@ function showImbalanceChart(data) {
             calendar.render();
         }, 0);
     });
-}())
+}());
 
 function getHourReadingsDailyData() {
+    getClientInfo();
     let clientID = getClientID();
+    console.log(client.getMeteringType());
+    let url = client.getMeteringType() == 2 ? `/api/stp-hour-readings/getClient/${clientID}` :
+        `/api/hour-readings/getClient/${clientID}`;
     let dataArr = [];
     $.ajax({
-        url: `/api/hour-readings/getClient/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -667,7 +694,7 @@ function processDataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`, // ${type===0?'Активна':'Реактивна'}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
@@ -679,7 +706,6 @@ function processDataHourly(data) {
         }
         i = 0;
     }
-
     return dataArr;
 }
 

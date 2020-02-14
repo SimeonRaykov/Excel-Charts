@@ -21,7 +21,7 @@ function getGraphReadings(data) {
         }
         i += 1;
         currRow
-            .append(`<td><a href=/users/clients/stp-hour-reading/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
+            .append(`<td><a href=/users/clients/graphs-stp-hour-prediction/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
             .append($(`<td><a href=/users/clients/info/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
             .append($('<td>' + fixedDate + '</td>'))
