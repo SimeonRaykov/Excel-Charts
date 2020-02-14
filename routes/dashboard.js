@@ -142,6 +142,9 @@ router.get('/users/list/stp-graph-readings/', (req, res) => res.render('./graphs
 router.get('/users/list/graph-readings/', (req, res) => res.render('./graphs-menu/graph-readings.ejs', {
     name: user.getName()
 }));
+router.get('/users/clients/graphs-stp-hour-prediction/daily/s', (req, res) => res.render('./graphs-menu/graphs-stp-hour-prediction-daily.ejs', {
+    name: user.getName()
+}));
 router.get('/users/clients/graphs-hour-prediction/daily/s', (req, res) => res.render('./graphs-menu/graphs-hour-prediction-daily.ejs', {
     name: user.getName()
 }));

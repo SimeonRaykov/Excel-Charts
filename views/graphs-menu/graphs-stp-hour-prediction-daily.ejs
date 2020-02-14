@@ -31,7 +31,7 @@
 </head>
 
 <body>
-    <h2 class="text-center">Почасово мерене за дата:</h2>
+    <h2 class="text-center">График</h2>
     <label class="switch">
         <input class="switch-input" type="checkbox" checked />
         <span class="switch-label" data-on="Календар" data-off="Графики"></span>
@@ -40,13 +40,6 @@
     <div class="row calendar-daily">
         <div id="calendar">
         </div>
-        <!--  <div id="legend" class="col-md-2">
-            <h2 class="text-center mb-3"><i class="fas fa-tags"></i>Легенда</h2>
-            <ul>
-                <li class="text-primary mb-3">Синъо: Настоящи мерения</li>
-                <li class="text-danger">Червено: Нови мерения</li>
-            </ul>
-        </div> -->
     </div>
     <div class="row chart-daily">
         <label class="switch ml-3">
@@ -54,9 +47,9 @@
             <span class="switch-label" data-on="Линия" data-off="Бар"></span>
             <span class="switch-handle"></span>
         </label>
-        <canvas id="daily-hour-readings-chart" class="mb-5" width="1200" height="500"></canvas>
+        <canvas id="daily-hour-prediction-chart" class="mb-5" width="1200" height="500"></canvas>
     </div>
-    <script src="../../../../js/hour-readings/hour-readings-daily.js">
+    <script src="../../../../js/graphs/graphs-stp-hour-prediction-daily.js">
     </script>
 </body>
 

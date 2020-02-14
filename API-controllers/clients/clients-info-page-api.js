@@ -79,6 +79,32 @@ router.get('/api/hour-readings/:fromDate/:toDate/:clientID', (req, res) => {
         res.send(result);
     });
 });
+
+
+router.get('/api/stp-hour-readings/:fromDate/:toDate/:clientID', (req, res) => {
+    const fromDate = req.params.fromDate;
+    const toDate = req.params.toDate;
+    const clientID = req.params.clientID;
+    let sql = `SELECT clients.ident_code, stp_hour_readings.date, stp_hour_readings.hour_one AS 'hr1',  stp_hour_readings.hour_two AS 'hr2', stp_hour_readings.hour_three AS 'hr3', stp_hour_readings.hour_four AS 'hr4', stp_hour_readings.hour_five AS 'hr5', stp_hour_readings.hour_six AS 'hr6', stp_hour_readings.hour_seven AS 'hr7', stp_hour_readings.hour_eight AS 'hr8', stp_hour_readings.hour_nine AS 'hr9', stp_hour_readings.hour_ten AS 'hr10', stp_hour_readings.hour_eleven AS 'hr11', stp_hour_readings.hour_twelve AS 'hr12', stp_hour_readings.hour_thirteen AS 'hr13', stp_hour_readings.hour_fourteen AS 'hr14', stp_hour_readings.hour_fifteen AS 'hr15', stp_hour_readings.hour_sixteen AS 'hr16', stp_hour_readings.hour_seventeen AS 'hr17', stp_hour_readings.hour_eighteen AS 'hr18', stp_hour_readings.hour_nineteen AS 'hr19', stp_hour_readings.hour_twenty AS 'hr20', stp_hour_readings.hour_twentyone AS 'hr21', stp_hour_readings.hour_twentytwo AS 'hr22', stp_hour_readings.hour_twentythree AS 'hr23', stp_hour_readings.hour_zero AS 'hr24'FROM clients
+    INNER JOIN stp_hour_readings on clients.id = stp_hour_readings.client_id
+    WHERE clients.id = '${clientID}' `;
+    if (fromDate != -1 && toDate != -1) {
+        sql += `AND date>='${fromDate}' AND date<= '${toDate}' `;
+    } else if (fromDate != -1 && toDate == -1) {
+        sql += `AND date>='${fromDate}' `;
+    } else if (toDate != -1 && fromDate == -1) {
+        sql += `AND date<='${toDate}' `;
+    }
+    let query = db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        console.log(query.sql);
+        res.send(result);
+    });
+});
+
+
 router.get('/api/graph-predictions/:fromDate/:toDate/:clientID', (req, res) => {
     const fromDate = req.params.fromDate;
     const toDate = req.params.toDate;
@@ -127,6 +153,18 @@ router.get('/api/imbalances/getClient/:fromDate/:toDate/:id', (req, res) => {
 router.get('/api/hour-readings/getClient/:id', (req, res) => {
     let sql = `SELECT * FROM clients
     INNER JOIN hour_readings on clients.id = hour_readings.client_id 
+    WHERE clients.id = '${req.params.id}' `;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
+router.get('/api/stp-hour-readings/getClient/:id', (req, res) => {
+    let sql = `SELECT * FROM clients
+    INNER JOIN stp_hour_readings on clients.id = stp_hour_readings.client_id 
     WHERE clients.id = '${req.params.id}' `;
 
     db.query(sql, (err, result) => {

@@ -13,7 +13,7 @@ router.post('/api/filter/list-readings-graph/', (req, res) => {
         erp
     } = req.body;
 
-    let sql = `SELECT hour_prediction.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, hour_prediction.date FROM hour_prediction
+    let sql = `SELECT hour_prediction.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, hour_prediction.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero) as amount FROM hour_prediction
     INNER JOIN clients ON clients.id = hour_prediction.client_id 
     WHERE 1=1 `;
     if (fromDate != '' && fromDate != undefined && toDate != '' && toDate != undefined) {
