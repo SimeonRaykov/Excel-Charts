@@ -6,11 +6,14 @@ $(document).ready(function () {
 });
 
 function getGraphReadings(data) {
+    const readingType = 'graph-hour-reading';
+
     let i = 0;
     for (let el in data) {
         const date = data[el]['date'];
         const fullDate = new Date(date);
         const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+        const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
         const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
         const amount = data[el]['amount'];
         let currRow = $('<tr>').attr('role', 'row');
@@ -21,8 +24,8 @@ function getGraphReadings(data) {
         }
         i += 1;
         currRow
-            .append(`<td><a href=/users/clients/stp-hour-reading/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
-            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}>${data[el]['ident_code']}</a></td>`))
+            .append(`<td><a href=/users/clients/graphs-hour-prediction/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
+            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}?date=${formattedDate}&type=${readingType}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
             .append($('<td>' + fixedDate + '</td>'))
             .append($('<td>' + erpType + '</td>'))

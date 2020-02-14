@@ -477,6 +477,14 @@ function showImbalanceChart(data) {
 }
 
 (function addFullCalendars() {
+    const readingTypes = {
+        HOUR_READING: 'hour-reading',
+        GRAPH_HOUR_READING: 'graph-hour-reading'
+    }
+    const readingType = findGetParameter('type');
+    const readingDate = findGetParameter('date');
+    const today = new Date();
+    const formattedToday = `${today.getFullYear()}-${today.getMonth()+1<10?`0${today.getMonth()+1}`:today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`;
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar-hourly');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -486,18 +494,25 @@ function showImbalanceChart(data) {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
+            defaultDate: readingDate != null && readingType == readingTypes.HOUR_READING ? readingDate : formattedToday,
+            defaultView: readingDate != null && readingType == readingTypes.HOUR_READING ? 'timeGridDay' : 'dayGridMonth',
             events: getHourReadingsDailyData(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'prev, dayGridMonth,timeGridDay, next',
-
             },
-            contentHeight: 'auto',
+            contentHeight: 'auto'
         });
-        calendar.render();
-        $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
+        setTimeout(function () {
+            calendar.render();
+        }, 0);
+        if (readingType == readingTypes.HOUR_READING) {
+            $('body > div.container.mt-3 > ul > li:nth-child(2) > a').click();
+        } else if (readingDate == null && readingType == null) {
+            $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -509,17 +524,25 @@ function showImbalanceChart(data) {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
+            defaultDate: readingDate != null && readingType == readingTypes.GRAPH_HOUR_READING ? readingDate : formattedToday,
+            defaultView: readingDate != null && readingType == readingTypes.GRAPH_HOUR_READING ? 'timeGridDay' : 'dayGridMonth',
             events: getGraphPredictions(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'prev, dayGridMonth,timeGridDay, next',
-
             },
             contentHeight: 'auto',
         });
-        calendar.render();
+        setTimeout(function () {
+            calendar.render();
+        }, 0);
+        if (readingType == readingTypes.GRAPH_HOUR_READING) {
+            $('body > div.container.mt-3 > ul > li:nth-child(3) > a').click();
+        } else if (readingDate == null && readingType == null) {
+            $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -541,7 +564,9 @@ function showImbalanceChart(data) {
             },
             contentHeight: 'auto'
         });
-        calendar.render();
+        setTimeout(function () {
+            calendar.render();
+        }, 0);
     });
 }())
 

@@ -40,7 +40,6 @@ function getAllListings(data) {
     });
     $('#tBody').addClass('text-center');
     $('#list-readings > thead').addClass('text-center');
-
 }
 
 function visualizeDataTable(data) {

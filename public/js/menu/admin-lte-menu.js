@@ -1,32 +1,6 @@
 $(document).ready(function () {
-
     setDefaultDateForLinks();
-
-    // Remove active for all items.
-
-    $('.page-sidebar-menu li').removeClass('active');
-
-    // highlight submenu item
-    $('li a[href="' + this.location.pathname + '"]').parent().addClass('active');
-
-    // Highlight parent menu item.
-    $('ul a[href="' + this.location.pathname + '"]').parents('li').addClass('active');
-    $('.active').addClass('menu-open');
-    $('.active a').first().addClass('active');
-    $(`a[href*="${location.pathname}"]`).addClass('active');
-
-    const indexOfThirdIncline = nth_occurrence(document.referrer, '/', 3);
-    const documentHistoryPathname = document.referrer.substr(indexOfThirdIncline);
-    if (!$('li.has-treeview a').hasClass("active")) {
-        if (!$('.nav-item').hasClass("active")) {
-            $(`a[href*="${location.pathname}"]`).addClass('active');
-        }
-    }
-    /* else {
-           if (!$('.nav-item').hasClass("active")) {
-               $(`a[href*="${documentHistoryPathname}"]`).addClass('active');
-           }
-       } */
+    visualizeActiveLinks();
 });
 
 function setDefaultDateForLinks() {
@@ -47,27 +21,25 @@ function setDefaultDateForLinks() {
     $('#invoicing-readings-href').attr('href', `/users/invoicing?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
 }
 
+function visualizeActiveLinks() {
+    let path = location.pathname;
+    // Remove active for all items.
+    $('.page-sidebar-menu li').removeClass('active');
+    // make current-submenu active
+    if ($(`a[href*="${location.pathname}"]`).length == 0) {
+        path = localStorage.getItem('active-path');
+    } else {
+        localStorage.setItem('active-path', location.pathname);
+    }
+    $(`a[href*="${path}"]`).addClass('active');
+
+    // Open parent - menu and make active
+    $(`a[href*="${path}"]`).closest('li.has-treeview').addClass('menu-open active');
+    $(`.menu-open.active a`).first().addClass('active');
+}
+
 function getLastWeek() {
     var today = new Date();
     var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
     return lastWeek;
-}
-
-
-function nth_occurrence(string, char, nth) {
-    var first_index = string.indexOf(char);
-    var length_up_to_first_index = first_index + 1;
-
-    if (nth == 1) {
-        return first_index;
-    } else {
-        var string_after_first_occurrence = string.slice(length_up_to_first_index);
-        var next_occurrence = nth_occurrence(string_after_first_occurrence, char, nth - 1);
-
-        if (next_occurrence === -1) {
-            return -1;
-        } else {
-            return length_up_to_first_index + next_occurrence;
-        }
-    }
 }
