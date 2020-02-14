@@ -116,6 +116,7 @@ app.use('/', require('./API-controllers/readings/list-hour-readings-api'));
 //  Graphs - Menu
 app.use('/', require('./API-controllers/graphs/list-graph-stp-readings-api'));
 app.use('/', require('./API-controllers/graphs/list-graph-readings-api'));
+app.use('/', require('./API-controllers/graphs/graph-hour-predictions-daily-api'));
 
 //  Invoices
 app.use('/', require('./API-controllers/invoices/stp-list-readings-api'));
