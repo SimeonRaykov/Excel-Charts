@@ -30,24 +30,24 @@ document.addEventListener('DOMContentLoaded', function () {
         allDaySlot: false,
         eventOrder: 'groupId',
         defaultDate: fixedDate,
-        events: getHourReadingsDailyData(),
-        plugins: ['timeGrid', ],
-        defaultView: 'timeGridDay',
+        events: getSTPMonthlyPredictionData(),
+        plugins: ['timeGrid', 'dayGrid'],
+        defaultView: 'dayGridMonth',
         header: {
-            left: '',
+            left: 'prev,next today',
             center: 'title',
-            right: '',
+            right: 'prev, dayGridMonth,timeGridDay, next',
         }
     });
     calendar.render();
 });
 
-function getHourReadingsDailyData() {
+function getSTPMonthlyPredictionData() {
     let currDate = findGetParameter('date'),
         currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `/api/graphs/hour-prediction/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/graphs/stp-hour-prediction/monthly/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -60,7 +60,6 @@ function getHourReadingsDailyData() {
         }
 
     });
-    console.log(`/api/graphs/hour-prediction/daily/${currHourReadingId}/${currDate}`)
     return dataArr;
 }
 
@@ -153,28 +152,25 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    console.log(1);
-    console.log(data);
     writeHourReadingsDailyHeader(new Date(data[0]['date']));
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
-        let diff = data[el].diff;
-        let type = data[el].type;
+        let amount = data[el].amount;
         let i = 0;
-        const startIndex = 3;
-        const endIndex = 26;
+        const startIndex = 2;
+        const endIndex = 25;
         for (let [key, value] of Object.entries(data[el])) {
             if (i > endIndex) {
                 break;
             }
             if (i >= startIndex && i <= endIndex) {
                 currHourReading = {
-                    groupId: diff,
+                    groupId: 1,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value * amount}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: colors.blue
@@ -198,8 +194,8 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}-${data.getDate()<10?`0${data.getDate()}`:data.getDate()}`
-    $('h2').text(`Почасов график за дата: ${currPredictionDate}`);
+    const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}`
+    $('h2').text(`Почасов график за месец: ${currPredictionDate}`);
 }
 
 function findGetParameter(name, url) {

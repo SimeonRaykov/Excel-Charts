@@ -291,7 +291,7 @@ async function processPredictionFile(e) {
             let first_sheet_name = workbook.SheetNames[0];
 
             const profileID = 0;
-            const meteringType = 1; // Hour-Reading
+            const meteringType = 2; // STP
             const isManufacturer = 0;
 
             let client = [];

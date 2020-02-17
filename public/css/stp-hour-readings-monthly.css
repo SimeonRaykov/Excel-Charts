@@ -1,0 +1,28 @@
+.fc-content .fc-time {
+    display: none !important;
+}
+
+.fc-content span.fc-time {
+    display: inline-block !important;
+}
+
+.fc-time-grid-event .fc-time,
+.fc-time-grid-event .fc-title {
+    padding: 15px 1px !important;
+}
+
+a.fc-more {
+    visibility: hidden;
+}
+
+a.fc-more::after {
+    visibility: visible;
+    content: 'Има график' !important;
+    background-color: #2d6cdf;
+    white-space: nowrap;
+    border-radius: 10px;
+    position: relative !important;
+    left: -25%;
+    top: -23px;
+    padding: 10px
+}

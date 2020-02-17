@@ -143,7 +143,7 @@ function getClientInfo() {
 }
 
 function setMeteringType(data) {
-    data == 2 ? client.setMeteringType(2) : client.setMeteringType(1)
+    client.setMeteringType(data);
 }
 
 function getHourReadingsChartFilterData(fromDate, toDate, clientID) {
@@ -176,8 +176,10 @@ function getGraphPredictionsFilterData(fromDate, toDate, clientID) {
     if (toDate == '') {
         toDate = -1;
     }
+    let url = client.getMeteringType() == 2 ? `/api/stp-graph-predictions/${fromDate}/${toDate}/${clientID}` :
+        `/api/graph-predictions/${fromDate}/${toDate}/${clientID}`;
     $.ajax({
-        url: `/api/graph-predictions/${fromDate}/${toDate}/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -197,8 +199,10 @@ function getImbalancesChartFilterData(fromDate, toDate, clientID) {
     if (toDate == '') {
         toDate = -1;
     }
+    let url = client.getMeteringType() == 2 ? `/api/stp-imbalances/getClient/${fromDate}/${toDate}/${clientID}` :
+        `/api/imbalances/getClient/${fromDate}/${toDate}/${clientID}`;
     $.ajax({
-        url: `/api/imbalances/getClient/${fromDate}/${toDate}/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -289,15 +293,20 @@ function showHourReadingChart(data) {
           }
           */
     }
+    try {
+        myChart.destroy();
+    } catch (e) {}
+
     var myChart = new Chart(ctx, config);
 
     $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
-        myChart.destroy();
         var temp = jQuery.extend(true, {}, config);
         if (myChart.config.type == 'line') {
             temp.type = 'bar';
+            myChart.destroy();
         } else {
             temp.type = 'line';
+            myChart.destroy();
         }
 
         myChart = new Chart(ctx, temp);
@@ -312,13 +321,14 @@ function showGraphPredictionChart(data) {
     if (data != undefined) {
         if (data.length == 1) {
             for (let el in data) {
+                let amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
-                    if (index >= 2) {
+                    if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: data[el][hr] * amount
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -367,14 +377,19 @@ function showGraphPredictionChart(data) {
             responsive: false
         }
     }
-    var myChart = new Chart(ctx, config);
-
-    $('#graph > div.graph-prediction-div > form > div > div:nth-child(4) > label > input').click((e) => {
+    try {
         myChart.destroy();
+    } catch (e) {}
+
+    var myChart = new Chart(ctx, config);
+    $('#graph > div.graph-prediction-div > form > div > div:nth-child(4) > label > input').click((e) => {
+
         var temp = jQuery.extend(true, {}, config);
         if (myChart.config.type == 'line') {
+            myChart.destroy();
             temp.type = 'bar';
         } else {
+            myChart.destroy();
             temp.type = 'line';
         }
 
@@ -389,14 +404,15 @@ function showImbalanceChart(data) {
     let imbalancesData = [];
     let index = 0;
     let dataIterator = 0;
-    const startingIndexActualHourData = 2;
-    let indexActualData = 2;
-    let indexPrediction = 26;
-    const endIndexPrediction = 49;
-    const finalIndex = 25;
+    const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
+    let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
+    let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
+    const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
+    const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
     if (data != undefined) {
         if (data.length == 1) {
             for (let el in data) {
+                const amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
@@ -405,8 +421,8 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currImbalance = calcImbalance(isManufacturer, valuesData[indexActualData], valuesData[indexPrediction]);
-                        let t = index == 2 ? date : incrementHoursOne(date)
+                        const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                        let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
                             y: valuesData[indexActualData]
@@ -501,8 +517,10 @@ function showImbalanceChart(data) {
 
 (function addFullCalendars() {
     const readingTypes = {
+        STP_HOUR_READING: 'stp-hour-reading',
         HOUR_READING: 'hour-reading',
-        GRAPH_HOUR_READING: 'graph-hour-reading'
+        STP_GRAPH_HOUR_READING: 'stp-graph-hour-prediction',
+        GRAPH_HOUR_READING: 'graph-hour-prediction'
     }
     const readingType = findGetParameter('type');
     const readingDate = findGetParameter('date');
@@ -517,9 +535,9 @@ function showImbalanceChart(data) {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            defaultDate: readingDate != null && readingType == readingTypes.HOUR_READING ? readingDate : formattedToday,
-            defaultView: readingDate != null && readingType == readingTypes.HOUR_READING ? 'timeGridDay' : 'dayGridMonth',
-            events: getHourReadingsDailyData(),
+            defaultDate: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? readingDate : formattedToday,
+            defaultView: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? 'timeGridDay' : 'dayGridMonth',
+            events: getSTPMonthlyPredictionData(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
                 left: 'prev,next today',
@@ -531,7 +549,7 @@ function showImbalanceChart(data) {
         setTimeout(function () {
             calendar.render();
         }, 0);
-        if (readingType == readingTypes.HOUR_READING) {
+        if (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) {
             $('body > div.container.mt-3 > ul > li:nth-child(2) > a').click();
         } else if (readingDate == null && readingType == null) {
             $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
@@ -547,7 +565,7 @@ function showImbalanceChart(data) {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            defaultDate: readingDate != null && readingType == readingTypes.GRAPH_HOUR_READING ? readingDate : formattedToday,
+            defaultDate: readingDate != null && (readingType == readingTypes.GRAPH_HOUR_READING || readingType == readingTypes.STP_GRAPH_HOUR_READING) ? readingDate : formattedToday,
             defaultView: readingDate != null && readingType == readingTypes.GRAPH_HOUR_READING ? 'timeGridDay' : 'dayGridMonth',
             events: getGraphPredictions(),
             plugins: ['dayGrid', 'timeGrid'],
@@ -561,7 +579,8 @@ function showImbalanceChart(data) {
         setTimeout(function () {
             calendar.render();
         }, 0);
-        if (readingType == readingTypes.GRAPH_HOUR_READING) {
+        console.log(readingType);
+        if (readingType == readingTypes.GRAPH_HOUR_READING || readingType == readingTypes.STP_GRAPH_HOUR_READING) {
             $('body > div.container.mt-3 > ul > li:nth-child(3) > a').click();
         } else if (readingDate == null && readingType == null) {
             $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
@@ -573,7 +592,7 @@ function showImbalanceChart(data) {
         var calendar = new FullCalendar.Calendar(calendarEl, {
             eventLimit: true,
             eventLimit: 1,
-            eventLimitText: 'Има небанс',
+            eventLimitText: 'Има небаланс',
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
@@ -593,10 +612,9 @@ function showImbalanceChart(data) {
     });
 }());
 
-function getHourReadingsDailyData() {
+function getSTPMonthlyPredictionData() {
     getClientInfo();
     let clientID = getClientID();
-    console.log(client.getMeteringType());
     let url = client.getMeteringType() == 2 ? `/api/stp-hour-readings/getClient/${clientID}` :
         `/api/hour-readings/getClient/${clientID}`;
     let dataArr = [];
@@ -616,10 +634,13 @@ function getHourReadingsDailyData() {
 }
 
 function getGraphPredictions() {
+    getClientInfo();
     let clientID = getClientID();
+    const url = client.getMeteringType() == 2 ? `/api/stp-graph-predictions/getClient/${clientID}` :
+        `/api/graph-predictions/getClient/${clientID}`;
     let dataArr = [];
     $.ajax({
-        url: `/api/graph-predictions/getClient/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -635,9 +656,11 @@ function getGraphPredictions() {
 
 function getImbalances() {
     let clientID = getClientID();
+    let url = client.getMeteringType() == 2 ? `/api/stp-imbalances/getClient/${clientID}` :
+        `/api/imbalances/getClient/${clientID}`;
     let dataArr = [];
     $.ajax({
-        url: `/api/imbalances/getClient/${clientID}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -675,7 +698,8 @@ const colors = {
 }
 
 function processDataHourly(data) {
-    writeHourReadingsDailyHeader(data);
+    writeHourReadingsDailyHeader(data[0]['ident_code']);
+
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -710,14 +734,21 @@ function processDataHourly(data) {
 }
 
 function processDataGraphPredictions(data) {
-    writeHourReadingsDailyHeader(data);
     let dataArr = [];
     let currHourReading = [];
+    //  Hour Predictions
+    let startIndexGraphPrediction = 11;
+    let endIndexGraphPrediction = 34;
+
+    //  STP Predicitons
+    if (client.getMeteringType() == 2) {
+        startIndexGraphPrediction = 3;
+        endIndexGraphPrediction = 26;
+    }
     for (let el in data) {
+        let amount = data[el].amount || 1;
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
-        const startIndexGraphPrediction = 11;
-        const endIndexGraphPrediction = 34;
         let diff = data[el].diff;
         let i = 0;
         for (let [key, value] of Object.entries(data[el])) {
@@ -728,7 +759,7 @@ function processDataGraphPredictions(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value * amount}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: colors.blue
@@ -740,26 +771,29 @@ function processDataGraphPredictions(data) {
         }
         i = 0;
     }
-
     return dataArr;
 }
 
 function processDataImbalances(data) {
     writeImbalancesHeader(data);
+    console.log(data);
+    const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
+    const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
+        const amount = data[el]['amount'] || 1;
         let currHourDate = new Date(data[el].date);
-        let currHourReadingVal = 2;
-        let currHourPredictionVal = 26;
+        let currHourReadingVal = client.getMeteringType() == 2 ? 3 : 2;
+        let currHourPredictionVal = client.getMeteringType() == 2 ? 27 : 26;
         let objVals = Object.values(data[el]);
         let iterator = 0;
         let isManufacturer = data[el]['is_manufacturer'];
 
         for (let val of objVals) {
-            if (iterator >= 2 && iterator < 26) {
-                const currImbalance = calcImbalance(isManufacturer, objVals[currHourPredictionVal], objVals[currHourReadingVal]);
+            if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
+                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
@@ -778,8 +812,8 @@ function processDataImbalances(data) {
     return dataArr;
 }
 
-function calcImbalance(isManufacturer, actualValue, predictionVal) {
-    return isManufacturer == 0 ? predictionVal - actualValue : actualValue - predictionVal;
+function calcImbalance(isManufacturer, predictionVal, actualVal) {
+    return isManufacturer == 0 ? predictionVal - actualVal : actualVal - predictionVal;
 }
 
 function incrementHoursOne(date) {
@@ -791,7 +825,7 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    $('#hour-readings > h2').text(`Мерения по часове за клиент: ${data[0].ident_code}`);
+    $('#hour-readings > h2').text(`Мерения по часове за клиент: ${data}`);
 }
 
 function writeImbalancesHeader(data) {

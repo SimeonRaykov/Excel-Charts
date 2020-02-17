@@ -48,7 +48,7 @@ function getHourReadingsDailyData() {
         currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `/api/stp-hour-readings/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/daily/stp-hour-reading/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -61,7 +61,6 @@ function getHourReadingsDailyData() {
         }
 
     });
-    console.log(`/api/stp-hour-readings/daily/${currHourReadingId}/${currDate}`)
     return dataArr;
 }
 

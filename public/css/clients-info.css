@@ -25,8 +25,8 @@ label.red-border {
     border: 2px solid transparent;
 }
 
-.card-body select{
-    border:1px solid rgb(97, 80, 80);
+.card-body select {
+    border: 1px solid rgb(97, 80, 80);
 }
 
 .card-body input,
@@ -134,7 +134,7 @@ a.fc-more::after {
     border-radius: 10px;
     position: relative !important;
     left: -8%;
-    top: -23px;
+    top: -26px;
     padding: 10px
 }
 
@@ -144,6 +144,7 @@ a.fc-more::after {
 
 #calendar-imbalance a.fc-more::after {
     content: 'Има небаланс';
+    left: -22%;
 }
 
 .btn-primary {

@@ -5,48 +5,9 @@ $(document).ready(function () {
     listGraphReadingsFiltered();
 });
 
-function getGraphReadings(data) {
-    const readingType = 'graph-hour-prediction';
-
-    let i = 0;
-    for (let el in data) {
-        const date = data[el]['date'];
-        const fullDate = new Date(date);
-        const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-        const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
-        const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
-        const amount = data[el]['amount'];
-        let currRow = $('<tr>').attr('role', 'row');
-        if (i % 2 == 1) {
-            currRow.addClass('even');
-        } else {
-            currRow.addClass('odd');
-        }
-        i += 1;
-        currRow
-            .append(`<td><a href=/users/clients/graphs-hour-prediction/daily/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
-            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}?date=${formattedDate}&type=${readingType}>${data[el]['ident_code']}</a></td>`))
-            .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + fixedDate + '</td>'))
-            .append($('<td>' + erpType + '</td>'))
-            .append($('<td>' + amount + '</td>'))
-            .append($('</tr>'));
-        currRow.appendTo($('#tBody'));
-    }
-    // Order DESC
-    dataTable = $('#graph-readings-table').DataTable({
-        "order": [
-            [0, "asc"]
-        ],
-        retrieve: true
-    });
-    $('#tBody').addClass('text-center');
-    $('#list-readings > thead').addClass('text-center');
-}
-
 function getDataListing() {
     $.ajax({
-        url: '/api/data-listings/graphs-readings',
+        url: '/api/data-listings/imbalances',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -72,7 +33,6 @@ function convertDataToSet(data) {
 function visualizeDataListings(arr) {
     let clientNames = arr[0];
     let clientIds = arr[1]
-
     for (let name of clientNames) {
         $('#stp-hour-readings-clients').append(`<option value="${name}"></option>`);
     }
@@ -221,5 +181,13 @@ function visualizeCheckboxesFromHistoryLocation() {
     }
     if (!location.includes('evn')) {
         $('#evn').prop('checked', false);
+    }
+    if(!location.includes('hourly_imbalances')){
+        $('#stp_imbalances').prop('checked',true);
+     //   $('#hourly_imbalances').prop('checked',false);
+    }
+    else{
+        $('#hourly_imbalances').prop('checked',true);
+       // $('#stp_imbalances').prop('checked',false);
     }
 }

@@ -45,9 +45,10 @@ document.addEventListener('DOMContentLoaded', function () {
 function getHourReadingsDailyData() {
     let currDate = findGetParameter('date'),
         currHourReadingId = findGetParameter('id');
+    let url = `/api/graphs/hour-prediction/daily/${currHourReadingId}/${currDate}`
     let dataArr = [];
     $.ajax({
-        url: `/api/graphs/stp-hour-prediction/daily/${currHourReadingId}/${currDate}`,
+        url,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -60,7 +61,6 @@ function getHourReadingsDailyData() {
         }
 
     });
-    console.log(`/api/graphs/hour-prediction/daily/${currHourReadingId}/${currDate}`)
     return dataArr;
 }
 
@@ -153,8 +153,6 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    console.log(1);
-    console.log(data);
     writeHourReadingsDailyHeader(new Date(data[0]['date']));
     let dataArr = [];
     let currHourReading = [];
