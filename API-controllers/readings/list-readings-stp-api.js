@@ -4,10 +4,11 @@ const {
     db
 } = require('../../db.js');
 
-router.get('/api/stp-hour-readings/daily/:id/:date', (req, res) => {
+router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
     let sql = `SELECT *,stp_hour_readings.id AS hrID FROM stp_hour_readings
     INNER JOIN clients on stp_hour_readings.client_id = clients.id
-    WHERE stp_hour_readings.date = '${req.params.date}' AND stp_hour_readings.id = '${req.params.id}'
+    WHERE stp_hour_readings.date = '${req.params.date}' 
+    AND stp_hour_readings.id = '${req.params.id}'
     ORDER BY stp_hour_readings.id
     LIMIT 1`;
 

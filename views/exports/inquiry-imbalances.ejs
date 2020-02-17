@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <script src="../../../js/datatables/datatables.js"></script>
+    <link rel="stylesheet" href="../../../css/checkboxes.css">
+    <link rel="stylesheet" href="../../../css/radio-btns.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="card card-default">
+        <div class="card-header">
+            <h2 class="text-center">Небаланси</h2>
+        </div>
+        <div class="card-body">
+            <form action="" method="GET">
+                <div class="row justify-content-around">
+                    <div class="text-heading">От дата<input id="fromDate" name="fromDate" class="ml-2" type="date"
+                            type="search"></input>
+                    </div>
+                    <div class="text-heading">До дата<input id="toDate" name="toDate" class="ml-2" type="date"
+                            type="search"></input>
+                    </div>
+                    <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient"
+                            list="stp-hour-readings-clients" name="name" autocomplete="off" class="ml-2"
+                            type="search"></input>
+                        <datalist id="stp-hour-readings-clients">
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row my-3 justify-content-around">
+                    <div class="mt-3 text-heading mr-2"> Идентификационен код <input id="clientID" name="clientID"
+                            autocomplete="off" list="idList" type="search"></input>
+                        <datalist id="idList">
+                        </datalist>
+                    </div>
+                    <span class="mt-3 text-heading">Вид ЕРП:</span>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
+                        <span>ИВН</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="cez" id="cez" checked>
+                        <span>ЧЕЗ</span>
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox" name="erp_type" value="energoPRO" id="energoPRO" checked>
+                        <span>ЕнергоПРО</span>
+                    </label>
+                </div>
+                <div class="row justify-content-center">
+                    <label class="radio mr-5  col-md-3">СТП Тип
+                        <input type="radio" id="stp_imbalances" checked value="stp_imbalances" name="imbalances">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio col-md-4">Почасови Тип
+                        <input type="radio" id="hourly_imbalances" value="hourly_imbalances" name="imbalances">
+                        <span class="checkmark"></span>
+                    </label>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn-primary btn-lg ml-3 mt-3">Търсене</button>
+                    </div>
+                </div>
+        </div>
+        </form>
+        <div class="container clients text-center">
+        </div>
+    </div>
+    </div>
+    <script src="../../../../js/exports/inquiry-imbalances.js"></script>
+</body>
+
+</html>

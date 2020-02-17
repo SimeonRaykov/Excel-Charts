@@ -12,7 +12,7 @@ router.post('/api/filter/list-stp-graph-readings', (req, res) => {
         ident_code,
         erp
     } = req.body;
-
+    //  TODO
     let sql = `SELECT prediction.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, prediction.date, prediction.amount FROM prediction
     INNER JOIN clients ON clients.id = prediction.client_id 
     WHERE 1=1 `;
