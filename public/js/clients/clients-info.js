@@ -838,7 +838,7 @@ function writeImbalancesHeader(data) {
             $('#hour-readings > div.row').css('display', 'none');
             $('.hour-readings-graph-div').css('display', 'block');
         } else {
-            $('#hour-readings > div.row').css('display', 'flex');
+            $('#hour-readings > div.row').css('display', 'block');
             $('.hour-readings-graph-div').css('display', 'none');
         }
     })

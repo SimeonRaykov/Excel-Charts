@@ -19,6 +19,9 @@ function setDefaultDateForLinks() {
 
     //  Invoicing href
     $('#invoicing-readings-href').attr('href', `/users/invoicing?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
+
+    //  Imbalances inquiry href 
+    $('#inquiry-imbalances-href').attr('href', `/users/inquiry/imbalances?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&imbalances=hourly_imbalances`)
 }
 
 function visualizeActiveLinks() {
