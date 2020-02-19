@@ -1,3 +1,7 @@
+#export-imbalances {
+    display: none
+}
+
 input:hover {
     border: 2px solid red;
 }

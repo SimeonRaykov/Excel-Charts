@@ -274,6 +274,11 @@ function showHourReadingChart(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }
@@ -373,6 +378,11 @@ function showGraphPredictionChart(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }
@@ -496,6 +506,11 @@ function showImbalanceChart(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }

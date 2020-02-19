@@ -189,9 +189,10 @@ function getImbalances(arr) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            console.log(data);
+            window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
             showImbalanceChart(data);
             calendarData = calculateImbalances(data);
+            addImbalancesToTable(calendarData);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -201,57 +202,92 @@ function getImbalances(arr) {
     return calendarData;
 };
 
+function addImbalancesToTable(data) {
+    let currRow;
+    let currentStartDate;
+    let currentEndDate;
+    for (let el of data) {
+        currentStartDate = new Date(el.start);
+        currentEndDate = new Date(el.end);
+        currRow = $(`<tr>`);
+
+        currRow
+            .append(`<td>${el.id}</td>`)
+            .append(`<td>${el.title}</td`)
+            .append((`<td>${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}</td`))
+            .append((`<td>${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}</td`))
+            .append((`</tr>`));
+        currRow.appendTo($('#tBody-imbalances'));
+    }
+
+}
+
 function showImbalanceChart(data) {
     let labels = [];
     let actualHourData = [];
     let predictionData = [];
     let imbalancesData = [];
+
+    let tempActualArr = [];
+    let tempPredictionArr = [];
+    let tempImbalances = [];
+
     let index = 0;
     let dataIterator = 0;
-    const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
-    let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
-    let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
-    const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
-    const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
+
     if (data != undefined) {
-        if (data.length == 1) {
+        if (true /*data.length == 1*/ ) {
             for (let el in data) {
+                const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
+                let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
+                let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
+                const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
+                const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
                 const amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
+                let t = date;
                 for (let val of valuesData) {
                     if (index >= startingIndexActualHourData && index <= endIndexPrediction) {
                         if (index > finalIndex) {
                             break;
                         }
                         const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
-                        let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
                             y: valuesData[indexActualData]
                         }
+                        if (actualHourObj.y != undefined) {
+                            tempActualArr.push(actualHourObj);
+                        }
+
                         let predictionObj = {
                             t,
                             y: valuesData[indexPrediction]
                         }
+                        if (predictionObj.y != undefined) {
+                            tempPredictionArr.push(predictionObj);
+                        }
+
                         let imbalanceData = {
                             t,
                             y: currImbalance
                         }
-                        actualHourData.push(actualHourObj);
-                        predictionData.push(predictionObj);
-                        imbalancesData.push(imbalanceData);
+                        if (imbalanceData.y != undefined) {
+                            tempImbalances.push(imbalanceData);
+                        }
 
-                        labels.push(`${t.getHours()} ч.`);
                         indexActualData += 1;
                         indexPrediction += 1;
+                        labels.push(`${t.getHours()} ч.`);
+                        t = incrementHoursOne(date);
                     }
                     index += 1;
                 }
                 index = 0;
             }
-        } else if (data.length != 1) {
+        } else if (false) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
                 if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
@@ -273,33 +309,95 @@ function showImbalanceChart(data) {
             }
         }
     }
+
+    let sumOfAllReadingsActual = [];
+    let sumOfAllPredictions = [];
+    let sumOfAllImbalances = [];
+
+    let actualDataSorted = tempActualArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
+    let predictionDataSorted = tempPredictionArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
+    let imbalancesDataSorted = tempImbalances.sort((a, b) => (a.t > b.t) ? 1 : -1);
+
+    let currReadingActual;
+    let currReadingPrediction;
+    let currReadingImbalance;
+
+    let currStart;
+    let iterationsCount = 0;
+    let y = 1;
+
+    for (let i = 0; i < actualDataSorted.length; i += 1) {
+        currStart = actualDataSorted[i].t;
+        currReadingActual = {
+            t: actualDataSorted[i].t,
+            y: actualDataSorted[i].y
+        }
+        currReadingPrediction = {
+            t: predictionDataSorted[i].t,
+            y: predictionDataSorted[i].y
+        }
+
+        currReadingImbalance = {
+            t: imbalancesDataSorted[i].t,
+            y: imbalancesDataSorted[i].y
+        }
+
+        if (actualDataSorted[i + y]) {
+            while (currStart.getHours() == actualDataSorted[i + y].t.getHours() &&
+                currStart.getDate() == actualDataSorted[i + y].t.getDate() &&
+                currStart.getFullYear() == actualDataSorted[i + y].t.getFullYear() &&
+                currStart.getMonth() == actualDataSorted[i + y].t.getMonth()) {
+                currStart = actualDataSorted[i + y].t;
+                currReadingActual.y += actualDataSorted[i + y].y;
+                currReadingPrediction.y += predictionDataSorted[i + y].y;
+                currReadingImbalance.y += imbalancesDataSorted[i + y].y;
+                y += 1;
+                iterationsCount += 1;
+                if (!actualDataSorted[i + y]) {
+                    break;
+                }
+            }
+        }
+        i += iterationsCount;
+        iterationsCount = 0;
+        y = 1;
+        sumOfAllReadingsActual.push(currReadingActual);
+        sumOfAllPredictions.push(currReadingPrediction);
+        sumOfAllImbalances.push(currReadingImbalance);
+    }
+    let labelsNoDuplicates = removeDuplicatesFromArr(labels);
     var ctx = document.getElementById('imbalance-chart').getContext('2d');
     var config = {
         type: 'line',
         data: {
-            labels,
+            labels: labelsNoDuplicates,
             datasets: [{
                 label: 'Настоящи',
-                data: actualHourData,
+                data: sumOfAllReadingsActual,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
             }, {
                 label: 'Прогнози',
-                data: predictionData,
+                data: sumOfAllPredictions,
                 borderWidth: 2,
                 backgroundColor: "#9c1de7",
                 borderColor: "#1e2a78",
                 hidden: true
             }, {
                 label: 'Небаланс',
-                data: imbalancesData,
+                data: sumOfAllImbalances,
                 borderWidth: 2,
                 backgroundColor: "#f3f169",
                 borderColor: "#ffd615",
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }
@@ -319,7 +417,6 @@ function showImbalanceChart(data) {
 }
 
 function calculateImbalances(data) {
-    window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
     const beginningIndexOfIterator = 2;
     const endIndexOfIterator = 26;
     let dataArr = [];
@@ -355,7 +452,6 @@ function calculateImbalances(data) {
     }
     let sumOfAllArrs = [];
     let dataArrSorted = dataArr.sort((a, b) => (a.start > b.start) ? 1 : -1);
-    console.log(dataArrSorted);
     let currReading;
     let currStart;
     let iterationsCount = 0;
@@ -387,9 +483,15 @@ function calculateImbalances(data) {
         //  console.log(sumOfAllArrs);
         sumOfAllArrs.push(currReading);
     }
-    console.log(sumOfAllArrs);
     return sumOfAllArrs;
 }
+
+(function addOnClickEventToExportTableBTN() {
+    $('#export-table-btn').on('click', () => {
+        const tableName = $('#table-input').val();
+        exportTableToExcel('export-imbalances', tableName);
+    })
+}());
 
 function findGetParameter(name, url) {
     if (!url) url = window.location.href;

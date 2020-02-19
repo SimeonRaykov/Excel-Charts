@@ -128,6 +128,11 @@ function showChartDaily(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }

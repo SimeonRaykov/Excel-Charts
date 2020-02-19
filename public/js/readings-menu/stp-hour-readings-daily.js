@@ -45,10 +45,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function getHourReadingsDailyData() {
     let currDate = findGetParameter('date'),
-        currHourReadingId = findGetParameter('id');;
+        currHourReadingId = findGetParameter('id');
     let dataArr = [];
     $.ajax({
-        url: `/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/daily/stp-hour-reading/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
@@ -59,11 +59,13 @@ function getHourReadingsDailyData() {
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
+
     });
     return dataArr;
 }
 
 function showChartDaily(data) {
+    console.log(data);
     let labels = [];
     let chartData = [];
     let index = 0;
@@ -159,10 +161,8 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    let readingDate = new Date(data[0]['date']);
-    let formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1}-${readingDate.getDate()}`;
-
-    writeHourReadingsDailyHeader(formattedDate);
+    let date = new Date(data[0]['date'])
+    writeHourReadingsDailyHeader(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -205,7 +205,8 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeader(data) {
-    $('h2').text(`Почасово мерене за дата: ${data}`);
+    $('h2').text(`Почасово стп мерене за дата: ${data}`);
+    //  $('h2').text(`Клиентско id : ${data[1]}`);
 }
 
 function findGetParameter(name, url) {
