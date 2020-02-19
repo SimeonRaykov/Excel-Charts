@@ -101,9 +101,9 @@ router.post('/api/filter/calculate-imbalances/', (req, res) => {
         }
         //console.log(result);
         //  Mock Data 
-        let arrResults = [];
+        /* let arrResults = [];
         arrResults.push(result[0], result[0], result[0]);
-        return res.send(JSON.stringify(arrResults));
+        return res.send(JSON.stringify(arrResults)); */
         return res.send(JSON.stringify(result));
     });
 });

@@ -128,8 +128,29 @@
             </form>-->
             <canvas id="imbalance-chart" class="mb-5" width="1100" height="500"></canvas>
         </div>
+        <h2 class="text-center my-3">Експорт на данни</h2>
+        <div class="row justify-content-around">
+            <div>
+                <span class="mr-5">Име на файл</span><input id="table-input" class="text-center" type="text"
+                    placeholder="excel-imbalances" />
+            </div>
+            <div>
+                <button id="export-table-btn" class="btn btn-success btn-lg">Свали екселска таблица</button>
+            </div>
+        </div>
+
+        <table id="export-imbalances">
+            <th>ID</th>
+            <th>Сума на небаланс</th>
+            <th>Дата от</th>
+            <th>Дата до</th>
+            <tbody id="tBody-imbalances">
+
+            </tbody>
+        </table>
     </div>
     <script src="../../../../js/exports/inquiry-imbalances.js"></script>
+    <script src="../../../../js/exportFunctions/exportTable.js"></script>
 </body>
 
 </html>
