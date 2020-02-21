@@ -1,9 +1,13 @@
 ;
 $(document).ready(function () {
+    renderInfo();
     hideGraph();
     visualizeAllInputFromGetParams();
     getDataListing();
 });
+function renderInfo(){
+    $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
+}
 
 class Client {
     constructor() {

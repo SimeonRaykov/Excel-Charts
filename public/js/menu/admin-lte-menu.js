@@ -3,6 +3,17 @@ $(document).ready(function () {
     visualizeActiveLinks();
 });
 
+(function makeBrandLogoSmallerOnSidebarCollapse() {
+    $('body > div.wrapper > div.row > div:nth-child(1) > nav > ul > li:nth-child(1)').on('click', () => {
+        if ($('body > div.wrapper > aside > a > img').hasClass('smaller-logo')) {
+            $('body > div.wrapper > aside > a > img').removeClass('smaller-logo');
+        } else {
+            $('body > div.wrapper > aside > a > img').addClass('smaller-logo');
+        }
+
+    })
+}());
+
 function setDefaultDateForLinks() {
     const lastWeekDate = getLastWeek();
     const today = new Date();
