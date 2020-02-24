@@ -5,10 +5,11 @@ $(document).ready(function () {
     visualizeAllInputFromGetParams();
     getDataListing();
 });
-function renderInfo(){
+
+function renderInfo() {
     $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
 }
-
+  
 class Client {
     constructor() {
         this.meteringType = '';
@@ -22,36 +23,40 @@ class Client {
 }
 client = new Client();
 
-(function switchImbalanceCalendarAndGraph() {
-    $('#switch-calendar-graph').on('click', () => {
-        if ($('#calendar-imbalance').css('display') == 'block') {
-            $('#calendar-imbalance').css("display", "none");
-            $('div.imbalance-graph-div').css("display", "block");
+(function switchPredictionsCalendarAndGraph() {
+    $('#switch-calendar-predictions').on('click', () => {
+        if ($('#calendar-predictions').css('display') == 'block') {
+            $('#calendar-predictions').css("display", "none");
+            $('.readings-prediction-div').css("display", "block");
             $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label')
                 .css('display', 'block')
         } else {
-            $("div.imbalance-graph-div").css("display", "none");
+            $(".readings-prediction-div").css("display", "none");
+            $('#calendar-predictions').css("display", "block");
             $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label')
-                .css('display', 'none')
-            $('#calendar-imbalance').css("display", "block");
-
+                .css('display', 'none');
         }
     })
 })();
 
 const colors = {
     blue: '#aa62ea',
-    red: '#ff4d4d'
+    red: '#ff4d4d',
+    yellow: '#faee1c',
+    pink: '#ea7dc7',
+    orange: '#eac100',
+    light_blue: '#00d1ff'
 }
 
 function hideGraph() {
-    $('.imbalance-graph-div').css('display', 'none');
-    $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label')
+    hideSwitch();
+    $('.readings-prediction-div').css('display', 'none');
+    $('body > div.container.mt-3 > div.container.clients.text-center > div.row > div.offset-md-6 > label')
         .css('display', 'none');
 }
 
 function showCalendar() {
-    $('#calendar-imbalance').css('display', 'block');
+    $('#calendar-predictions').css('display', 'block');
 }
 
 function incrementHoursOne(date) {
@@ -65,6 +70,18 @@ function getDataListing() {
         dataType: 'json',
         success: function (data) {
             convertDataToSet(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+
+    $.ajax({
+        url: '/api/data-listings/profile-name',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeProfileNameDataListings(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -85,14 +102,21 @@ function convertDataToSet(data) {
 
 function visualizeDataListings(arr) {
     let clientNames = arr[0];
-    let clientIds = arr[1]
+    let clientIds = arr[1];
     for (let name of clientNames) {
-        $('#stp-hour-readings-clients').append(`<option value="${name}"></option>`);
+        $('#stp-hour-predictions-clients').append(`<option value="${name}"></option>`);
     }
 
     for (let ID of clientIds) {
         $('#idList').append(`<option value="${ID}"></option>`);
     }
+}
+
+function visualizeProfileNameDataListings(profileNames) {
+    for (let profileName of profileNames) {
+        $('#profile_names').append(`<option value="${profileName.profile_name}"></option>`);
+    }
+    visualizeTooltips();
 }
 
 $('#searchBtn').on('click', (event) => {
@@ -103,20 +127,21 @@ $('#searchBtn').on('click', (event) => {
     let toDate = $('#toDate').val();
     let nameOfClient = $('#name').val();
     let clientID = $('#clientID').val();
-    getImbalances([fromDate, toDate, nameOfClient, clientID]);
+    let profileName = $('#profile_name').val()
+    getPredictions([fromDate, toDate, nameOfClient, clientID, profile_name]);
     showCalendar();
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar-imbalance');
+    var calendarEl = document.getElementById('calendar-predictions');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         eventLimit: true,
         eventLimit: 1,
-        eventLimitText: 'Има небаланс',
+        eventLimitText: 'Има график',
         eventLimitClick: 'day',
         allDaySlot: false,
         eventOrder: 'groupId',
-        events: getImbalances(),
+        events: getPredictions(),
         plugins: ['dayGrid', 'timeGrid'],
         header: {
             left: 'prev,next today',
@@ -131,15 +156,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 0);
 });
 
-function getImbalances(arr) {
+function getPredictions(arr) {
     let calendarData = [];
     if (!arr) {
         var name = findGetParameter('name');
         var fromDate = findGetParameter('fromDate');
         var toDate = findGetParameter('toDate');
         var clientID = findGetParameter('clientID');
+        var profile_name = findGetParameter('profile_name');
         var erp = []
-        var metering_type = 'stp_imbalances';
+        var metering_type = findGetParameter('predictions');
         if (window.location.href.includes('energoPRO')) {
             erp.push(3);
         }
@@ -149,8 +175,8 @@ function getImbalances(arr) {
         if (window.location.href.includes('evn')) {
             erp.push(1);
         }
-        if (window.location.href.includes('hourly_imbalances')) {
-            metering_type = 'hourly_imbalances';
+        if (window.location.href.includes('profile_coef')) {
+            metering_type = 'profile_coef';
         }
 
     } else {
@@ -160,7 +186,8 @@ function getImbalances(arr) {
             name,
             clientID,
             erp,
-            metering_type
+            metering_type,
+            profile_name
         ] = arr;
     }
 
@@ -176,8 +203,7 @@ function getImbalances(arr) {
     if (clientID == '') {
         clientID = -1;
     }
-    let url = `/api/filter/calculate-imbalances/`;
-    let isFirst = !window.location.href.includes('?');
+    let url = `/api/filter/inquiry-graphs/`;
     notification('Loading...', 'loading');
     $.ajax({
         url,
@@ -188,15 +214,17 @@ function getImbalances(arr) {
             name,
             ident_code: clientID,
             erp,
-            metering_type
+            metering_type,
+            profile_name
         },
         async: false,
         dataType: 'json',
         success: function (data) {
-            window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
-            showImbalanceChart(data);
-            calendarData = calculateImbalances(data);
-            addImbalancesToTable(calendarData);
+
+            window.location.href.includes('profile_coef') ? client.setMeteringType(2) : client.setMeteringType(1)
+            showGraphsChart(data);
+            calendarData = getPredictionDataForCalendar(data);
+            addPredictionsToTable(calendarData);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -206,7 +234,8 @@ function getImbalances(arr) {
     return calendarData;
 };
 
-function addImbalancesToTable(data) {
+function addPredictionsToTable(data) {
+    console.log(data);
     let currRow;
     let currentStartDate;
     let currentEndDate;
@@ -214,50 +243,40 @@ function addImbalancesToTable(data) {
         currentStartDate = new Date(el.start);
         currentEndDate = new Date(el.end);
         currRow = $(`<tr>`);
-
         currRow
             .append(`<td>${el.id}</td>`)
             .append(`<td>${el.title}</td`)
             .append((`<td>${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}</td`))
             .append((`<td>${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}</td`))
             .append((`</tr>`));
-        currRow.appendTo($('#tBody-imbalances'));
+        currRow.appendTo($('#tBody-prediction'));
     }
 
 }
 
-function showImbalanceChart(data) {
+function showGraphsChart(data) {
     let labels = [];
     let actualHourData = [];
-    let predictionData = [];
-    let imbalancesData = [];
 
     let tempActualArr = [];
-    let tempPredictionArr = [];
-    let tempImbalances = [];
-
     let index = 0;
     let dataIterator = 0;
 
     if (data != undefined) {
         if (true /*data.length == 1*/ ) {
             for (let el in data) {
-                const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
-                let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
-                let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
-                const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
-                const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
-                const amount = data[el]['amount'] || 1;
+                const startingIndexActualHourData = 2;
+                let indexActualData = 2;
+                let finalIndex = 26;
                 let date = new Date(data[el]['date']);
-                let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
                 let t = date;
                 for (let val of valuesData) {
-                    if (index >= startingIndexActualHourData && index <= endIndexPrediction) {
+                    if (index >= startingIndexActualHourData) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+
                         let actualHourObj = {
                             t,
                             y: valuesData[indexActualData]
@@ -266,24 +285,7 @@ function showImbalanceChart(data) {
                             tempActualArr.push(actualHourObj);
                         }
 
-                        let predictionObj = {
-                            t,
-                            y: valuesData[indexPrediction]
-                        }
-                        if (predictionObj.y != undefined) {
-                            tempPredictionArr.push(predictionObj);
-                        }
-
-                        let imbalanceData = {
-                            t,
-                            y: currImbalance
-                        }
-                        if (imbalanceData.y != undefined) {
-                            tempImbalances.push(imbalanceData);
-                        }
-
                         indexActualData += 1;
-                        indexPrediction += 1;
                         labels.push(`${t.getHours()} ч.`);
                         t = incrementHoursOne(date);
                     }
@@ -313,88 +315,20 @@ function showImbalanceChart(data) {
             }
         }
     }
-
-    let sumOfAllReadingsActual = [];
-    let sumOfAllPredictions = [];
-    let sumOfAllImbalances = [];
-
-    let actualDataSorted = tempActualArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
-    let predictionDataSorted = tempPredictionArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
-    let imbalancesDataSorted = tempImbalances.sort((a, b) => (a.t > b.t) ? 1 : -1);
-
-    let currReadingActual;
-    let currReadingPrediction;
-    let currReadingImbalance;
-
-    let currStart;
-    let iterationsCount = 0;
-    let y = 1;
-
-    for (let i = 0; i < actualDataSorted.length; i += 1) {
-        currStart = actualDataSorted[i].t;
-        currReadingActual = {
-            t: actualDataSorted[i].t,
-            y: actualDataSorted[i].y
-        }
-        currReadingPrediction = {
-            t: predictionDataSorted[i].t,
-            y: predictionDataSorted[i].y
-        }
-
-        currReadingImbalance = {
-            t: imbalancesDataSorted[i].t,
-            y: imbalancesDataSorted[i].y
-        }
-
-        if (actualDataSorted[i + y]) {
-            while (currStart.getHours() == actualDataSorted[i + y].t.getHours() &&
-                currStart.getDate() == actualDataSorted[i + y].t.getDate() &&
-                currStart.getFullYear() == actualDataSorted[i + y].t.getFullYear() &&
-                currStart.getMonth() == actualDataSorted[i + y].t.getMonth()) {
-                currStart = actualDataSorted[i + y].t;
-                currReadingActual.y += actualDataSorted[i + y].y;
-                currReadingPrediction.y += predictionDataSorted[i + y].y;
-                currReadingImbalance.y += imbalancesDataSorted[i + y].y;
-                y += 1;
-                iterationsCount += 1;
-                if (!actualDataSorted[i + y]) {
-                    break;
-                }
-            }
-        }
-        i += iterationsCount;
-        iterationsCount = 0;
-        y = 1;
-        sumOfAllReadingsActual.push(currReadingActual);
-        sumOfAllPredictions.push(currReadingPrediction);
-        sumOfAllImbalances.push(currReadingImbalance);
-    }
+    console.log(tempActualArr);
     let labelsNoDuplicates = removeDuplicatesFromArr(labels);
-    var ctx = document.getElementById('imbalance-chart').getContext('2d');
+    var ctx = document.getElementById('predictions-chart').getContext('2d');
     var config = {
         type: 'line',
         data: {
             labels: labelsNoDuplicates,
             datasets: [{
                 label: 'Настоящи',
-                data: sumOfAllReadingsActual,
+                data: tempActualArr,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
-            }, {
-                label: 'Прогнози',
-                data: sumOfAllPredictions,
-                borderWidth: 2,
-                backgroundColor: "#9c1de7",
-                borderColor: "#1e2a78",
-                hidden: true
-            }, {
-                label: 'Небаланс',
-                data: sumOfAllImbalances,
-                borderWidth: 2,
-                backgroundColor: "#f3f169",
-                borderColor: "#ffd615",
-            }],
+            }]
         },
         options: {
             scales: {
@@ -420,80 +354,44 @@ function showImbalanceChart(data) {
     })
 }
 
-function calculateImbalances(data) {
+function getPredictionDataForCalendar(data) {
     const beginningIndexOfIterator = 2;
-    const endIndexOfIterator = 26;
     let dataArr = [];
     let currHourReading = [];
 
     for (let el in data) {
         currHourReading = [];
-        const amount = data[el]['amount'] || 1;
         let currHourDate = new Date(data[el].date);
-        let currHourReadingVal = 2;
-        let currHourPredictionVal = 26;
         let objVals = Object.values(data[el]);
         let iterator = 0;
-        let isManufacturer = data[el]['is_manufacturer'];
-
+        const color = randomProperty(colors)
         for (let val of objVals) {
-            if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
+            if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
-                    id: iterator,
-                    title: currImbalance,
+                    id: data[el].ident_code,
+                    title: val,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
-                    backgroundColor: colors.blue
+                    backgroundColor: color
                 }
                 dataArr.push(currHourReading);
                 incrementHoursOne(currHourDate);
-                currHourReadingVal += 1;
-                currHourPredictionVal += 1;
             }
             iterator += 1;
         }
     }
-    let sumOfAllArrs = [];
-    let dataArrSorted = dataArr.sort((a, b) => (a.start > b.start) ? 1 : -1);
-    let currReading;
-    let currStart;
-    let iterationsCount = 0;
-    let y = 1;
-    let idCounter = 1;
-    for (let i = 0; i < dataArrSorted.length; i += 1) {
-        currStart = dataArrSorted[i].start;
-        currReading = {
-            id: idCounter++,
-            title: dataArrSorted[i].title,
-            start: dataArrSorted[i].start,
-            end: dataArrSorted[i].end,
-            backgroundColor: colors.blue
-        }
-        if (dataArrSorted[i + y]) {
-            while (currStart == dataArrSorted[i + y].start) {
-                currStart = dataArrSorted[i + y].start;
-                currReading.title += dataArrSorted[i + y].title;
-                y += 1;
-                iterationsCount += 1;
-                if (!dataArrSorted[i + y]) {
-                    break;
-                }
-            }
-        }
-        i += iterationsCount;
-        iterationsCount = 0;
-        y = 1;
-        //  console.log(sumOfAllArrs);
-        sumOfAllArrs.push(currReading);
-    }
-    return sumOfAllArrs;
+    return dataArr;
 }
+
+var randomProperty = function (obj) {
+    var keys = Object.keys(obj)
+    return obj[keys[keys.length * Math.random() << 0]];
+};
 
 (function addOnClickEventToExportTableBTN() {
     $('#export-table-btn').on('click', () => {
         const tableName = $('#table-input').val();
-        exportTableToExcel('export-imbalances', tableName);
+        exportTableToExcel('export-predictions', tableName);
     })
 }());
 
@@ -564,6 +462,7 @@ function visualizeInputFromGetParams() {
     findGetParameter('name') === null ? '' : $('#nameOfClient').val(findGetParameter('name'));
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
     findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
+    findGetParameter('profile_name') === null ? '' : $('#profile_name').val(findGetParameter('profile_name'));
 }
 
 function visualizeCheckboxesFromHistoryLocation() {
@@ -577,15 +476,17 @@ function visualizeCheckboxesFromHistoryLocation() {
     if (!location.includes('evn')) {
         $('#evn').prop('checked', false);
     }
-    if (!location.includes('hourly_imbalances')) {
-        $('#stp_imbalances').prop('checked', true);
-        //   $('#hourly_imbalances').prop('checked',false);
+    if (location.includes('profile_coef')) {
+        $('#profile_coef').prop('checked', true);
     } else {
-        $('#hourly_imbalances').prop('checked', true);
-        // $('#stp_imbalances').prop('checked',false);
+        $('#hour_prediction').prop('checked', true);
     }
 }
 
-function calcImbalance(isManufacturer, predictionVal, actualVal) {
-    return isManufacturer == 0 ? predictionVal - actualVal : actualVal - predictionVal;
+function hideSwitch() {
+    $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label').css('display', 'none');
+}
+
+function visualizeTooltips() {
+    $('[data-toggle="tooltip"]').tooltip()
 }
