@@ -93,9 +93,6 @@ router.get('/users/clients/STP-Details/:id', (req, res) => res.render('./STP lis
 router.get('/users/clients/hour-reading/:id', (req, res) => res.render('./hour-readings/clients-hour-readings.ejs', {
     name: user.getName()
 }));
-router.get('/users/clients/hour-reading/daily/s', (req, res) => res.render('./hour-readings/hour-readings-daily.ejs', {
-    name: user.getName()
-}));
 router.get('/users/list/hour-readings', (req, res) => res.render('./hour-readings/listHourReadingsTable.ejs', {
     name: user.getName()
 }));
@@ -108,13 +105,7 @@ router.get('/users/graphs/STP', (req, res) => res.render('./Graphs/GraphSTP.ejs'
 router.get('/users/graphs/STP/:id', (req, res) => res.render('./Graphs/GraphSTP-Client.ejs', {
     name: user.getName()
 }));
-// Exports Inquiry
-router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
-    name: user.getName()
-}));
-router.get('/users/inquiry/imbalances', (req, res) => res.render('./exports/inquiry-imbalances.ejs', {
-    name: user.getName()
-}));
+
 // Clients
 router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
     name: user.getName()
@@ -124,15 +115,14 @@ router.get('/users/clients/info/:id', (req, res) => res.render('./clients/client
     name: user.getName()
 }));
 
-// Invoicing
-router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readings-stp.ejs', {
-    name: user.getName()
-}));
-
-// Readings menu - STP Hour - readings
+// Readings menu 
 router.get('/users/clients/stp-hour-reading/daily/s', (req, res) => res.render('./readings-menu/list-readings-stp.ejs', {
     name: user.getName()
 }));
+router.get('/users/clients/hour-reading/daily/s', (req, res) => res.render('./readings-menu/hour-readings-daily.ejs', {
+    name: user.getName()
+}));
+
 
 //  Graph menu
 router.get('/users/list/stp-graph-readings/', (req, res) => res.render('./graphs-menu/stp-graph-readings.ejs', {
@@ -147,5 +137,25 @@ router.get('/users/clients/graphs-stp-hour-prediction/monthly/s', (req, res) => 
 router.get('/users/clients/graphs-hour-prediction/daily/s', (req, res) => res.render('./graphs-menu/graphs-hour-prediction-daily.ejs', {
     name: user.getName()
 }));
+
+//  Invoicing
+router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readings-stp.ejs', {
+    name: user.getName()
+}));
+
+//  Exports Inquiry
+router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
+    name: user.getName()
+}));
+router.get('/users/inquiry/readings', (req, res) => res.render('./exports/inquiry-readings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/inquiry/graphs', (req, res) => res.render('./exports/inquiry-graphs.ejs', {
+    name: user.getName()
+}));
+router.get('/users/inquiry/imbalances', (req, res) => res.render('./exports/inquiry-imbalances.ejs', {
+    name: user.getName()
+}));
+
 
 module.exports = router;

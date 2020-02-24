@@ -124,5 +124,7 @@ app.use('/', require('./API-controllers/invoices/stp-list-clients-details-api'))
 app.use('/', require('./API-controllers/invoices/stp-reading-details-api'));
 
 //  Inquiry
+app.use('/', require('./API-controllers/inquiry/inquiry-readings-api'));
+app.use('/', require('./API-controllers/inquiry/inquiry-graphs-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-imbalances-api'));
 exports.db = db;
