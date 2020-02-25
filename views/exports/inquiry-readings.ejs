@@ -32,7 +32,8 @@
     <link rel="stylesheet" href="../../../css/checkboxes.css">
     <link rel="stylesheet" href="../../../css/radio-btns.css">
     <link rel="stylesheet" href="../../../css/inquiry-readings.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="../../../css/handsontable.css">
+    <title>Справка - Мерения</title>
 </head>
 
 <body>
@@ -87,8 +88,7 @@
                         <div class="row justify-content-around">
                             <span class="mt-3 text-heading">Вид Мерене:</span>
                             <label class="radio mr-5">СТП
-                                <input type="radio" id="stp_hour_readings" value="stp_hour_readings"
-                                    name="readings">
+                                <input type="radio" id="stp_hour_readings" value="stp_hour_readings" name="readings">
                                 <span class="checkmark"></span>
                             </label>
                             <label class="radio">Почасови
@@ -97,9 +97,9 @@
                             </label>
                             <div class="mt-3 text-heading" aria-haspopup="true" aria-expanded="true"
                                 data-toggle="tooltip" data-placement="bottom" container="body"
-                                 title="Избиране на име на профил за СТП">
-                                Име на профил<input id="profile_name" class="ml-3" name="profile_name" autocomplete="off"
-                                    list="profile_names" type="search"></input>
+                                title="Избиране на име на профил за СТП">
+                                Име на профил<input id="profile_name" class="ml-3" name="profile_name"
+                                    autocomplete="off" list="profile_names" type="search"></input>
                                 <datalist id="profile_names">
                                 </datalist>
                             </div>
@@ -147,17 +147,25 @@
                 </div>
             </div>
 
-            <table id="export-readings">
-                <th>ID</th>
-                <th>Име на клиент</th>
-                <th>Дата от</th>
-                <th>Дата до</th>
-                <tbody id="tBody-readings">
-
-                </tbody>
-            </table>
+            <div class="container mt-5">
+                <div class="row justify-content-around">
+                    <button class="btn btn-lg ml-5" id="hide_dataTable">
+                        <i class="fas fa-2x fa-window-close"></i>
+                    </button>
+                    <h2 class="mt-2 text-center">Преглед - Мерения</h2>
+                    <button class="btn btn-lg mr-5" id="show_dataTable">
+                        <i class="fas fa-2x fa-check-square"></i>
+                    </button>
+                </div>
+                <div class="mt-3 row justify-content-center">
+                    <div id="handsontable-readings"></div>
+                </div>
+            </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet"
+        media="screen">
     <script src="../../../../js/exports/inquiry-readings.js"></script>
     <script src="../../../../js/exportFunctions/exportTable.js"></script>
 </body>

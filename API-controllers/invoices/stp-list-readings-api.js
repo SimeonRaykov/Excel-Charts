@@ -23,7 +23,7 @@ router.post('/api/filterData', (req, res) => {
         name,
         ERP
     } = req.body;
-    let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS invoicing_id,client_number, ident_code, period_from, period_to, value_bgn, type
+    let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS invoicing_id,client_number, ident_code, qty, period_from, period_to, value_bgn, type
     FROM invoicing
     INNER JOIN clients
     ON invoicing.client_id = clients.id

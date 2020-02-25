@@ -58,12 +58,12 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
             sql += ` AND profile_id = ${profileID}`
         }
     } else if (metering_type === 'profile_coef') {
-        sql = `SELECT clients.ident_code,${metering_type}.date, (${metering_type}.hour_one * amount) AS 'hr0',(${metering_type}.hour_two* amount) AS 'hr1',  (${metering_type}.hour_three* amount) AS 'hr2', (${metering_type}.hour_four* amount) AS 'hr3', (${metering_type}.hour_five* amount) AS 'hr4', (${metering_type}.hour_six* amount) AS 'hr5', (${metering_type}.hour_seven* amount) AS 'hr6', (${metering_type}.hour_eight* amount) AS 'hr7', (${metering_type}.hour_nine* amount) AS 'hr8', (${metering_type}.hour_ten* amount) AS 'hr9', (${metering_type}.hour_eleven* amount) AS 'hr10', (${metering_type}.hour_twelve* amount) AS 'hr11', (${metering_type}.hour_thirteen* amount) AS 'hr12', (${metering_type}.hour_fourteen* amount) AS 'hr13', (${metering_type}.hour_fifteen* amount) AS 'hr14', (${metering_type}.hour_sixteen* amount) AS 'hr15', (${metering_type}.hour_seventeen* amount) AS 'hr16', (${metering_type}.hour_eighteen* amount) AS 'hr17', (${metering_type}.hour_nineteen* amount) AS 'hr18', (${metering_type}.hour_twenty* amount) AS 'hr19', (${metering_type}.hour_twentyone* amount) AS 'hr20', ${metering_type}.hour_twentytwo AS 'hr21', (${metering_type}.hour_twentythree* amount) AS 'hr22', (${metering_type}.hour_zero* amount) AS 'hr23' FROM clients
-    INNER JOIN ${metering_type} on clients.id = ${metering_type}.profile_id 
-    INNER JOIN prediction ON prediction.client_id = clients.id
-    WHERE MONTH(prediction.date) = MONTH(profile_coef.date)
-    AND YEAR(prediction.date) = YEAR(profile_coef.date)
-     `;
+        sql = `SELECT clients.ident_code,profile_coef.date, (profile_coef.hour_one * amount) AS 'hr0',(profile_coef.hour_two* amount) AS 'hr1',  (profile_coef.hour_three* amount) AS 'hr2', (profile_coef.hour_four* amount) AS 'hr3', (profile_coef.hour_five* amount) AS 'hr4', (profile_coef.hour_six* amount) AS 'hr5', (profile_coef.hour_seven* amount) AS 'hr6', (profile_coef.hour_eight* amount) AS 'hr7', (profile_coef.hour_nine* amount) AS 'hr8', (profile_coef.hour_ten* amount) AS 'hr9', (profile_coef.hour_eleven* amount) AS 'hr10', (profile_coef.hour_twelve* amount) AS 'hr11', (profile_coef.hour_thirteen* amount) AS 'hr12', (profile_coef.hour_fourteen* amount) AS 'hr13', (profile_coef.hour_fifteen* amount) AS 'hr14', (profile_coef.hour_sixteen* amount) AS 'hr15', (profile_coef.hour_seventeen* amount) AS 'hr16', (profile_coef.hour_eighteen* amount) AS 'hr17', (profile_coef.hour_nineteen* amount) AS 'hr18', (profile_coef.hour_twenty* amount) AS 'hr19', (profile_coef.hour_twentyone* amount) AS 'hr20', profile_coef.hour_twentytwo AS 'hr21', (profile_coef.hour_twentythree* amount) AS 'hr22', (profile_coef.hour_zero* amount) AS 'hr23' FROM clients
+        INNER JOIN prediction ON prediction.client_id = clients.id
+        INNER JOIN stp_profiles ON stp_profiles.id = clients.profile_id
+        INNER JOIN profile_coef ON profile_coef.profile_id = stp_profiles.id
+            WHERE MONTH(prediction.date) = MONTH(profile_coef.date)
+            AND YEAR(prediction.date) = YEAR(profile_coef.date) `;
         if (fromDate != -1 && toDate != -1) {
             sql += ` AND ${metering_type}.date>='${fromDate}' AND ${metering_type}.date<= '${toDate}' `;
         } else if (fromDate != -1 && toDate == -1) {

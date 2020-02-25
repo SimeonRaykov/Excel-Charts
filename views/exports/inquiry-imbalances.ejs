@@ -32,7 +32,8 @@
     <link rel="stylesheet" href="../../../css/checkboxes.css">
     <link rel="stylesheet" href="../../../css/radio-btns.css">
     <link rel="stylesheet" href="../../../css/inquiry-imbalances.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="../../../css/handsontable.css">
+    <title>Справка - Небаланси</title>
 </head>
 
 <body>
@@ -152,18 +153,26 @@
                 </div>
             </div>
 
-            <table id="export-imbalances">
-                <th>ID</th>
-                <th>Сума на небаланс</th>
-                <th>Дата от</th>
-                <th>Дата до</th>
-                <tbody id="tBody-imbalances">
+            <div class="container mt-5">
+                <div class="row justify-content-around">
+                    <button class="btn btn-lg ml-5" id="hide_dataTable">
+                        <i class="fas fa-2x fa-window-close"></i>
+                    </button>
+                    <h2 class="mt-2 text-center">Преглед - Небаланси</h2>
+                    <button class="btn btn-lg mr-5" id="show_dataTable">
+                        <i class="fas fa-2x fa-check-square"></i>
+                    </button>
+                </div>
+                <div class="mt-3 row justify-content-center">
+                    <div id="handsontable-imbalances"></div>
+                </div>
+            </div>
 
-                </tbody>
-            </table>
         </div>
-
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet"
+        media="screen">
     <script src="../../../../js/exports/inquiry-imbalances.js"></script>
     <script src="../../../../js/exportFunctions/exportTable.js"></script>
 </body>
