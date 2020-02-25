@@ -6,6 +6,62 @@ $(document).ready(function () {
     getDataListing();
 });
 
+function initializeHandsOnTable(data) {
+    var container = document.getElementById('handsontable-readings');
+    var hot = new Handsontable(container, {
+        htMiddle: true,
+        htCenter: true,
+        contextMenu: true,
+        manualRowMove: true,
+        bindRowsWithHeaders: 'strict',
+        rowHeaders: true,
+        colHeaders: true,
+        data: data,
+        filters: true,
+        dropdownMenu: true,
+        licenseKey: 'non-commercial-and-evaluation',
+        colWidths: [200, 200, 200, 200],
+        colHeights: 500,
+        rowWidths: 200,
+        rowHeights: 30,
+        cells: function () {
+            var cellPrp = {};
+            cellPrp.className = 'htCenter htMiddle'
+            return cellPrp
+        }
+    });
+
+    const exportPlugin = hot.getPlugin('exportFile');
+    exportPlugin.exportAsString('csv', {
+        columnHeaders: true,
+        rowHeaders: true,
+        columnDelimiter: ',',
+    });
+
+    $('#export-table-btn').on('click', () => {
+        const filename = $('#table-input').val() || 'excel-readings';
+        exportPlugin.downloadFile('csv', {
+            filename
+        });
+    })
+};
+
+(function removeDataTableEvent() {
+    $('#hide_dataTable').click(() => {
+        $('#handsontable-readings').css('display', 'none');
+        $('#hide_dataTable').addClass('animated-push-btn');
+        $('#show_dataTable').removeClass('animated-push-btn');
+    });
+}());
+
+(function addDataTableEvent() {
+    $('#show_dataTable').click(() => {
+        $('#handsontable-readings').css('display', 'block');
+        $('#show_dataTable').addClass('animated-push-btn');
+        $('#hide_dataTable').removeClass('animated-push-btn');
+    });
+}());
+
 function renderInfo() {
     $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
 }
@@ -237,24 +293,23 @@ function getReadings(arr) {
 };
 
 function addReadingsToTable(data) {
-    console.log(data);
     let currRow;
     let currentStartDate;
     let currentEndDate;
+    let allReadings = [];
+    allReadings.push(['Идентификационен код', 'Мерене', 'Дата от', 'Дата до'])
     for (let el of data) {
         currentStartDate = new Date(el.start);
         currentEndDate = new Date(el.end);
-        currRow = $(`<tr>`);
-
+        currRow = [];
         currRow
-            .append(`<td>${el.id}</td>`)
-            .append(`<td>${el.title}</td`)
-            .append((`<td>${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}</td`))
-            .append((`<td>${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}</td`))
-            .append((`</tr>`));
-        currRow.appendTo($('#tBody-readings'));
+            .push(el.id,
+                el.title,
+                `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`,
+                `${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}:00 ч.`)
+        allReadings.push(currRow);
     }
-
+    initializeHandsOnTable(allReadings);
 }
 
 function showReadingsChart(data) {
@@ -391,13 +446,6 @@ var randomProperty = function (obj) {
     return obj[keys[keys.length * Math.random() << 0]];
 };
 
-(function addOnClickEventToExportTableBTN() {
-    $('#export-table-btn').on('click', () => {
-        const tableName = $('#table-input').val();
-        exportTableToExcel('export-readings', tableName);
-    })
-}());
-
 function findGetParameter(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -489,7 +537,7 @@ function visualizeCheckboxesFromHistoryLocation() {
 function hideSwitch() {
     $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label').css('display', 'none');
 }
- 
+
 function visualizeTooltips() {
     $('[data-toggle="tooltip"]').tooltip()
 }

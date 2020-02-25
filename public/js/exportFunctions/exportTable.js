@@ -3,7 +3,6 @@ function exportTableToExcel(tableID, fileName = '') {
     let dataType = 'application/vnd.ms-excel';
     let tableSelect = document.getElementById(tableID);
     let tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
-
     fileName = fileName ? fileName + '.xls' : 'excel-imbalances.xls';
     downloadLink = document.createElement('a');
     document.body.appendChild(downloadLink);

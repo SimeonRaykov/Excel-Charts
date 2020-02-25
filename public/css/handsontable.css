@@ -1,0 +1,23 @@
+.handsontable .ht_clone_left thead,
+.handsontable .ht_master thead,
+.handsontable .ht_master tr th {
+    visibility: visible !important;
+}
+
+.fas.fa-2x.fa-window-close {
+    color: red;
+}
+
+.fas.fa-2x.fa-check-square {
+    color: green
+}
+
+@keyframes pop {
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.animated-push-btn {
+    animation: pop 0.3s linear 1;
+}

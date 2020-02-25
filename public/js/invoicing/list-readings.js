@@ -1,14 +1,59 @@
 ;
 $(document).ready(function () {
+    try {
+        console.log(JSON.parse(localStorage.getItem('current-invoicing-data')));
+        console.log(localStorage.getItem('invoicing-criteria'));
+    } catch (e) {
+        console.log(e);
+    }
+    stopBubblingForInputs();
     getDataListing();
     visualizeHistoryParams();
     listAllReadings();
 });
 
+(function selectAllColHeadings() {
+    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-primary.btn-lg').on('click', () => {
+        const checkboxesHeadings = $('table th input');
+        checkboxesHeadings.each(function () {
+            if ($(this).prop('checked') === false) {
+                $('table th input').prop('checked', true);
+                return;
+            } else {
+                $('table th input').prop('checked', false);
+                return;
+            }
+        });
+    });
+}());
+
+(function selectAllRows() {
+    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-danger.btn-lg').on('click', () => {
+        const checkboxesFirstRow = $($('table tbody input')[0]).prop('checked');
+        if (checkboxesFirstRow === true) {
+            $('table tbody input').prop('checked', false);
+        } else {
+            $('table tbody input').prop('checked', true);
+        }
+    })
+}());
+
+(function renderInvoicingPreview() {
+    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-success.btn-lg').on('click', () => {
+        setHeadingsColsandItemsRowsInLocalStorage();
+    });
+}());
+
+function stopBubblingForInputs() {
+    $('table input').on('click', (e) => {
+        e.stopPropagation();
+    });
+}
+
 function getAllListings(data) {
+    console.log(data);
     let i = 0;
     for (let el in data) {
-
         let currRow = $('<tr>').attr('role', 'row');
         if (i % 2 == 1) {
             currRow.addClass('even');
@@ -17,13 +62,14 @@ function getAllListings(data) {
         }
         i += 1;
         currRow
-            .append('<td>' + data[el]['invoicing_id'] + '</td>')
+            .append('<td><input type="checkbox" class="mr-1">' + data[el]['invoicing_id'] + '</td>')
             .append($('<td>' + data[el]['client_number'] + '</td>'))
             .append($(`<td><a href=clients/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_from']) + '</td>'))
             .append($('<td>' + getJsDate(data[el]['period_to']) + '</td>'))
             .append($('<td>' + (data[el]['time_zone'] == '' ? '' : data[el]['time_zone']) + '</td>'))
+            .append($('<td>' + (data[el]['qty'] == '' ? '' : data[el]['qty'] + ' (кВтч/кВАрч)') + '</td>'))
             .append($('<td>' + (data[el]['value_bgn'] == 0 ? 'няма стойност' : `${data[el]['value_bgn']} лв`) + '</td>'))
             .append($('<td>' + (data[el]['type'] == 1 ? 'Техническа част' : 'Разпределение') + '</td>'))
             .append($('<td>' + (data[el]['operator'] == 2 ? 'ЧЕЗ' : data[el]['operator'] == 1 ? 'EVN' : 'EnergoPRO') + '</td>'))
@@ -36,6 +82,7 @@ function getAllListings(data) {
         "order": [
             [0, "desc"]
         ],
+        "paging": false,
         retrieve: true
     });
     $('#tBody').addClass('text-center');
@@ -52,7 +99,6 @@ function getDataListing() {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             convertDataToSet(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -86,18 +132,20 @@ function visualizeDataListings(arr) {
     }
 }
 
-$('body > div > form > div > button').on('click', (event) => {
-    event.preventDefault();
-    dataTable.clear().destroy();
-    dataTable;
-    let fromDate = $('#fromDate').val();
-    let toDate = $('#toDate').val();
-    let nameOfClient = $('#nameOfClient').val();
-    let clientID = $('#clientID').val();
-    let ERP = $('#ERP').val();
+(function filterClientData() {
+    $('body > div > form > div > button').on('click', (event) => {
+        event.preventDefault();
+        dataTable.clear().destroy();
+        dataTable;
+        let fromDate = $('#fromDate').val();
+        let toDate = $('#toDate').val();
+        let nameOfClient = $('#nameOfClient').val();
+        let clientID = $('#clientID').val();
+        let ERP = $('#ERP').val();
 
-    listAllReadings([fromDate, toDate, nameOfClient, clientID, ERP]);
-});
+        listAllReadings([fromDate, toDate, nameOfClient, clientID, ERP]);
+    });
+}())
 
 function listAllReadings(arr) {
     if (!arr) {
@@ -237,4 +285,57 @@ function visualizeHistoryParams() {
     if (!window.location.href.includes('evn')) {
         $('#evn').prop('checked', false);
     }
+}
+
+function setHeadingsColsandItemsRowsInLocalStorage() {
+    const allTableRowsInputs = $('table tbody input');
+    let data = [];
+    allTableRowsInputs.each(function () {
+        if ($(this).prop('checked') === true) {
+            let currRow = ($(this).parent().parent());
+            let id, client_number, client_ident_code, curr_client_name,
+                date_from, date_to, hour_zone, qty, total_cost, document_type, erp_type;
+
+            id = ($(currRow.children()[0]).text());
+            client_number = ($(currRow.children()[1]).text());
+            client_ident_code = ($(currRow.children()[2]).text());
+            curr_client_name = ($(currRow.children()[3]).text());
+            date_from = ($(currRow.children()[4]).text());
+            date_to = ($(currRow.children()[5]).text());
+            hour_zone = ($(currRow.children()[6]).text());
+            qty = ($(currRow.children()[7]).text());
+            total_cost = ($(currRow.children()[8]).text());
+            document_type = ($(currRow.children()[9]).text());
+            erp_type = ($(currRow.children()[10]).text());
+
+            /*  for (let i = 0; i < currRow.children().length; i += 1) {
+                 console.log($(currRow.children()[i]).text());
+             } */
+            let currInfo = {
+                id,
+                client_number,
+                client_ident_code,
+                curr_client_name,
+                date_from,
+                date_to,
+                hour_zone,
+                qty,
+                total_cost,
+                document_type,
+                erp_type
+            }
+            data.push(currInfo);
+        }
+    });
+    const allTableCols = $('table th input');
+    let colHeadingText;
+    let invoicingCriteria = [];
+    allTableCols.each(function () {
+        if ($(this).prop('checked')) {
+            colHeadingText = $(this).parent().text();
+            invoicingCriteria.push(colHeadingText);
+        }
+    });
+    localStorage.setItem('invoicing-criteria', JSON.stringify(invoicingCriteria));
+    localStorage.setItem('current-invoicing-data', JSON.stringify(data));
 }
