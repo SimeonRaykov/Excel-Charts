@@ -12,6 +12,12 @@ $(document).ready(function () {
     listAllReadings();
 });
 
+(function addOnClickToReadingsPreviewBTN() {
+    $('#preview-readings').click(() => {
+        window.location.href = '/users/invoicing/preview'
+    })
+})();
+
 (function selectAllColHeadings() {
     $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-primary.btn-lg').on('click', () => {
         const checkboxesHeadings = $('table th input');
@@ -44,6 +50,13 @@ $(document).ready(function () {
     });
 }());
 
+(function issueInvoices() {
+    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-warning.btn-lg').click(() => {
+        setHeadingsColsandItemsRowsInLocalStorage();
+        console.log(JSON.parse(localStorage.getItem('current-invoicing-data')));
+    })
+}());
+
 function stopBubblingForInputs() {
     $('table input').on('click', (e) => {
         e.stopPropagation();
@@ -51,7 +64,6 @@ function stopBubblingForInputs() {
 }
 
 function getAllListings(data) {
-    console.log(data);
     let i = 0;
     for (let el in data) {
         let currRow = $('<tr>').attr('role', 'row');
@@ -287,9 +299,22 @@ function visualizeHistoryParams() {
     }
 }
 
-function setHeadingsColsandItemsRowsInLocalStorage() {
+async function setHeadingsColsandItemsRowsInLocalStorage() {
+    const allTableCols = $('table th input');
+    let colHeadingText;
+    let invoicingCriteria = [];
+    allTableCols.each(function () {
+        if ($(this).prop('checked')) {
+            colHeadingText = $(this).parent().text();
+            invoicingCriteria.push(colHeadingText);
+        }
+    });
+    localStorage.setItem('invoicing-criteria', JSON.stringify(invoicingCriteria));
+    let invoicingCriterias = JSON.stringify(invoicingCriteria);
+
     const allTableRowsInputs = $('table tbody input');
     let data = [];
+    let currInfo = {};
     allTableRowsInputs.each(function () {
         if ($(this).prop('checked') === true) {
             let currRow = ($(this).parent().parent());
@@ -308,34 +333,44 @@ function setHeadingsColsandItemsRowsInLocalStorage() {
             document_type = ($(currRow.children()[9]).text());
             erp_type = ($(currRow.children()[10]).text());
 
-            /*  for (let i = 0; i < currRow.children().length; i += 1) {
-                 console.log($(currRow.children()[i]).text());
-             } */
-            let currInfo = {
-                id,
-                client_number,
-                client_ident_code,
-                curr_client_name,
-                date_from,
-                date_to,
-                hour_zone,
-                qty,
-                total_cost,
-                document_type,
-                erp_type
+            currInfo = {};
+            if (invoicingCriterias.includes("ID на отчет")) {
+                currInfo.id = id;
+            }
+            if (invoicingCriterias.includes("Клиентски номер")) {
+                currInfo.client_number = client_number;
+            }
+            if (invoicingCriterias.includes("Идентификационен код")) {
+                currInfo.client_ident_code = client_ident_code;
+            }
+            if (invoicingCriterias.includes("Име на клиент")) {
+                currInfo.curr_client_name = curr_client_name;
+            }
+            if (invoicingCriterias.includes("Период на отчетност от")) {
+                currInfo.date_from = date_from;
+            }
+            if (invoicingCriterias.includes("Период на отчетност до")) {
+                currInfo.date_to = date_to;
+            }
+            if (invoicingCriterias.includes("Часова зона")) {
+                currInfo.hour_zone = hour_zone;
+
+            }
+            if (invoicingCriterias.includes("Количество")) {
+                currInfo.qty = qty;
+            }
+            if (invoicingCriterias.includes("Стойност в лв")) {
+                currInfo.total_cost = total_cost;
+            }
+            if (invoicingCriterias.includes("Тип на документа")) {
+                currInfo.document_type = document_type;
+            }
+            if (invoicingCriterias.includes("ЕРП")) {
+                currInfo.erp_type = erp_type;
             }
             data.push(currInfo);
         }
     });
-    const allTableCols = $('table th input');
-    let colHeadingText;
-    let invoicingCriteria = [];
-    allTableCols.each(function () {
-        if ($(this).prop('checked')) {
-            colHeadingText = $(this).parent().text();
-            invoicingCriteria.push(colHeadingText);
-        }
-    });
-    localStorage.setItem('invoicing-criteria', JSON.stringify(invoicingCriteria));
+
     localStorage.setItem('current-invoicing-data', JSON.stringify(data));
 }
