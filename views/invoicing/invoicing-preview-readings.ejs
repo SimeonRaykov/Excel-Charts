@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <script src="../../../js/datatables/datatables.js"></script>
+    <title>Детайли на мерене</title>
+</head>
+
+<body>
+    <main>
+        <div class="card card-default">
+            <div class="card-header">
+                <h2 class="text-center mb-4">Преглед на данни за фактуриране</h2>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-around">
+                    <button class="btn-success btn-lg">Върни се</button>
+                    <button class="btn-warning btn-lg">Фактурирай</button>
+                </div>
+            </div>
+        </div>
+        <table id="preview-readings" class="display text-center">
+            <thead>
+            </thead>
+            <tbody id="tBody">
+            </tbody>
+        </table> 
+    </main>
+    <script src="/js/invoicing/preview-readings.js"></script>
+</body>
+
+</html>

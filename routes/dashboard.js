@@ -143,6 +143,11 @@ router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readin
     name: user.getName()
 }));
 
+router.get('/users/invoicing/preview', (req, res) => res.render('./invoicing/invoicing-preview-readings.ejs', {
+    name: user.getName()
+}));
+
+
 //  Exports Inquiry
 router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
     name: user.getName()

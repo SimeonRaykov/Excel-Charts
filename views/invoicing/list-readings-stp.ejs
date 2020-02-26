@@ -15,7 +15,6 @@
 </head>
 
 <body>
-
     <div class="card card-default mt-2">
         <div class="card-header">
             <h2 class="text-center">Импортирани Мерения - СТП</h2>
@@ -62,22 +61,24 @@
     </div>
     <div class="row justify-content-around mb-3">
         <button class="btn-primary btn-lg">Селектиране на всички колони</button>
-        <button class="btn-success btn-lg">Преглед</button>
+        <button id="preview-readings" class="btn-success btn-lg">
+            Преглед
+        </button>
         <button class="btn-warning btn-lg">Фактуриране</button>
         <button class="btn-danger btn-lg">Селектиране на всички редове</button>
     </div>
     <table id="list-readings" class="display">
         <thead>
             <tr>
-                <th><input type="checkbox"> ID на отчет</th>
+                <th><input type="checkbox" checked> ID на отчет</th>
                 <th><input type="checkbox">Клиентски номер</th>
-                <th><input type="checkbox">Идентификационен код</th>
+                <th><input type="checkbox" checked>Идентификационен код</th>
                 <th><input type="checkbox">Име на клиент</th>
-                <th><input type="checkbox">Период на отчетност от</th>
-                <th><input type="checkbox">Период на отчетност до</th>
+                <th><input type="checkbox" checked>Период на отчетност от</th>
+                <th><input type="checkbox" checked>Период на отчетност до</th>
                 <th><input type="checkbox">Часова зона</th>
-                <th><input type="checkbox">Количество</th>
-                <th><input type="checkbox">Стойност в лв.</th>
+                <th><input type="checkbox" checked>Количество</th>
+                <th><input type="checkbox" checked>Стойност в лв.</th>
                 <th><input type="checkbox">Тип на документа</th>
                 <th><input type="checkbox">ЕРП</th>
                 <th>Детайли</th>
