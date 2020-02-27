@@ -12,6 +12,21 @@ input:not([type='date']):not([type='search']):not([type='checkbox']) {
     text-align: center;
 }
 
+.nav-tabs .nav-link{
+    transition: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+.nav-tabs .nav-link:hover {
+    color:white !important;
+    border: 1px solid #3d5af1;
+    background-color: #9c1de7
+}
+
+ul.nav-tabs a.nav-link {
+    color: black !important;
+}
+
 input:hover:not([type='date']) {
     border: 1px solid #9c1de7 !important;
 }
@@ -104,12 +119,8 @@ input:not([type='date']):not([type='search']):not([type='checkbox'])::-webkit-ca
     display: none;
 }
 
-.nav-tabs .nav-link {
-    color: black;
-}
-
 ul.nav-tabs a.nav-link {
-    color: #482ff7 !important;
+    color:black !important;
 }
 
 .nav-tabs .nav-link:hover {

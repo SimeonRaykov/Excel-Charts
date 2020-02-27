@@ -3,7 +3,28 @@ $(document).ready(function () {
     visualizeActiveLinks();
 });
 
-(function makeBrandLogoSmallerOnSidebarCollapse() {
+(function swapHamburgerMenuIcons() {
+    $('body > div.wrapper > div.row > div:nth-child(1) > nav > ul > li:nth-child(1)').on('click', () => {
+        if ($('#hmg-icon').hasClass('fa-bars')) {
+            $('#hmg-icon').removeClass('fa-bars').addClass('fa-times');
+        } else {
+            $('#hmg-icon').removeClass('fa-times').addClass('fa-bars');
+        }
+    })
+}());
+
+(function makeBrandLogoSmallerOnSidebarCollapseAndHover() {
+    $('body > div.wrapper > aside').hover(() => {
+        if ($('body').hasClass('sidebar-collapse')) {
+            if ($('body > div.wrapper > aside > a > img').hasClass('smaller-logo')) {
+                $('body > div.wrapper > aside > a > img').removeClass('smaller-logo');
+            } else {
+                $('body > div.wrapper > aside > a > img').addClass('smaller-logo');
+            }
+        }
+    })
+
+
     $('body > div.wrapper > div.row > div:nth-child(1) > nav > ul > li:nth-child(1)').on('click', () => {
         if ($('body > div.wrapper > aside > a > img').hasClass('smaller-logo')) {
             $('body > div.wrapper > aside > a > img').removeClass('smaller-logo');

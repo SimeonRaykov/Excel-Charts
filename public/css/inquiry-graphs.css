@@ -2,6 +2,8 @@
     border: 1px solid lightblue;
     color: black;
     width: 200%;
+    transition: 0.5s;
+    transition-timing-function: ease-in-out;
 }
 
 #export-predictions {
@@ -9,7 +11,9 @@
 }
 
 .nav-tabs .nav-link:hover {
-    border: 1px solid blueviolet;
+    color:white !important;
+    border: 1px solid #3d5af1;
+    background-color: #9c1de7;
 }
 
 .nav-tabs .nav-item.show .nav-link,
@@ -18,7 +22,7 @@
 }
 
 ul.nav-tabs a.nav-link {
-    color: #482ff7 !important;
+    color: black !important;
 }
 
 #export-readings {
