@@ -3,6 +3,9 @@ table a {
     color: blue;
     text-decoration: none;
 }
+table a:hover {
+    text-decoration:none
+}
 
 table a::before {
     content: "";
