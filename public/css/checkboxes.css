@@ -32,6 +32,17 @@
     position: absolute;
 }
 
+
+.checkbox.table-heading input+span:before,
+.checkbox.table-heading input+span:after {
+    left: 50%;
+    top: -70%;
+}
+
+.checkbox.table-heading {
+    margin: 0;
+}
+
 .checkbox input+span:before {
     background: #D1D7E3;
     -webkit-transition: background 0.2s ease, -webkit-transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 2);

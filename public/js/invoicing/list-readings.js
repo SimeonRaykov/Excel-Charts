@@ -19,7 +19,7 @@ $(document).ready(function () {
 })();
 
 (function selectAllColHeadings() {
-    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-primary.btn-lg').on('click', () => {
+    $('#select-cols').on('click', () => {
         const checkboxesHeadings = $('table th input');
         checkboxesHeadings.each(function () {
             if ($(this).prop('checked') === false) {
@@ -34,7 +34,7 @@ $(document).ready(function () {
 }());
 
 (function selectAllRows() {
-    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-danger.btn-lg').on('click', () => {
+    $('#select-rows').on('click', () => {
         const checkboxesFirstRow = $($('table tbody input')[0]).prop('checked');
         if (checkboxesFirstRow === true) {
             $('table tbody input').prop('checked', false);
@@ -61,7 +61,7 @@ function stopBubblingForInputs() {
     $('table input').on('click', (e) => {
         e.stopPropagation();
     });
-}
+};
 
 function getAllListings(data) {
     let i = 0;
@@ -94,6 +94,10 @@ function getAllListings(data) {
         "order": [
             [0, "desc"]
         ],
+        fixedHeader: {
+            header: true,
+            footer: true
+          },
         "paging": false,
         retrieve: true
     });
@@ -148,7 +152,6 @@ function visualizeDataListings(arr) {
     $('body > div > form > div > button').on('click', (event) => {
         event.preventDefault();
         dataTable.clear().destroy();
-        dataTable;
         let fromDate = $('#fromDate').val();
         let toDate = $('#toDate').val();
         let nameOfClient = $('#nameOfClient').val();
