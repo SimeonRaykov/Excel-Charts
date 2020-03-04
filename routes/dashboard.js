@@ -147,7 +147,6 @@ router.get('/users/invoicing/preview', (req, res) => res.render('./invoicing/inv
     name: user.getName()
 }));
 
-
 //  Exports Inquiry
 router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
     name: user.getName()
@@ -162,5 +161,9 @@ router.get('/users/inquiry/imbalances', (req, res) => res.render('./exports/inqu
     name: user.getName()
 }));
 
+//  404 Not Found
+router.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {
+    name: user.getName()
+}));
 
 module.exports = router;

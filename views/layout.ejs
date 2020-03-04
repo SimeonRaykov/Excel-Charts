@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
     <link rel="stylesheet" href="../../../../AdminLTE-master/css/layout.css">
     <link rel="shortcut icon" href="../../../AdminLTE-master/images/favicons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../../css/underline-animation.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -50,7 +51,7 @@
                     <!-- Left navbar links -->
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                            <a class="nav-link" data-widget="pushmenu" href="#"><i id="hmg-icon" class="fas fa-bars"></i></a>
                         </li>
                         <li class="nav-item d-none d-sm-inline-block">
                             <a href="/dashboard" class="nav-link">Home</a>
@@ -100,8 +101,7 @@
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-edit"></i>
-                                <p>
-                                    Импорти
+                                <p>Импорти
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
@@ -165,27 +165,27 @@
                         <li class="nav-item">
                             <a href="/users/import/profiles" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Профили</p>
+                                <p> Профили</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/users/import/graphs" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Графици</p>
+                                <p> Графици</p>
                             </a>
                         </li>
                     </ul>
                     </li>
                     <li class="nav-item"> <a href="/users/clients" class="nav-link">
                             <i class="fas fa-users"></i>
-                            <p class="ml-2">Клиенти</p>
+                            <p class="ml-2"> Клиенти</p>
                         </a>
                     </li>
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <i class="fas fa-file-alt"></i>
                             <p>
-                                Мерене
+                                &nbspМерене
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
@@ -208,7 +208,7 @@
                         <a href="#" class="nav-link">
                             <i class="fas fa-chart-line"></i>
                             <p>
-                                Графици
+                                &nbspГрафици
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
@@ -230,8 +230,7 @@
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
                             <i class="fas fa-file-invoice"></i>
-                            <p>
-                                Фактуриране
+                            <p>&nbspФактуриране
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
@@ -248,7 +247,7 @@
                         <a href="#" class="nav-link">
                             <i class="fas fa-file-export"></i>
                             <p>
-                                Справка
+                                &nbspСправка
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
