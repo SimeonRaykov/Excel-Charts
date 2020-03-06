@@ -9,10 +9,10 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
-
-// Passport config
+const username = require('./routes/dashboard').getUsername;
+// Passport config   
 require('./config/passport.js')(passport);
-// EJS  
+// EJS   
 app.set('views', path.join(__dirname, 'views')); // add this one, change 'views' for your folder name if needed.
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
@@ -127,5 +127,10 @@ app.use('/', require('./API-controllers/invoices/stp-reading-details-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-readings-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-graphs-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-imbalances-api'));
+
+//  404 Not Found
+app.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {
+    name: username
+}));
 
 exports.db = db;
