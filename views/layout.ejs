@@ -51,7 +51,8 @@
                     <!-- Left navbar links -->
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" data-widget="pushmenu" href="#"><i id="hmg-icon" class="fas fa-times"></i></a>
+                            <a class="nav-link" data-widget="pushmenu" href="#"><i id="hmg-icon"
+                                    class="fas fa-times"></i></a>
                         </li>
                         <li class="nav-item d-none d-sm-inline-block">
                             <a href="/dashboard" class="nav-link">Home</a>
@@ -96,8 +97,6 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-edit"></i>
@@ -118,160 +117,105 @@
                                         <p>Почасови</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="/users/import/invoicing" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Фактуриране</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/users/import/STP/HourPredictions" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>СТП прогнози</p>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a href="/users/import/stp-hour-readings" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>СТП по часови</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                <li class="nav-item has-treeview">
-                                    <a href="#" class="nav-link">
-                                        <i class="fas fa-clock"></i>
-                                        <p>
-                                            Мерения по часове
-                                            <i class="fas fa-angle-left right"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="/users/import/hour-readings/CEZ" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>ЧЕЗ</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="/users/import/hour-readings/evnORenergoPRO" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>ИВН / ЕнергоПРО</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="/users/import/profiles" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Профили</p>
+                        <li class="nav-item"> <a href="/users/clients" class="nav-link">
+                                <i class="fas fa-users"></i>
+                                <p class="ml-2"> Клиенти</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="/users/import/graphs" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p> Графици</p>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <p>
+                                    &nbspМерене
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a id="readings-stp-href" href="/users/list/readings" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>СТП</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="readings-href" href="/users/list/hour-readings" class="nav-link">
+                                        <i class="fas fa-clock pl-1"></i>
+                                        <p>По часови</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                    </ul>
-                    </li>
-                    <li class="nav-item"> <a href="/users/clients" class="nav-link">
-                            <i class="fas fa-users"></i>
-                            <p class="ml-2"> Клиенти</p>
-                        </a>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-file-alt"></i>
-                            <p>
-                                &nbspМерене
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a id="readings-stp-href" href="/users/list/readings" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>СТП</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a id="readings-href" href="/users/list/hour-readings" class="nav-link">
-                                    <i class="fas fa-clock"></i>
-                                    <p>По часови</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-chart-line"></i>
-                            <p>
-                                &nbspГрафици
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a id="stp-graph-readings-href" href="/users/list/stp-graph-readings/" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>СТП</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a id="graph-readings-href" href="/users/list/graph-readings/" class="nav-link">
-                                    <i class="fas fa-clock"></i>
-                                    <p>По часови</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-file-invoice"></i>
-                            <p>&nbspФактуриране
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a id="invoicing-readings-href" href="/users/invoicing" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>СТП</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-file-export"></i>
-                            <p>
-                                &nbspСправка
-                                <i class="fas fa-angle-left right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a id="inquiry-readings-href" href="/users/inquiry/readings" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Мерене</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a id="inquiry-graphs-href" href="/users/inquiry/graphs" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Графици</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a id="inquiry-imbalances-href" href="/users/inquiry/imbalances" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Небаланси</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-chart-line"></i>
+                                <p>
+                                    &nbspГрафици
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a id="stp-graph-readings-href" href="/users/list/stp-graph-readings/"
+                                        class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>СТП</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="graph-readings-href" href="/users/list/graph-readings/" class="nav-link">
+                                        <i class="fas fa-clock pl-1"></i>
+                                        <p>По часови</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-invoice"></i>
+                                <p>&nbspФактуриране
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a id="invoicing-readings-href" href="/users/invoicing" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>СТП</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-export"></i>
+                                <p>
+                                    &nbspСправка
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a id="inquiry-readings-href" href="/users/inquiry/readings" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Мерене</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="inquiry-graphs-href" href="/users/inquiry/graphs" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Графици</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="inquiry-imbalances-href" href="/users/inquiry/imbalances" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Небаланси</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
