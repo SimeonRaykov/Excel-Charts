@@ -127,7 +127,7 @@ app.use('/', require('./API-controllers/invoices/stp-reading-details-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-readings-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-graphs-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-imbalances-api'));
-
+ 
 //  404 Not Found
 app.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {
     name: username

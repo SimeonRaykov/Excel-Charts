@@ -23,8 +23,12 @@ router.post('/api/saveClientSTPChanges/details/:id', async (req, res) => {
     let selectProfileSQL = `SELECT id FROM stp_profiles
     WHERE profile_name = '${profileName}'
     LIMIT 1`;
-    let resultProfile = await dbSync.query(selectProfileSQL)
-    let profileID = resultProfile[0].id;
+    let resultProfile = await dbSync.query(selectProfileSQL);
+    let profileID = 0;
+    if (resultProfile.length) {
+        profileID = resultProfile[0].id;
+    }
+
     let sql = `UPDATE clients SET profile_id = ${profileID},client_name = '${clientName}' , is_manufacturer= ${isManufacturer} WHERE id=${clientID}`;
     db.query(sql, (err, result) => {
         if (err) {

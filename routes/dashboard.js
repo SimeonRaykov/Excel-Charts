@@ -161,9 +161,5 @@ router.get('/users/inquiry/imbalances', (req, res) => res.render('./exports/inqu
     name: user.getName()
 }));
 
-//  404 Not Found
-router.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {
-    name: user.getName()
-}));
-
 module.exports = router;
+module.exports.getUsername = user.getName()
