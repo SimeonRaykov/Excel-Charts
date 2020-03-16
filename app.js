@@ -19,7 +19,7 @@ app.set('view engine', 'ejs');
 
 // Make bootstrap / ejs work with js and datable files
 app.use(express.static('public'), express.static(__dirname + '/static'))
-// Bodydparser
+// Bodydparser 
 app.use(express.json({
     limit: '50mb'
 }));
@@ -68,7 +68,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const datavendPort = '192.168.1.114'
+const datavendPort = '192.168.1.114';
 
 // PORT 
 const PORT = process.env.PORT || 3000;
@@ -127,7 +127,7 @@ app.use('/', require('./API-controllers/invoices/stp-reading-details-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-readings-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-graphs-api'));
 app.use('/', require('./API-controllers/inquiry/inquiry-imbalances-api'));
- 
+
 //  404 Not Found
 app.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {
     name: username
