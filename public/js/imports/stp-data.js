@@ -110,6 +110,15 @@ $(document).ready(function () {
     openDataImportTab();
 });
 
+(function showHideSTPHourReadingEVNEvent() {
+    $('#hour-reading').on('click', function hideEVNRadioBTN() {
+        $('#data > div:nth-child(5) > label:nth-child(1)').hide();
+    });
+    $('#prediction').on('click', function showEVNRadioBTN() {
+        $('#data > div:nth-child(5) > label:nth-child(1)').show();
+    })
+}())
+
 ($('body > div.container').click(() => {
     if ($('#hour-reading').is(':checked')) {
         importType.setType(importTypes.hour_reading);
@@ -159,23 +168,12 @@ function processHourReadingFile(e) {
             let currHourValues = [];
             let currSTPHourReading = [];
 
-            let first_sheet_nameX = workbook.SheetNames[0];
-            let worksheetX = workbook.Sheets[first_sheet_nameX];
-            let nameOfThirdCell = worksheetX['C1'].v;
+            let worksheetX = workbook.Sheets[workbook.SheetNames[0]];
+            let nameOfThirdCell = worksheetX['A1'].v || 0;
             validateHourReadingDocument(nameOfThirdCell);
             if (company.getCompany() === companies.CEZ) {
                 let first_sheet_name = workbook.SheetNames[0];
-                //var address_of_cell = 'A139';
-                /* Get worksheet */
                 var worksheet = workbook.Sheets[first_sheet_name];
-                /* Find desired cell */
-                //var desired_cell = worksheet[address_of_cell];
-                /* Get the value */
-                //var desired_value = (desired_cell ? desired_cell.v : undefined);
-                // console.log(Object.keys(workbook['Sheets']['Sheet1']));
-                //console.log(desired_value);
-
-                //   console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
                 let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
                 let client = [];
                 for (let i = 1; i < arr.length; i += 1) {
@@ -229,7 +227,11 @@ function processHourReadingFile(e) {
                             const typeEnergy = 0;
                             for (let y = 3; y <= arr[x].length; y += 1) {
                                 let currDateHelper = `${arr[0][y]}`;
-                                let currDate = new Date(currDateHelper.split(" ")[0]);
+                                let currDate = currDateHelper.split(" ")[0].split('.');
+                                const fixedDate = currDate[0];
+                                const currMonth = currDate[1];
+                                const currYear = currDate[2];
+                                const realDate = new Date(`${currMonth}-${fixedDate}-${currYear}`);
                                 for (let val = 0; val < 24; val += 1) {
                                     currHourObj = {
                                         currHour: val,
@@ -238,7 +240,8 @@ function processHourReadingFile(e) {
                                     currHourValues.push(currHourObj);
                                     y += 1;
                                 }
-                                let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+
+                                let formattedDate = `${realDate.getFullYear()}-${realDate.getMonth()+1}-${realDate.getDate()}`;
                                 if (!formattedDate.includes('NaN')) {
                                     currSTPHourReading.push(clientName, clientIdentCode, typeEnergy, formattedDate, currHourValues, company.getErpType(), new Date());
                                     allSTPHourReadings.push(currSTPHourReading);
@@ -261,7 +264,7 @@ function processHourReadingFile(e) {
                 notification('loading', 'loading');
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.EVN) {
-
+                console.log('TODO');
             }
         };
         reader.readAsArrayBuffer(f);

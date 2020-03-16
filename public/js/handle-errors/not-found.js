@@ -8,7 +8,7 @@
     var scene = new THREE.Scene();
 
     scene.add(camera);
-    renderer.setSize(300, 250);
+    renderer.setSize(650, 650);
     $container.append(renderer.domElement);
 
     ///////////////////////////////////////////////

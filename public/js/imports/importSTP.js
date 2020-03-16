@@ -307,11 +307,82 @@ function processFile(e) {
                     }
                 }
             });
+            let allSTPHourReadings = [];
+
+            let currHourReadingClient = col[3][10];
+            let profileCoef = 1;
+            for (let i = 3; i < col.length; i += 1) {
+                try {
+                    let currentDateFrom = col[i][12].split(".");
+                    let currentDateTo = col[i][13].split(".");
+                    let formmatedDateFrom = new Date(`${currentDateFrom[1]}.${currentDateFrom[0]}.${currentDateFrom[2]}`)
+                    let formattedDateTo = new Date(`${currentDateTo[1]}.${currentDateTo[0]}.${currentDateTo[2]}`)
+                    let currValues = 0;
+                    let currSTPHourReading = [];
+                    let currClientName = col[i][8].replace(/"/g, '');
+                    while (currHourReadingClient == col[i + 1][10]) {
+
+                        let currDiff = col[i][21].replace(/"/g, '');
+                        currDiff = currDiff.replace(/,/g, '\.');
+                        if (currDiff != '' && currDiff != undefined && currDiff != null && currDiff != ' ') {
+                            currValues += currDiff / 1000 * profileCoef;
+                            console.log(currValues);
+                            currHourReadingClient = col[i][10];
+                        }
+                        i += 1;
+                    }
+                    currSTPHourReading.push(currHourReadingClient, formmatedDateFrom, formattedDateTo, currValues, currClientName);
+                    allSTPHourReadings.push(currSTPHourReading);
+                    currHourReadingClient = col[i + 1][10];
+                } catch (e) {
+                    break;
+                }
+            }
+            //     console.log(allSTPHourReadings);
+            let finalSTPHourReadings = [];
+            for (let x = 0; x < allSTPHourReadings.length; x += 1) {
+                let startDate = allSTPHourReadings[x][1];
+                let endDate = allSTPHourReadings[x][2];
+                let currDate = startDate;
+                console.log(startDate.getDate());
+
+                while (currDate.getDate() != endDate.getDate() ||
+                    currDate.getMonth() != endDate.getMonth() ||
+                    currDate.getFullYear() != endDate.getFullYear()) {
+                    const currClientName = allSTPHourReadings[x][4];
+                    const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');;
+                    let currHourValues = [];
+                    for (let val = 0; val < 24; val += 1) {
+                        currHourObj = {
+                            currHour: val,
+                            currValue: allSTPHourReadings[x][3]
+                        }
+
+                        currHourValues.push(currHourObj);
+                    }
+                    const typeEnergy = 0; // ACTIVE ENERGY
+                    const erpType = 1; //  EVN
+                    let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                    let currHourReading = [];
+                    currHourReading.push(currClientName, currClientID, typeEnergy, formattedDate, currHourValues, erpType, new Date());
+                    finalSTPHourReadings.push(currHourReading);
+                    currDate.setDate(currDate.getDate() + 1);
+                }
+            }
+            console.log(finalSTPHourReadings);
             saveClientsToDB(clientsAll);
-            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds)
+            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
             cl = getClientsFromDB(mappedClientsIDs);
             changeClientIdForReadings(readingsAll, cl)
-            saveReadingsToDB(readingsAll);
+            saveReadingsToDB(readingsAll); 
+            // TODO CHECK PROFILES
+            //  IF PROFILE COEFS
+            changeClientIdForHourReadings(finalSTPHourReadings, cl);
+            notification('loading', 'loading');
+            console.log(finalSTPHourReadings);
+            saveSTPHourReadingsToDB(finalSTPHourReadings);
+            
+
         }
         ////////////
         //CEZ CSV///
@@ -536,6 +607,24 @@ function saveReadingsToDB(readings) {
     notification('Everything is good', 'success');
 };
 
+function saveSTPHourReadingsToDB(readings) {
+    $.ajax({
+        url: '/api/addSTPHourReadings',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(readings),
+        success: function (data) {
+            console.log('Readings saved');
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            //   notification(errorThrown, 'error');
+            console.log('error in save readings');
+        }
+    });
+    notification('Everything is good', 'success');
+};
+
 function notification(msg, type) {
     toastr.clear();
     toastr.options = {
@@ -562,4 +651,16 @@ function notification(msg, type) {
     } else if (type == 'loading') {
         toastr.info(msg);
     }
+};
+
+function changeClientIdForHourReadings(allSTPHourReadings, cl) {
+    allSTPHourReadings.forEach(stp_hour_reading => {
+        if (cl != undefined) {
+            for (let i = 0; i < cl.length; i++) {
+                if (cl[i].ident_code == stp_hour_reading['1']) {
+                    stp_hour_reading['1'] = cl[i].id;
+                }
+            }
+        }
+    });
 };

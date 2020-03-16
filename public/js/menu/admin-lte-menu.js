@@ -22,8 +22,7 @@ $(document).ready(function () {
                 $('body > div.wrapper > aside > a > img').addClass('smaller-logo');
             }
         }
-    })
-
+    });
 
     $('body > div.wrapper > div.row > div:nth-child(1) > nav > ul > li:nth-child(1)').on('click', () => {
         if ($('body > div.wrapper > aside > a > img').hasClass('smaller-logo')) {
@@ -31,8 +30,7 @@ $(document).ready(function () {
         } else {
             $('body > div.wrapper > aside > a > img').addClass('smaller-logo');
         }
-
-    })
+    });
 }());
 
 function setDefaultDateForLinks() {

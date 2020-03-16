@@ -3,8 +3,9 @@ table a {
     color: blue;
     text-decoration: none;
 }
+
 table a:hover {
-    text-decoration:none
+    text-decoration: none
 }
 
 table a::before {
@@ -22,7 +23,7 @@ table a::before {
     transition: all 0.5s ease-in-out 0s;
 }
 
-table a:hover:before {
+table a:not(.fc-more):not(.fc-end):hover:before {
     visibility: visible;
     -webkit-transform: scaleX(1);
     transform: scaleX(1);

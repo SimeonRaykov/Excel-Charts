@@ -56,7 +56,7 @@ client = new Client();
         saveChangesForSTPClient();
     });
 }());
-
+ 
 function getInputValsForInfoPage() {
     const name = $('#info div:nth-child(1) > input').val();
     const profileName = $('#input-profile-name').val();

@@ -40,6 +40,7 @@ $(document).ready(function () {
 });
 
 function getInitialData(url) {
+    console.log(url);
     $.ajax({
         url,
         method: 'GET',

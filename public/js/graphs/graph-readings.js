@@ -7,7 +7,6 @@ $(document).ready(function () {
 
 function getGraphReadings(data) {
     const readingType = 'graph-hour-prediction';
-
     let i = 0;
     for (let el in data) {
         const date = data[el]['date'];
