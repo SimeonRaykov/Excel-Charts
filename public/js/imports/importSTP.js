@@ -19,8 +19,10 @@ let company = new Company();
 
 ($('body > div.container').click(() => {
     if ($('#energo-pro').is(':checked')) {
+        $('.clients-no-profile').text('');
         company.setCompany('ENERGO_PRO');
     } else if ($('#cez').is(':checked')) {
+        $('.clients-no-profile').text('');
         company.setCompany('CEZ');
     } else if ($('#evn').is(':checked')) {
         company.setCompany('EVN');
@@ -280,8 +282,6 @@ function processFile(e) {
                         const profileID = 0;
                         const isManufacturer = 0;
 
-
-
                         let type = value['3'];
                         if (type === '"Техническа част"') {
                             type = 1;
@@ -307,10 +307,15 @@ function processFile(e) {
                     }
                 }
             });
-            let allSTPHourReadings = [];
+            saveClientsToDB(clientsAll);
+            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
+            cl = getClientsFromDB(mappedClientsIDs);
+            changeClientIdForReadings(readingsAll, cl)
+            saveReadingsToDB(readingsAll);
 
+            let allSTPHourReadings = [];
+            let clientsWithoutProfile = [];
             let currHourReadingClient = col[3][10];
-            let profileCoef = 1;
             for (let i = 3; i < col.length; i += 1) {
                 try {
                     let currentDateFrom = col[i][12].split(".");
@@ -320,13 +325,15 @@ function processFile(e) {
                     let currValues = 0;
                     let currSTPHourReading = [];
                     let currClientName = col[i][8].replace(/"/g, '');
+                    if (getProfile(currHourReadingClient) === 0) {
+                        clientsWithoutProfile.push(currHourReadingClient);
+                    }
                     while (currHourReadingClient == col[i + 1][10]) {
 
                         let currDiff = col[i][21].replace(/"/g, '');
                         currDiff = currDiff.replace(/,/g, '\.');
                         if (currDiff != '' && currDiff != undefined && currDiff != null && currDiff != ' ') {
-                            currValues += currDiff / 1000 * profileCoef;
-                            console.log(currValues);
+                            currValues += currDiff / 1000;
                             currHourReadingClient = col[i][10];
                         }
                         i += 1;
@@ -338,51 +345,45 @@ function processFile(e) {
                     break;
                 }
             }
-            //     console.log(allSTPHourReadings);
-            let finalSTPHourReadings = [];
-            for (let x = 0; x < allSTPHourReadings.length; x += 1) {
-                let startDate = allSTPHourReadings[x][1];
-                let endDate = allSTPHourReadings[x][2];
-                let currDate = startDate;
-                console.log(startDate.getDate());
 
-                while (currDate.getDate() != endDate.getDate() ||
-                    currDate.getMonth() != endDate.getMonth() ||
-                    currDate.getFullYear() != endDate.getFullYear()) {
-                    const currClientName = allSTPHourReadings[x][4];
-                    const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');;
-                    let currHourValues = [];
-                    for (let val = 0; val < 24; val += 1) {
-                        currHourObj = {
-                            currHour: val,
-                            currValue: allSTPHourReadings[x][3]
+            if (clientsWithoutProfile.length === 0) {
+                let finalSTPHourReadings = [];
+                for (let x = 0; x < allSTPHourReadings.length; x += 1) {
+                    let startDate = allSTPHourReadings[x][1];
+                    let endDate = allSTPHourReadings[x][2];
+                    let currDate = startDate;
+
+                    while (currDate.getDate() != endDate.getDate() ||
+                        currDate.getMonth() != endDate.getMonth() ||
+                        currDate.getFullYear() != endDate.getFullYear()) {
+                        const formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
+                        const currClientName = allSTPHourReadings[x][4];
+                        const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');;
+                        let currHourValues = [];
+                        const currAmount = getProfileAmount(currClientID, formattedDate);
+                        for (let val = 0; val < 24; val += 1) {
+                            currHourObj = {
+                                currHour: val,
+                                currValue: allSTPHourReadings[x][3] * currAmount[val]
+                            }
+                            currHourValues.push(currHourObj);
                         }
-
-                        currHourValues.push(currHourObj);
+                        const typeEnergy = 0; // ACTIVE ENERGY
+                        const erpType = 1; //  EVN
+                        let currHourReading = [];
+                        currHourReading.push(currClientName, currClientID, typeEnergy, formattedDate, currHourValues, erpType, new Date());
+                        finalSTPHourReadings.push(currHourReading);
+                        currDate.setDate(currDate.getDate() + 1);
                     }
-                    const typeEnergy = 0; // ACTIVE ENERGY
-                    const erpType = 1; //  EVN
-                    let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                    let currHourReading = [];
-                    currHourReading.push(currClientName, currClientID, typeEnergy, formattedDate, currHourValues, erpType, new Date());
-                    finalSTPHourReadings.push(currHourReading);
-                    currDate.setDate(currDate.getDate() + 1);
                 }
+                changeClientIdForHourReadings(finalSTPHourReadings, cl);
+                notification('loading', 'loading');
+                saveSTPHourReadingsToDB(finalSTPHourReadings);
+            } else {
+                $('.clients-no-profile').text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил и заявката за СТП почасови мерения е отказана! Трябва да им се сложат профили.');
+                console.log('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил и заявката за СТП почасови мерения е отказана! Трябва да им се сложат профили.');
+                notification('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил и заявката за СТП почасови мерения е отказана! Трябва да им се сложат профили.', 'error');
             }
-            console.log(finalSTPHourReadings);
-            saveClientsToDB(clientsAll);
-            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
-            cl = getClientsFromDB(mappedClientsIDs);
-            changeClientIdForReadings(readingsAll, cl)
-            saveReadingsToDB(readingsAll); 
-            // TODO CHECK PROFILES
-            //  IF PROFILE COEFS
-            changeClientIdForHourReadings(finalSTPHourReadings, cl);
-            notification('loading', 'loading');
-            console.log(finalSTPHourReadings);
-            saveSTPHourReadingsToDB(finalSTPHourReadings);
-            
-
         }
         ////////////
         //CEZ CSV///
@@ -470,7 +471,6 @@ function processFile(e) {
                         return;
                     }
 
-
                     let type = value['3'];
                     if (type === '"Техническа част"') {
                         type = 1;
@@ -545,7 +545,8 @@ function saveClientsToDB(clients) {
         },
         error: function (jqXhr, textStatus, errorThrown) {
             //  notification(errorThrown, 'error');
-            console.log('error in save clients');
+            //  console.log('error in save clients');
+            notification(jqXhr.responseText, 'success');
         }
     });
 };
@@ -565,12 +566,51 @@ function getClientsFromDB(clients) {
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(errorThrown, 'error');
-            console.log('error');
+            // notification(errorThrown, 'error');
+            notification(jqXhr.responseText, 'success');
+            //  console.log('error');
         }
     });
     return retVal;
 };
+
+function getProfile(identCode) {
+    notification('Loading..', 'loading');
+    let profile;
+    $.ajax({
+        url: `/api/getProfile/${identCode}`,
+        method: 'GET',
+        contentType: 'application/json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            profile = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(jqXhr.responseText, 'success');
+        }
+    });
+    return profile;
+}
+
+function getProfileAmount(identCode, date) {
+    notification('Loading..', 'loading');
+    let amount;
+    $.ajax({
+        url: `/api/getProfile-HourValue/${identCode}/${date}`,
+        method: 'GET',
+        contentType: 'application/json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            amount = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(jqXhr.responseText, 'success');
+        }
+    });
+    return amount;
+}
 
 function changeClientIdForReadings(readingsAll, cl) {
     readingsAll.forEach(reading => {
@@ -589,19 +629,20 @@ function mapClientsIDsToGetIdentCodeCorrectly(clientIds) {
 }
 
 function saveReadingsToDB(readings) {
-    console.log(readings);
     $.ajax({
         url: '/addreadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
+        async: false,
         data: JSON.stringify(readings),
         success: function (data) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            //  console.log('error in save readings');
+            notification(jqXhr.responseText, 'success');
         }
     });
     notification('Everything is good', 'success');
@@ -619,38 +660,11 @@ function saveSTPHourReadingsToDB(readings) {
         },
         error: function (jqXhr, textStatus, errorThrown) {
             //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            //    console.log('error in save readings');
+            notification(jqXhr.responseText, 'success');
         }
     });
     notification('Everything is good', 'success');
-};
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
 };
 
 function changeClientIdForHourReadings(allSTPHourReadings, cl) {

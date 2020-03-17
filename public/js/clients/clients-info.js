@@ -5,6 +5,8 @@ $(document).ready(function () {
     visualizeAllDefaultInputs()
 });
 
+let _IS_EXECUTED = false;
+
 class Client {
     constructor() {
         this.meteringType = '';
@@ -56,7 +58,7 @@ client = new Client();
         saveChangesForSTPClient();
     });
 }());
- 
+
 function getInputValsForInfoPage() {
     const name = $('#info div:nth-child(1) > input').val();
     const profileName = $('#input-profile-name').val();
@@ -82,16 +84,22 @@ function getDatalistingOptions(operator) {
     });
 }
 
-function visualizeDataListings(data) {
-    const profileName = document.querySelectorAll('select')[0].value;
-    for (let el in data) {
-        if (data[el]['profile_name'] != undefined && data[el]['profile_name'] != null && data[el]['profile_name'] != '') {
-            if (data[el]['profile_name'] != profileName) {
-                const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">${data[el]['profile_name']}</option>`)
-                curr.appendTo('#input-profile-name');
+var visualizeDataListings = function (data) {
+    return function () {
+        if (!_IS_EXECUTED) {
+            _IS_EXECUTED = true;
+            const profileName = document.querySelectorAll('select')[0].value;
+            for (let el in data) {
+                console.log(el);
+                if (data[el]['profile_name'] != undefined && data[el]['profile_name'] != null && data[el]['profile_name'] != '') {
+                    if (data[el]['profile_name'] != profileName) {
+                        const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">${data[el]['profile_name']}</option>`)
+                        curr.appendTo('#input-profile-name');
+                    }
+                }
             }
         }
-    }
+    }()
 }
 
 function saveChangesForSTPClient() {

@@ -174,7 +174,6 @@ function visualizeProfileNameDataListings(profileNames) {
     for (let profileName of profileNames) {
         $('#profile_names').append(`<option value="${profileName.profile_name}"></option>`);
     }
-    visualizeTooltips();
 }
 
 $('#searchBtn').on('click', (event) => {
@@ -538,6 +537,3 @@ function hideSwitch() {
     $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label').css('display', 'none');
 }
 
-function visualizeTooltips() {
-    $('[data-toggle="tooltip"]').tooltip()
-}

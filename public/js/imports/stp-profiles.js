@@ -259,8 +259,8 @@ function createProfile() {
             console.log('Profile saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //  notification(errorThrown, 'error');
-            console.log('error in client save');
+            notification(jqXhr.responseText,'success');
+          //  console.log('error in client save');
         }
     });
 }
@@ -289,14 +289,15 @@ function getProfileID() {
         },
         async: false,
         error: function (jqXhr, textStatus, errorThrown) {
-            //  notification(errorThrown, 'error');
-            console.log('error in get profileID');
+            notification(jqXhr.responseText,'success');
+         //   console.log('error in get profileID');
         }
     });
     return id;
 }
 
 function saveProfileReadingsToDB(readings) {
+    notification('Loading..', 'loading');
     $.ajax({
         url: '/api/saveProfileReadings',
         method: 'POST',
@@ -304,12 +305,11 @@ function saveProfileReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log('Readings saved');
+            console.log('Profiles saved');
             notification('Everything is good', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            notification(jqXhr.responseText,'success');
         }
     });
 };
@@ -337,34 +337,6 @@ function getCols(sheet) {
     }
     return result;
 }
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
-};
 
 function validateDocument() {
     validateProfileName();

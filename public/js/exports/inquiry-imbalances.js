@@ -641,3 +641,4 @@ function visualizeCheckboxesFromHistoryLocation() {
 function calcImbalance(isManufacturer, predictionVal, actualVal) {
     return isManufacturer == 0 ? predictionVal - actualVal : actualVal - predictionVal;
 }
+

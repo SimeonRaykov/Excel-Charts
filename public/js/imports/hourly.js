@@ -278,8 +278,7 @@ function processGraphFile(e) {
     const profileID = 0;
     const isManufacturer = 0;
 
-
-    var files = e.dataTransfer.files,
+    const files = e.dataTransfer.files,
         f = files[0];
     var reader = new FileReader();
     var fileName = e.dataTransfer.files[0].name;
@@ -312,7 +311,7 @@ function processGraphFile(e) {
             for (let i = 1; i < arr.length; i += 1) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
-                if (clientIdentCode != null && clientIdentCode != undefined) {
+                if (clientIdentCode != null && clientIdentCode != undefined && clientName!= null && clientName != undefined) {
                     client.push(0, clientName, clientIdentCode, meteringType, profileID, graphPrediction.getType(), isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];
@@ -321,27 +320,33 @@ function processGraphFile(e) {
             saveClientsToDB(clientsAll);
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
+                const clientName = arr[i][0];
                 let ident_code = arr[i][1];
-                for (let y = 2; y < arr[i].length; y += 1) {
-                    let currHourHelper = arr[0][y].split(":");
-                    let currHour = currHourHelper[0] - 1;
-                    if (currHour == -1) {
-                        currHour = 23;
+                if (clientName == '' || clientName == undefined || clientName == null ||
+                    ident_code == '' || ident_code == undefined || ident_code == null) {
+                    continue;
+                } else {
+                    for (let y = 2; y < arr[i].length; y += 1) {
+                        let currHourHelper = arr[0][y].split(":");
+                        let currHour = currHourHelper[0] - 1;
+                        if (currHour == -1) {
+                            currHour = 23;
+                        }
+                        let currValue = arr[i][y];
+                        let currHourObj = {
+                            currHour,
+                            currValue
+                        }
+                        currHourValues.push(currHourObj);
                     }
-                    let currValue = arr[i][y];
-                    let currHourObj = {
-                        currHour,
-                        currValue
+                    if (ident_code != '' && ident_code != undefined && ident_code != null) {
+                        clientID = getClientIDFromDB(ident_code);
+                        let createdDate = new Date();
+                        graph_hour_reading.push(clientID, date, currHourValues, type, ERP, createdDate);
+                        allGraphHourReadings.push(graph_hour_reading);
+                        graph_hour_reading = [];
+                        currHourValues = [];
                     }
-                    currHourValues.push(currHourObj);
-                }
-                if (ident_code != '' && ident_code != undefined && ident_code != null) {
-                    clientID = getClientIDFromDB(ident_code);
-                    let createdDate = new Date();
-                    graph_hour_reading.push(clientID, date, currHourValues, type, ERP, createdDate);
-                    allGraphHourReadings.push(graph_hour_reading);
-                    graph_hour_reading = [];
-                    currHourValues = [];
                 }
             }
             saveGraphHourReadingsToDB(allGraphHourReadings);
