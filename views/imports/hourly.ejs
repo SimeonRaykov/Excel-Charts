@@ -30,7 +30,8 @@
                 <input type="radio" id="hour-reading" name="importDataType">
                 <span class="checkmark"></span>
             </label>
-            <label class="radio mr-5">График
+            <label class="radio mr-5" data-toggle="tooltip" data-placement="right" container="body"
+            title data-original-title="Името на файла трябва да е във формат - дд-мм-гггг.">График
                 <input type="radio" id="graph" name="importDataType">
                 <span class="checkmark"></span>
             </label>
@@ -58,6 +59,7 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
+    <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
     <script src="../../../../js/imports/hourly.js"></script>
 </body>
 

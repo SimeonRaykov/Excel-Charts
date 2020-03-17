@@ -32,11 +32,13 @@
             <h2 class="mb-3">Импортиране на данни - СТП</h2>
             <h2>Избери тип:</h2>
             <div class="row justify-content-center">
-                <label class="radio mr-5">Почасово мерене
+                <label class="radio mr-5" data-toggle="tooltip" data-placement="left" container="body"
+                title data-original-title="Опцията за ИВН е сложена в импорти - Фактуриране">Почасово мерене
                     <input type="radio" id="hour-reading" name="importDataType">
                     <span class="checkmark"></span>
                 </label>
-                <label class="radio">График
+                <label class="radio" data-toggle="tooltip" data-placement="right" container="body"
+                title data-original-title="Форматирай клетките предварително, така че да са във формат - мм.гг.">График
                     <input type="radio" id="prediction" name="importDataType">
                     <span class="checkmark"></span>
                 </label>
@@ -94,6 +96,8 @@
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
+    <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
+    <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
     <script src="../../../../js/imports/stp-data.js"></script>
     <script src="../../../../js/imports/stp-profiles.js"></script>
 </body>

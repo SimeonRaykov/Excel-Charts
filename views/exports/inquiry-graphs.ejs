@@ -142,7 +142,8 @@
                     <span class="mr-5">Име на файл</span><input id="table-input" class="text-center" type="text"
                         placeholder="excel-predictions" />
                 </div>
-                <div>
+                <div data-toggle="tooltip" data-placement="right" container="body"
+                title="Преди отваряне в excel клетките трябва да се разделят със запетайка">
                     <button id="export-table-btn" class="btn btn-success btn-lg">Свали екселска таблица</button>
                 </div>
             </div>
@@ -168,6 +169,7 @@
     <script src="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet"
         media="screen">
+        <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
     <script src="../../../../js/exports/inquiry-graphs.js"></script>
     <script src="../../../../js/exportFunctions/exportTable.js"></script>
 </body>

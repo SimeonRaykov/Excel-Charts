@@ -30,6 +30,39 @@ router.post('/api/getProfileID', (req, res) => {
     });
 });
 
+router.get('/api/getProfile/:ident_code', (req, res) => {
+    let identCode = req.params.ident_code;
+    let sql = `SELECT profile_id FROM clients WHERE ident_code = ${identCode}`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result[0].profile_id));
+    });
+});
+
+router.get('/api/getProfile-HourValue/:identCode/:date/', (req, res) => {
+    let {identCode, date} = req.params;
+
+    let sql = `SELECT hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven
+    hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen,
+    hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty,
+    hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero FROM clients
+    INNER JOIN profile_coef ON profile_coef.profile_id = clients.profile_id
+    WHERE ident_code = '${identCode}' AND date = '${date}'
+    LIMIT 1`;
+    let resultArr = [];
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        for(let h in result[0]){
+            resultArr.push(result[0][h])
+        }
+        return res.send(JSON.stringify(resultArr));
+    });
+});
+
 router.post('/api/saveProfileReadings', async (req, res) => {
     let profileReadingsFiltered = await filterProfileHourReadings(req.body);
     let sql = 'INSERT INTO profile_coef (profile_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, created_date) VALUES ?';
@@ -37,8 +70,8 @@ router.post('/api/saveProfileReadings', async (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Hour Readings inserted');
-        return res.send("Hour Readings added");
+        console.log('Profile data inserted into db');
+        return res.send("Profile data inserted into db");
     });
 });
 

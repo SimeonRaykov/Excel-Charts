@@ -4,8 +4,8 @@ const {
     db
 } = require('../../db.js');
 
-router.post('/addreadings', (req, res) => {
-    let sql = 'INSERT INTO invoicing (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
+router.post('/addreadings', (req, res) => { 
+    let sql = 'INSERT IGNORE INTO invoicing (client_id, period_from, period_to, period_days, scale_number, scale_type, time_zone, readings_new, readings_old, diff, correction, deduction, total_qty, service, qty, price, value_bgn, type, operator) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
