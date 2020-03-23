@@ -158,7 +158,9 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    writeHourReadingsDailyHeader(new Date(data[0]['date']));
+    const identCode = data[0]['ident_code'];
+    writeClientHeading(identCode);
+    writeHourReadingsDailyHeading(new Date(data[0]['date']));
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -200,10 +202,13 @@ function decrementHoursBy23(date) {
     return new Date(date.setHours(date.getHours() - 23));
 }
 
-function writeHourReadingsDailyHeader(data) {
+function writeHourReadingsDailyHeading(data) {
     const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}-${data.getDate()<10?`0${data.getDate()}`:data.getDate()}`
-    $('h2').text(`Почасов график за дата: ${currPredictionDate}`);
-    //  $('h2').text(`Клиентско id : ${data[1]}`);
+    $('#date-heading').text(`Почасов график за дата: ${currPredictionDate}`);
+}
+
+function writeClientHeading(data) {
+    $('#client-heading').text(`Клиент: ${data}`);
 }
 
 function findGetParameter(name, url) {

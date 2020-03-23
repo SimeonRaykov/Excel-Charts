@@ -152,7 +152,11 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    writeHourReadingsDailyHeader(new Date(data[0]['date']));
+    console.log(data);
+    const identCode = data[0]['ident_code'];
+    writeClientHeading(identCode);
+    writeHourReadingsDailyHeading(new Date(data[0]['date']));
+
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -193,9 +197,13 @@ function decrementHoursBy23(date) {
     return new Date(date.setHours(date.getHours() - 23));
 }
 
-function writeHourReadingsDailyHeader(data) {
+function writeHourReadingsDailyHeading(data) {
     const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}`
-    $('h2').text(`Почасов график за месец: ${currPredictionDate}`);
+    $('#date-heading').text(`Почасов график за месец: ${currPredictionDate}`);
+}
+
+function writeClientHeading(data) {
+    $('#client-heading').text(`Клиент: ${аьшь}`);
 }
 
 function findGetParameter(name, url) {

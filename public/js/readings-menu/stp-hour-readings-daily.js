@@ -65,7 +65,6 @@ function getHourReadingsDailyData() {
 }
 
 function showChartDaily(data) {
-    console.log(data);
     let labels = [];
     let chartData = [];
     let index = 0;
@@ -76,14 +75,12 @@ function showChartDaily(data) {
         if (data.length == 1) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                console.log(date);
                 for (let hr in data[el]) {
                     if (index >= startingIndex) {
                         if (index > endIndex) {
                             break;
                         }
                         let t = index == 2 ? date : incrementHoursOne(date)
-                        console.log(t);
                         let hourObj = {
                             t,
                             y: data[el][hr],
@@ -162,7 +159,8 @@ const colors = {
 
 function processCalendarData(data) {
     let date = new Date(data[0]['date'])
-    writeHourReadingsDailyHeader(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
+    writeClientNameHeading(data[0]['ident_code']);
+    writeHourReadingsDailyHeading(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -204,9 +202,12 @@ function decrementHoursBy23(date) {
     return new Date(date.setHours(date.getHours() - 23));
 }
 
-function writeHourReadingsDailyHeader(data) {
-    $('h2').text(`Почасово стп мерене за дата: ${data}`);
-    //  $('h2').text(`Клиентско id : ${data[1]}`);
+function writeHourReadingsDailyHeading(data) {
+    $('#date-heading').text(`Почасово мерене за дата: ${data}`);
+}
+
+function writeClientNameHeading(data) {
+    $('#client-heading').text(`Клиент: ${data}`);
 }
 
 function findGetParameter(name, url) {

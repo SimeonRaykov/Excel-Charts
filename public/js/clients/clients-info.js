@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    //  getClientInfo();
     hideGraphs();
     getAllCharts();
     visualizeAllDefaultInputs()
@@ -90,7 +89,6 @@ var visualizeDataListings = function (data) {
             _IS_EXECUTED = true;
             const profileName = document.querySelectorAll('select')[0].value;
             for (let el in data) {
-                console.log(el);
                 if (data[el]['profile_name'] != undefined && data[el]['profile_name'] != null && data[el]['profile_name'] != '') {
                     if (data[el]['profile_name'] != profileName) {
                         const curr = $(`<option data-id="${data[el]['id']}" value="${data[el]['profile_name']}">${data[el]['profile_name']}</option>`)
@@ -224,12 +222,14 @@ function getImbalancesChartFilterData(fromDate, toDate, clientID) {
 }
 
 function showHourReadingChart(data) {
+    let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let chartData = [];
     let index = 0;
     let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
@@ -247,11 +247,10 @@ function showHourReadingChart(data) {
                 index = 0;
             }
         } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
+                //  labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
                 for (let hr in data[el]) {
                     if (index >= 2) {
                         let t = index == 2 ? date : incrementHoursOne(date)
@@ -260,6 +259,7 @@ function showHourReadingChart(data) {
                             y: data[el][hr]
                         }
                         chartData.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
@@ -268,6 +268,7 @@ function showHourReadingChart(data) {
             }
         }
     }
+
     var ctx = document.getElementById('hour-readings-chart').getContext('2d');
     var config = {
         type: 'line',
@@ -282,57 +283,60 @@ function showHourReadingChart(data) {
             }],
         },
         options: {
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        console.log(tooltipItem);
+                        return "Стойност: " + tooltipItem.yLabel + '\n';
+                    },
+                }
+            },
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_READINGS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
             responsive: false
         }
-        /*
-        options: {
-            scales: {
-              xAxes: [{
-                ticks: {
-                  maxRotation: 50,
-                  minRotation: 30,
-                  padding: 10,
-                  autoSkip: false,
-                  fontSize: 10
-                }
-              }]
-            }
-          }
-          */
     }
     try {
-        myChart.destroy();
+        HourReadingsChart.destroy();
     } catch (e) {}
 
-    var myChart = new Chart(ctx, config);
+    HourReadingsChart = new Chart(ctx, config);
 
     $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
         var temp = jQuery.extend(true, {}, config);
-        if (myChart.config.type == 'line') {
+        console.log(HourReadingsChart.config.type);
+        if (HourReadingsChart.config.type == 'line') {
             temp.type = 'bar';
-            myChart.destroy();
         } else {
             temp.type = 'line';
-            myChart.destroy();
         }
-
-        myChart = new Chart(ctx, temp);
+        setTimeout(function () {
+            HourReadingsChart.destroy();
+            HourReadingsChart = new Chart(ctx, temp)
+        }, 0)
     })
 }
 
 function showGraphPredictionChart(data) {
+    let _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
     let labels = [];
     let chartData = [];
     let index = 0;
     let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
+            _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
                 let amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
@@ -351,11 +355,9 @@ function showGraphPredictionChart(data) {
                 index = 0;
             }
         } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_GRAPHS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
                 for (let hr in data[el]) {
                     if (index >= 2) {
                         let t = index == 2 ? date : incrementHoursOne(date)
@@ -364,6 +366,7 @@ function showGraphPredictionChart(data) {
                             y: data[el][hr]
                         }
                         chartData.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
@@ -388,7 +391,14 @@ function showGraphPredictionChart(data) {
         options: {
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_GRAPHS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
@@ -396,26 +406,27 @@ function showGraphPredictionChart(data) {
         }
     }
     try {
-        myChart.destroy();
+        GraphsChart.destroy();
     } catch (e) {}
 
-    var myChart = new Chart(ctx, config);
+    GraphsChart = new Chart(ctx, config);
     $('#graph > div.graph-prediction-div > form > div > div:nth-child(4) > label > input').click((e) => {
 
         var temp = jQuery.extend(true, {}, config);
-        if (myChart.config.type == 'line') {
-            myChart.destroy();
+        if (GraphsChart.config.type == 'line') {
             temp.type = 'bar';
         } else {
-            myChart.destroy();
             temp.type = 'line';
         }
-
-        myChart = new Chart(ctx, temp);
+        setTimeout(function () {
+            GraphsChart.destroy();
+            GraphsChart = new Chart(ctx, temp)
+        }, 0)
     })
 }
 
 function showImbalanceChart(data) {
+    let _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
     let labels = [];
     let actualHourData = [];
     let predictionData = [];
@@ -429,6 +440,7 @@ function showImbalanceChart(data) {
     const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
     if (data != undefined) {
         if (data.length == 1) {
+            _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
             for (let el in data) {
                 const amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
@@ -466,11 +478,9 @@ function showImbalanceChart(data) {
                 index = 0;
             }
         } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_IMBALANCES_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
                 for (let hr in data[el]) {
                     if (index >= 2) {
                         let t = index == 2 ? date : incrementHoursOne(date)
@@ -479,6 +489,7 @@ function showImbalanceChart(data) {
                             y: data[el][hr]
                         }
                         actualHourData.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
@@ -516,24 +527,38 @@ function showImbalanceChart(data) {
         options: {
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_IMBALANCES_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
             responsive: false
         }
     }
-    var myChart = new Chart(ctx, config);
+    try {
+        ImbalancesChart.destroy();
+    } catch (e) {}
+
+    ImbalancesChart = new Chart(ctx, config);
 
     $('#imbalance > div.imbalance-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
-        myChart.destroy();
+        ImbalancesChart.destroy();
         var temp = jQuery.extend(true, {}, config);
-        if (myChart.config.type == 'line') {
+        if (ImbalancesChart.config.type == 'line') {
             temp.type = 'bar';
         } else {
             temp.type = 'line';
         }
-        myChart = new Chart(ctx, temp);
+        setTimeout(function () {
+            ImbalancesChart.destroy();
+            ImbalancesChart = new Chart(ctx, temp)
+        }, 0)
     })
 }
 
@@ -721,8 +746,9 @@ const colors = {
 }
 
 function processDataHourly(data) {
-    writeHourReadingsDailyHeader(data[0]['ident_code']);
-
+    writeReadingsHeading(data[0]['ident_code']);
+    writeGraphHeading(data[0]['ident_code']);
+    writeImbalancesHeading(data[0]['ident_code']);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -798,7 +824,6 @@ function processDataGraphPredictions(data) {
 }
 
 function processDataImbalances(data) {
-    writeImbalancesHeader(data);
     console.log(data);
     const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
     const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
@@ -847,16 +872,37 @@ function decrementHoursBy23(date) {
     return date.setHours(date.getHours() - 23);
 }
 
-function writeHourReadingsDailyHeader(data) {
-    $('#hour-readings > h2').text(`Мерения по часове за клиент: ${data}`);
+
+function writeReadingsHeading(data) {
+    if (data) {
+        $('#hourReadingsHeading').text(`Мерения по часове за клиент: ${data}`);
+    } else {
+        $('#hourReadingsHeading').text(`Няма мерения за клиент за клиент`);
+    }
 }
 
-function writeImbalancesHeader(data) {
-    $('#imbalance > h2').text(`Небаланси за клиент: ${data[0].ident_code}`)
+function writeGraphHeading(data) {
+    console.log(2);
+    if (data) {
+        $('#graphHeading').text(`График за клиент: ${data}`);
+    } else {
+        $('#graphHeading').text(`Няма график за клиент`);
+    }
+
+}
+
+function writeImbalancesHeading(data) {
+    console.log(1);
+    if (data) {
+        $('#imbalancesHeading').text(`Небаланси за клиент: ${data}`)
+    } else {
+        $('#imbalancesHeading').text(`Няма небаланси за клиент`)
+    }
+
 }
 
 (function switchHourReadingCalendarAndGraph() {
-    $('#hour-readings > label > span.switch-label').on('click', () => {
+    $('#hour-readings > label > input').on('click', () => {
         if ($('.hour-readings-graph-div').css('display') == 'none') {
             $('#hour-readings > div.row').css('display', 'none');
             $('.hour-readings-graph-div').css('display', 'block');
@@ -868,7 +914,7 @@ function writeImbalancesHeader(data) {
 }());
 
 (function switchGraphPredictionCalendarAndGraph() {
-    $('#graph > label > span.switch-label').on('click', () => {
+    $('#graph > label > input').on('click', () => {
         if ($('.graph-prediction-div').css('display') == 'block') {
             $('.graph-prediction-div').css("display", "none");
             $('.graphRow-calendar').css("display", "block");

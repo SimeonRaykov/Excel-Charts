@@ -37,7 +37,65 @@ $(document).ready(function () {
         }
     }
     getInitialData(url);
+    getDataListings();
 });
+
+(function filterClientsByName() {
+    $('#client_name').on('change', () => {
+        const clientNameVal = $('#client_name').val();
+        const table = $('#clients').DataTable();
+        table.search(clientNameVal).draw();
+    })
+}())
+
+(function filterClientsByIdentCode() {
+    $('#ident_code').on('change', () => {
+        const identCodeVal = $('#ident_code').val();
+        const table = $('#clients').DataTable();
+        table.search(identCodeVal).draw();
+    })
+}())
+
+function getDataListings() {
+    $.ajax({
+        url: '/api/data-listings/all-clients',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeDataListings(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeDataListings(data) {
+    let namesDataListing = $('<datalist id="client_names" >');
+    let identCodesDataListing = $('<datalist id="ident_codes" >');
+    let clNames = [];
+    let identCodes = [];
+    for (let obj of data) {
+        clNames.push(obj.client_name);
+        identCodes.push(obj.ident_code);
+    }
+    const filteredNames = clNames.filter((v, i, a) => a.indexOf(v) === i);
+    const filteredIdentCodes = identCodes.filter((v, i, a) => a.indexOf(v) === i);
+
+    for (let name of filteredNames) {
+        let currName = $(`<option>${name}</option>`);
+        currName.appendTo(namesDataListing);
+    }
+
+    for (let identCode of filteredIdentCodes) {
+        let currIdentCode = $(`<option>${identCode}</option>`);
+        currIdentCode.appendTo(identCodesDataListing);
+    }
+    namesDataListing.append('</datalist>');
+    identCodesDataListing.append('</datalist>');
+    $('#client_name').append(namesDataListing);
+    $('#ident_code').append(identCodesDataListing);
+}
 
 function getInitialData(url) {
     $.ajax({

@@ -37,6 +37,10 @@ function getAllSTPHourListings(data) {
         "order": [
             [0, "asc"]
         ],
+       /*  "processing": true,
+        "serverSide": true,
+        url: "/api/filter/getAllSTPHourReadingsTable",
+        type:'POST', */
         retrieve: true
     });
     $('#tBody').addClass('text-center');
