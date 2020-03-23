@@ -3,7 +3,7 @@ const router = express.Router();
 const {
     db
 } = require('../../db.js');
- 
+
 router.get('/api/getAllClients', (req, res) => {
     let sql = `SELECT clients.id, client_name, ident_code, metering_type FROM clients`;
     let query = db.query(sql, (err, result) => {
@@ -14,7 +14,7 @@ router.get('/api/getAllClients', (req, res) => {
         res.send(result);
     });
 });
- 
+
 router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
     let erpType = req.params.erp_type;
     let meteringType = req.params.metering_type;
@@ -41,6 +41,18 @@ router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
         }
         console.log(query.sql);
         res.send(result);
+    });
+});
+
+router.get('/api/data-listings/all-clients', (req, res) => {
+    let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
+     FROM clients`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
     });
 });
 

@@ -15,15 +15,15 @@ router.post('/addclients', (req, res) => {
         console.log('Clients inserted');
         return res.send("Clients added");
     });
-});
-
+}); 
+ 
 router.post('/api/getClients', (req, res) => {
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join(', ')})`;
     db.query(sql, req.body.join(), (err, result) => {
         if (err) {
             throw err;
         }
-        console.log('Clients get');
+        console.log('Clients get'); 
         return res.send(JSON.stringify(result));
     });
 });

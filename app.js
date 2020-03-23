@@ -12,7 +12,7 @@ const path = require('path');
 const username = require('./routes/dashboard').getUsername;
 // Passport config   
 require('./config/passport.js')(passport);
-// EJS   
+// EJS     
 app.set('views', path.join(__dirname, 'views')); // add this one, change 'views' for your folder name if needed.
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
@@ -73,13 +73,13 @@ const datavendPort = '192.168.1.114';
 // PORT 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, datavendPort, console.log(`Server started on port ${PORT}`));
-
+/* 
 db.connect((err) => {
     if (err) {
         throw err;
     }
     console.log('Mysql connected');
-});
+}); */
 
 app.disable('view cache');
 const nocache = require('nocache');

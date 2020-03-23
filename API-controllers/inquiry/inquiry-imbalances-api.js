@@ -45,7 +45,7 @@ router.post('/api/filter/calculate-imbalances/', (req, res) => {
             sql += ` AND hour_prediction.date<='${toDate}' `;
         }
         if (name != -1) {
-            sql += ` AND clients.name = '${name}' `
+            sql += ` AND clients.client_name = '${name}' `
         }
         if (ident_code != -1) {
             sql += ` AND clients.ident_code = '${ident_code}'`;
@@ -79,7 +79,7 @@ router.post('/api/filter/calculate-imbalances/', (req, res) => {
             sql += `AND profile_coef.date<='${toDate}' `;
         }
         if (name != -1) {
-            sql += ` AND clients.name = '${name}' `
+            sql += ` AND clients.client_name = '${name}' `
         }
         if (ident_code != -1) {
             sql += ` AND clients.ident_code = '${ident_code}'`;

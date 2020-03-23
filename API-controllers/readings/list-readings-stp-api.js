@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     db
 } = require('../../db.js');
+const NodeTable = require('nodetable');
 
 router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
     let sql = `SELECT *,stp_hour_readings.id AS hrID FROM stp_hour_readings
@@ -21,6 +22,36 @@ router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
 });
 
 router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
+
+   /*  const requestQuery = req.query;
+
+    let columnsMap = [{
+            db: "id",
+            dt: 0
+        },
+        {
+            db: "ident_code",
+            dt: 1
+        },
+        {
+            db: "client_name",
+            dt: 2
+        },
+        {
+            db: "date",
+            dt: 3
+        },
+        {
+            db: "erp_type",
+            dt: 4
+        },
+        {
+            db: "amount",
+            dt: 5
+        }
+    ];
+ */
+
     let {
         fromDate,
         toDate,
@@ -58,6 +89,20 @@ router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
         return res.send(JSON.stringify([]));
     }
     sql += ' ORDER BY stp_hour_readings.id';
+
+   /*  const primaryKey = "stp_hour_readings.id" */
+  
+    /* const nodeTable = new NodeTable(requestQuery, db, sql, primaryKey, columnsMap); */
+   
+   /*  nodeTable.output((err, data)=>{
+      if (err) {
+        console.log(err);
+        return;
+      }
+      // Directly send this data as output to Datatable
+      res.send(data)
+    }) */
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;

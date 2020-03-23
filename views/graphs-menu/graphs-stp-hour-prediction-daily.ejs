@@ -30,8 +30,10 @@
     <title>Document</title>
 </head>
 
-<body>
-    <h2 class="text-center">График</h2>
+<body> 
+    <h2 id="client-heading" class="text-center mb-3">Клиент:</h2>
+    <h2 id="date-heading" class="text-center">График за месец:</h2>
+    
     <label class="switch red-border">
         <input class="switch-input" type="checkbox" checked />
         <span class="switch-label" data-on="Календар" data-off="Графики"></span>
@@ -48,7 +50,7 @@
             <span class="switch-handle"></span>
         </label>
         <canvas id="daily-hour-prediction-chart" class="mb-5" width="1200" height="500"></canvas>
-    </div>
+    </div> 
     <script src="../../../../js/graphs/graphs-stp-hour-prediction-daily.js">
     </script>
 </body>

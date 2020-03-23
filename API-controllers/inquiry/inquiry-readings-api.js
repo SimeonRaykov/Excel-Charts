@@ -51,7 +51,7 @@ router.post('/api/filter/inquiry-readings/', (req, res) => {
         sql += ` AND ${metering_type}.date<='${toDate}' `;
     }
     if (name != -1) {
-        sql += ` AND clients.name = '${name}' `
+        sql += ` AND clients.client_name = '${name}' `
     }
     if (ident_code != -1) {
         sql += ` AND clients.ident_code = '${ident_code}'`;

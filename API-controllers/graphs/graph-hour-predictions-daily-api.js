@@ -31,7 +31,7 @@ router.get('/api/graphs/stp-hour-prediction/monthly/:id/:date', (req, res) => {
     AND YEAR(profile_coef.date) = YEAR('${req.params.date}')
     AND prediction.id = '${req.params.id}'`;
 
-    db.query(sql, (err, result) => {
+   db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }

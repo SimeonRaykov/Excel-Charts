@@ -38,7 +38,7 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
             sql += ` AND ${metering_type}.date<='${toDate}' `;
         }
         if (name != -1) {
-            sql += ` AND clients.name = '${name}' `
+            sql += ` AND clients.client_name = '${name}' `
         }
         if (ident_code != -1) {
             sql += ` AND clients.ident_code = '${ident_code}'`;
@@ -72,7 +72,7 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
             sql += ` AND ${metering_type}.date<='${toDate}' `;
         }
         if (name != -1) {
-            sql += ` AND clients.name = '${name}' `
+            sql += ` AND clients.client_name = '${name}' `
         }
         if (ident_code != -1) {
             sql += ` AND clients.ident_code = '${ident_code}'`;
