@@ -1,4 +1,3 @@
-
-
-
- 
+#clients_wrapper>div.dataTables_scroll>div.dataTables_scrollBody {
+    overflow: hidden !important;
+}

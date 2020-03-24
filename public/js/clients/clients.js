@@ -1,6 +1,10 @@
 $(document).ready(function () {
-    // Type = 2 STP 
-    const meteringType = 'all';
+    addEventListenerToCheckboxes()
+    processInitialData();
+    getDataListings();
+});
+
+function processInitialData() {
     let url = `/api/getAllClients`;
 
     // User friendly get params
@@ -37,14 +41,13 @@ $(document).ready(function () {
         }
     }
     getInitialData(url);
-    getDataListings();
-});
+}
 
 (function filterClientsByName() {
     $('#client_name').on('change', () => {
         const clientNameVal = $('#client_name').val();
         const table = $('#clients').DataTable();
-        table.search(clientNameVal).draw();
+        table.column(2).search(clientNameVal).draw();
     })
 }())
 
@@ -52,7 +55,7 @@ $(document).ready(function () {
     $('#ident_code').on('change', () => {
         const identCodeVal = $('#ident_code').val();
         const table = $('#clients').DataTable();
-        table.search(identCodeVal).draw();
+        table.column(1).search(identCodeVal).draw();
     })
 }())
 
@@ -142,7 +145,7 @@ function visualizeDataTable(data) {
     });
 };
 
-(function addEventListenerToCheckboxes() {
+function addEventListenerToCheckboxes() {
     $('input[type=checkbox]').click(() => {
         const checkboxesMeteringType = document.getElementsByName('metering_type');
         const checkboxesERPType = document.getElementsByName('erp_type');
@@ -161,7 +164,7 @@ function visualizeDataTable(data) {
         window.history.replaceState(null, null, `clients?erpType=${erpTypeValue}&meteringType=${meteringValue}`)
         filterClients(erpTypeValue, meteringValue);
     })
-})();
+};
 
 function filterClients(erpValue, meteringValue) {
     if (meteringValue == 0 || erpValue == 0) {

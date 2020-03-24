@@ -1,8 +1,16 @@
 $(document).ready(function () {
     hideGraphs();
     getAllCharts();
-    visualizeAllDefaultInputs()
+    visualizeAllDefaultInputs();
+    visualizeChartsAutomatically();
 });
+
+const readingTypes = {
+    STP_HOUR_READING: 'stp-hour-reading',
+    HOUR_READING: 'hour-reading',
+    STP_GRAPH_HOUR_READING: 'stp-graph-hour-prediction',
+    GRAPH_HOUR_READING: 'graph-hour-prediction'
+}
 
 let _IS_EXECUTED = false;
 
@@ -562,14 +570,23 @@ function showImbalanceChart(data) {
     })
 }
 
+function visualizeChartsAutomatically() {
+    const readingType = findGetParameter('type');
+    const readingDate = findGetParameter('date');
+    if ((readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) && readingDate != null) {
+        $('#hour-readings input[name=fromDate]').val(readingDate);
+        $('#hour-readings input[name=toDate]').val(readingDate);
+        $('#searchBtnHourlyGraph').click();
+    } else if (readingType == readingTypes.GRAPH_HOUR_READING && readingDate != null) {
+        $('#graph input[name=fromDateGraphPrediction]').val(readingDate);
+        $('#graph input[name=toDateGraphPrediction]').val(readingDate);
+        $('#searchBtnGraphPrediction').click();
+    }
+
+}
 
 (function addFullCalendars() {
-    const readingTypes = {
-        STP_HOUR_READING: 'stp-hour-reading',
-        HOUR_READING: 'hour-reading',
-        STP_GRAPH_HOUR_READING: 'stp-graph-hour-prediction',
-        GRAPH_HOUR_READING: 'graph-hour-prediction'
-    }
+
     const readingType = findGetParameter('type');
     const readingDate = findGetParameter('date');
     const today = new Date();

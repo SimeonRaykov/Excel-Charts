@@ -1,11 +1,5 @@
 ;
 $(document).ready(function () {
-    try {
-        console.log(JSON.parse(localStorage.getItem('current-invoicing-data')));
-        console.log(localStorage.getItem('invoicing-criteria'));
-    } catch (e) {
-        console.log(e);
-    }
     stopBubblingForInputs();
     getDataListing();
     visualizeHistoryParams();
@@ -97,8 +91,7 @@ function getAllListings(data) {
         fixedHeader: {
             header: true,
             footer: true
-          },
-        "paging": false,
+        },
         retrieve: true
     });
     $('#tBody').addClass('text-center');

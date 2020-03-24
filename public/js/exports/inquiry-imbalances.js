@@ -42,7 +42,7 @@ function initializeHandsOnTable(data) {
         filters: true,
         dropdownMenu: true,
         licenseKey: 'non-commercial-and-evaluation',
-        colWidths: [200, 200, 200, 200],
+        colWidths: 200,
         colHeights: 500,
         rowWidths: 200,
         rowHeights: 30,
@@ -266,22 +266,61 @@ function getImbalances(arr) {
 };
 
 function addImbalancesToTable(data) {
+    let allReadings = [];
     let currRow;
     let currentStartDate;
     let currentEndDate;
-    let allReadings = [];
-    allReadings.push(['Идентификационен код', 'Небаланс', 'Дата от', 'Дата до'])
-    for (let el of data) {
-        currentStartDate = new Date(el.start);
-        currentEndDate = new Date(el.end);
-        currRow = [];
-        currRow
-            .push(el.id,
-                el.title,
-                `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`,
-                `${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}:00 ч.`)
-        allReadings.push(currRow);
+    let firstRow = [];
+
+    function renderRowsTable() {
+
+        allReadings.push(['Идентификационен код', 'Небаланс', 'Дата от', 'Дата до'])
+        for (let el of data) {
+            currentStartDate = new Date(el.start);
+            currentEndDate = new Date(el.end);
+            currRow = [];
+            currRow
+                .push(el.id,
+                    el.title,
+                    `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`,
+                    `${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}:00 ч.`)
+            allReadings.push(currRow);
+        }
     }
+
+    function renderColsTable() {
+        let firstID = data[0].id;
+        let firstDate = new Date(data[0].start);
+        const firstDateFormatted = `${firstDate.getFullYear()}-${firstDate.getMonth()+1}-${firstDate.getDate()} : ${firstDate.getHours()}:00 ч.`;
+        firstRow.push('Идентификационен код', firstDateFormatted);
+        for (let i = 1; i < data.length; i += 1) {
+            let currentStartDate = new Date(data[i].start);
+            if (currentStartDate.getFullYear() == firstDate.getFullYear() &&
+                currentStartDate.getMonth() == firstDate.getMonth() &&
+                currentStartDate.getDate() == firstDate.getDate() &&
+                currentStartDate.getHours() == firstDate.getHours()) {
+                break;
+            }
+            let formattedStartDate = `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`;
+            firstRow.push(formattedStartDate);
+        }
+        allReadings.push(firstRow);
+
+        let currentID = data[0].id;
+        let currentRow = [];
+        for (let obj of data) {
+            let newID = obj.id;
+            if (newID != currentID) {
+                allReadings.push(currentRow);
+                currentRow.unshift(currentID);
+                currentRow = [];
+                currentID = newID;
+            }
+            let currValue = obj.title;
+            currentRow.push(currValue);
+        }
+    }
+    renderRowsTable();
     initializeHandsOnTable(allReadings);
 }
 
@@ -641,4 +680,3 @@ function visualizeCheckboxesFromHistoryLocation() {
 function calcImbalance(isManufacturer, predictionVal, actualVal) {
     return isManufacturer == 0 ? predictionVal - actualVal : actualVal - predictionVal;
 }
-

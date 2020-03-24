@@ -20,7 +20,7 @@ function initializeHandsOnTable(data) {
         filters: true,
         dropdownMenu: true,
         licenseKey: 'non-commercial-and-evaluation',
-        colWidths: [200, 200, 200, 200],
+        colWidths: 200,
         colHeights: 500,
         rowWidths: 200,
         rowHeights: 30,
@@ -292,35 +292,75 @@ function getReadings(arr) {
 };
 
 function addReadingsToTable(data) {
+    let allReadings = [];
     let currRow;
     let currentStartDate;
     let currentEndDate;
-    let allReadings = [];
-    allReadings.push(['Идентификационен код', 'Мерене', 'Дата от', 'Дата до'])
-    for (let el of data) {
-        currentStartDate = new Date(el.start);
-        currentEndDate = new Date(el.end);
-        currRow = [];
-        currRow
-            .push(el.id,
-                el.title,
-                `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`,
-                `${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}:00 ч.`)
-        allReadings.push(currRow);
+    let firstRow = [];
+
+    function renderRowsTable() {
+
+        allReadings.push(['Идентификационен код', 'Мерене', 'Дата от', 'Дата до'])
+        for (let el of data) {
+            currentStartDate = new Date(el.start);
+            currentEndDate = new Date(el.end);
+            currRow = [];
+            currRow
+                .push(el.id,
+                    el.title,
+                    `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`,
+                    `${currentEndDate.getFullYear()}-${currentEndDate.getMonth()+1}-${currentEndDate.getDate()} : ${currentEndDate.getHours()}:00 ч.`)
+            allReadings.push(currRow);
+        }
     }
+
+    function renderColsTable() {
+        let firstID = data[0].id;
+        let firstDate = new Date(data[0].start);
+        const firstDateFormatted = `${firstDate.getFullYear()}-${firstDate.getMonth()+1}-${firstDate.getDate()} : ${firstDate.getHours()}:00 ч.`;
+        firstRow.push('Идентификационен код', firstDateFormatted);
+        for (let i = 1; i < data.length; i += 1) {
+            let currentStartDate = new Date(data[i].start);
+            if (currentStartDate.getFullYear() == firstDate.getFullYear() &&
+                currentStartDate.getMonth() == firstDate.getMonth() &&
+                currentStartDate.getDate() == firstDate.getDate() &&
+                currentStartDate.getHours() == firstDate.getHours()) {
+                break;
+            }
+            let formattedStartDate = `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`;
+            firstRow.push(formattedStartDate);
+        }
+        allReadings.push(firstRow);
+
+        let currentID = data[0].id;
+        let currentRow = [];
+        for (let obj of data) {
+            let newID = obj.id;
+            if (newID != currentID) {
+                allReadings.push(currentRow);
+                currentRow.unshift(currentID);
+                currentRow = [];
+                currentID = newID;
+            }
+            let currValue = obj.title;
+            currentRow.push(currValue);
+        }
+    }
+    renderColsTable();
     initializeHandsOnTable(allReadings);
 }
 
 function showReadingsChart(data) {
+    let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let actualHourData = [];
 
     let tempActualArr = [];
     let index = 0;
-    let dataIterator = 0;
 
     if (data != undefined) {
-        if (true /*data.length == 1*/ ) {
+        if (findGetParameter('fromDate') == findGetParameter('toDate')) {
+                _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 const startingIndexActualHourData = 2;
                 let indexActualData = 2;
@@ -350,12 +390,10 @@ function showReadingsChart(data) {
                 }
                 index = 0;
             }
-        } else if (false) {
+        } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
                 for (let hr in data[el]) {
                     if (index >= 2) {
                         let t = index == 2 ? date : incrementHoursOne(date)
@@ -363,16 +401,15 @@ function showReadingsChart(data) {
                             t,
                             y: data[el][hr]
                         }
-                        actualHourData.push(hourObj);
+                        tempActualArr.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
     }
-    console.log(tempActualArr);
     let labelsNoDuplicates = removeDuplicatesFromArr(labels);
     var ctx = document.getElementById('readings-chart').getContext('2d');
     var config = {
@@ -390,7 +427,14 @@ function showReadingsChart(data) {
         options: {
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_READINGS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
@@ -536,4 +580,3 @@ function visualizeCheckboxesFromHistoryLocation() {
 function hideSwitch() {
     $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label').css('display', 'none');
 }
-
