@@ -7,7 +7,8 @@ $(document).ready(function () {
 });
 
 (function addOnClickToReadingsPreviewBTN() {
-    $('#preview-readings').click(() => {
+    $('#preview-readings').click(async () => {
+        await setHeadingsColsandItemsRowsInLocalStorage();
         window.location.href = '/users/invoicing/preview'
     })
 })();
@@ -38,18 +39,35 @@ $(document).ready(function () {
     })
 }());
 
-(function renderInvoicingPreview() {
+/* (function renderInvoicingPreview() {
     $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-success.btn-lg').on('click', () => {
         setHeadingsColsandItemsRowsInLocalStorage();
     });
-}());
+}()); */
 
 (function issueInvoices() {
-    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-warning.btn-lg').click(() => {
-        setHeadingsColsandItemsRowsInLocalStorage();
-        console.log(JSON.parse(localStorage.getItem('current-invoicing-data')));
+    $('#invoiceBTN').click(() => {
+        $.ajax({
+            url: `/api/filter/invoices`,
+            method: 'POST',
+            data: {
+                IDs: localStorage.getItem('current-invoicing-data').split(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                clearInvoices();
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
     })
 }());
+
+function clearInvoices() {
+    localStorage.removeItem('current-invoicing-data');
+}
 
 function stopBubblingForInputs() {
     $('table input').on('click', (e) => {
@@ -85,6 +103,7 @@ function getAllListings(data) {
     }
     // Order DESC
     dataTable = $('#list-readings').DataTable({
+        stateSave: true,
         "order": [
             [0, "desc"]
         ],
@@ -329,44 +348,56 @@ async function setHeadingsColsandItemsRowsInLocalStorage() {
             document_type = ($(currRow.children()[9]).text());
             erp_type = ($(currRow.children()[10]).text());
 
-            currInfo = {};
-            if (invoicingCriterias.includes("ID на отчет")) {
-                currInfo.id = id;
-            }
-            if (invoicingCriterias.includes("Клиентски номер")) {
-                currInfo.client_number = client_number;
-            }
-            if (invoicingCriterias.includes("Идентификационен код")) {
-                currInfo.client_ident_code = client_ident_code;
-            }
-            if (invoicingCriterias.includes("Име на клиент")) {
-                currInfo.curr_client_name = curr_client_name;
-            }
-            if (invoicingCriterias.includes("Период на отчетност от")) {
-                currInfo.date_from = date_from;
-            }
-            if (invoicingCriterias.includes("Период на отчетност до")) {
-                currInfo.date_to = date_to;
-            }
-            if (invoicingCriterias.includes("Часова зона")) {
-                currInfo.hour_zone = hour_zone;
+            /*   currInfo = {};
+              if (invoicingCriterias.includes("ID на отчет")) {
+                  currInfo.id = id;
+              }
+              if (invoicingCriterias.includes("Клиентски номер")) {
+                  currInfo.client_number = client_number;
+              }
+              if (invoicingCriterias.includes("Идентификационен код")) {
+                  currInfo.client_ident_code = client_ident_code;
+              }
+              if (invoicingCriterias.includes("Име на клиент")) {
+                  currInfo.curr_client_name = curr_client_name;
+              }
+              if (invoicingCriterias.includes("Период на отчетност от")) {
+                  currInfo.date_from = date_from;
+              }
+              if (invoicingCriterias.includes("Период на отчетност до")) {
+                  currInfo.date_to = date_to;
+              }
+              if (invoicingCriterias.includes("Часова зона")) {
+                  currInfo.hour_zone = hour_zone;
 
-            }
-            if (invoicingCriterias.includes("Количество")) {
-                currInfo.qty = qty;
-            }
-            if (invoicingCriterias.includes("Стойност в лв")) {
-                currInfo.total_cost = total_cost;
-            }
-            if (invoicingCriterias.includes("Тип на документа")) {
-                currInfo.document_type = document_type;
-            }
-            if (invoicingCriterias.includes("ЕРП")) {
-                currInfo.erp_type = erp_type;
-            }
-            data.push(currInfo);
+              }
+              if (invoicingCriterias.includes("Количество")) {
+                  currInfo.qty = qty;
+              }
+              if (invoicingCriterias.includes("Стойност в лв")) {
+                  currInfo.total_cost = total_cost;
+              }
+              if (invoicingCriterias.includes("Тип на документа")) {
+                  currInfo.document_type = document_type;
+              }
+              if (invoicingCriterias.includes("ЕРП")) {
+                  currInfo.erp_type = erp_type;
+              } */
+            data.push(id);
         }
     });
-
-    localStorage.setItem('current-invoicing-data', JSON.stringify(data));
+    Array.prototype.unique = function () {
+        var a = this.concat();
+        for (var i = 0; i < a.length; ++i) {
+            for (var j = i + 1; j < a.length; ++j) {
+                if (a[i] === a[j])
+                    a.splice(j--, 1);
+            }
+        }
+        return a;
+    };
+    let currentItems = localStorage.getItem('current-invoicing-data') || [];
+    currentItems != '' ? currentItems = currentItems.split() : '';
+    let mergedValues = currentItems.concat(data).unique();
+    localStorage.setItem('current-invoicing-data', mergedValues);
 }

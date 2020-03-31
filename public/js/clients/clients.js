@@ -139,6 +139,7 @@ function visualizeDataTable(data) {
     $('#clients > thead').addClass('text-center');
     //DESC order 
     dataTable = $('#clients').DataTable({
+        stateSave: true,
         "order": [
             [0, "asc"]
         ]

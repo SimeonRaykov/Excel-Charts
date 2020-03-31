@@ -363,10 +363,10 @@ function showReadingsChart(data) {
                 _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 const startingIndexActualHourData = 2;
-                let indexActualData = 2;
-                let finalIndex = 26;
+                let indexActualData = 2; 
+                let finalIndex = 26;     
                 let date = new Date(data[el]['date']);
-                let valuesData = Object.values(data[el]);
+                let valuesData = Object.values(data[el]);  
                 let t = date;
                 for (let val of valuesData) {
                     if (index >= startingIndexActualHourData) {

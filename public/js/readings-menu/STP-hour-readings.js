@@ -34,6 +34,7 @@ function getAllSTPHourListings(data) {
     }
     // Order DESC
     dataTable = $('#hour-readings-table').DataTable({
+        stateSave: true, 
         "order": [
             [0, "asc"]
         ],

@@ -34,6 +34,7 @@ function getGraphReadings(data) {
     }
     // Order DESC
     dataTable = $('#graph-readings-table').DataTable({
+        stateSave: true,
         "order": [
             [0, "asc"]
         ],
