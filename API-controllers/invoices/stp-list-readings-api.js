@@ -75,5 +75,22 @@ router.get('/api/data-listings/STP-Hour-Readings', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
+router.post('/api/filter/invoices', (req, res) => {
+    let {
+        IDs
+    } = req.body;
+
+    let sql = `SELECT invoicing.id AS invoicing_id, clients.ident_code, period_from, period_to, qty, value_bgn
+    FROM invoicing
+    INNER JOIN clients
+    ON invoicing.client_id = clients.id
+    WHERE invoicing.id IN (${IDs})`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+})
 
 module.exports = router;
