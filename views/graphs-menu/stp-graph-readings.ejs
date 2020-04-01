@@ -28,7 +28,8 @@
 <body>
     <div class="card card-default">
         <div class="card-header">
-            <h2 class="text-center">Графици - СТП </h2>
+            <h2 class="text-center" data-toggle="tooltip" data-placement="top"
+                data-original-title="Трябва да бъде сложен профил на клиента предварително!">Графици - СТП </h2>
         </div>
         <div class="card-body">
             <form action="" method="GET">
@@ -76,7 +77,7 @@
     </div>
     <table id="stp-graph-readings-table" class="display">
         <thead>
-            <tr> 
+            <tr>
                 <th>ID на график</th>
                 <th>Идентификационен код на клиент</th>
                 <th>Име на клиент</th>
@@ -90,6 +91,7 @@
     </table>
     </div>
     <script src="../../../../js/graphs/stp-graph-readings.js"></script>
+    <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
 </body>
 
 </html>

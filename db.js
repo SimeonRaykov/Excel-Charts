@@ -26,7 +26,7 @@ function handleDisconnect() {
         if (err) { // or restarting (takes a while sometimes).
             console.log('error when connecting to db:', err);
             fs.writeFile('error_log.txt', err, function (err) {
-            //    if (err) throw err;
+                //    if (err) throw err;
                 // console.log('Saved!');
             });
             setTimeout(handleDisconnect, 10000); // We introduce a delay before attempting to reconnect,
@@ -36,11 +36,11 @@ function handleDisconnect() {
     connection.on('error', function (err) {
         console.log('db error', err);
         handleDisconnect();
-    /*     if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-            handleDisconnect(); // lost due to either server restart, or a
-        } else { // connnection idle timeout (the wait_timeout
-            throw err; // server variable configures this)
-        } */
+        /*     if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+                handleDisconnect(); // lost due to either server restart, or a
+            } else { // connnection idle timeout (the wait_timeout
+                throw err; // server variable configures this)
+            } */
     });
 }
 
