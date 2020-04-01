@@ -352,6 +352,7 @@ function initializeHandsOnTable(data) {
 
 
 function showGraphsChart(data) {
+    let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let actualHourData = [];
 
@@ -360,7 +361,8 @@ function showGraphsChart(data) {
     let dataIterator = 0;
 
     if (data != undefined) {
-        if (true /*data.length == 1*/ ) {
+        if (findGetParameter('fromDate') == findGetParameter('toDate')) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 const startingIndexActualHourData = 2;
                 let indexActualData = 2;
@@ -390,12 +392,10 @@ function showGraphsChart(data) {
                 }
                 index = 0;
             }
-        } else if (false) {
+        } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
                 for (let hr in data[el]) {
                     if (index >= 2) {
                         let t = index == 2 ? date : incrementHoursOne(date)
@@ -403,7 +403,8 @@ function showGraphsChart(data) {
                             t,
                             y: data[el][hr]
                         }
-                        actualHourData.push(hourObj);
+                        tempActualArr.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
@@ -412,8 +413,10 @@ function showGraphsChart(data) {
             }
         }
     }
-    console.log(tempActualArr);
     let labelsNoDuplicates = removeDuplicatesFromArr(labels);
+    if (labelsNoDuplicates.length != labels.length) {
+        tempActualArr = sumValuesForDifferentClients(tempActualArr);
+    }
     var ctx = document.getElementById('predictions-chart').getContext('2d');
     var config = {
         type: 'line',
@@ -430,7 +433,14 @@ function showGraphsChart(data) {
         options: {
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_READINGS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
@@ -492,16 +502,6 @@ var randomProperty = function (obj) {
         exportTableToExcel('handsontable-predictions', tableName);
     })
 }()); */
-
-function findGetParameter(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
 
 function getThisAndLastMonthDates() {
     let today = new Date();
@@ -583,4 +583,35 @@ function visualizeCheckboxesFromHistoryLocation() {
 
 function hideSwitch() {
     $('#info > div.container.clients.text-center > div.row > div.offset-md-6 > label').css('display', 'none');
+}
+
+function sumValuesForDifferentClients(tempActualArr) {
+    let sumArr = [];
+    for (let i = 0; i < tempActualArr.length; i += 1) {
+        const currDateObj = new Date(tempActualArr[i].t);
+        const normalDate = `${currDateObj.getFullYear()}, ${currDateObj.getMonth()}, ${currDateObj.getDate()}, ${currDateObj.getHours()}`;
+        const currObj = {
+            t: normalDate,
+            y: tempActualArr[i].y
+        };
+        const searchedObj = processSumValues(normalDate, sumArr, tempActualArr[i].y);
+        if (!searchedObj) {
+            sumArr.push(currObj);
+        }
+    }
+    for (let x = 0; x < sumArr.length; x += 1) {
+        const dateElements = sumArr[x].t.split(', ');
+        sumArr[x].t = new Date(dateElements[0], dateElements[1], dateElements[2], dateElements[3]);
+    }
+    console.log(sumArr);
+    return sumArr;
+}
+
+function processSumValues(nameKey, myArray, sumValue) {
+    for (let i = 0; i < myArray.length; i++) {
+        if (myArray[i].t === nameKey) {
+            return myArray[i].y += sumValue;
+        }
+    }
+    return false;
 }

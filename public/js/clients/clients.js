@@ -1,8 +1,24 @@
 $(document).ready(function () {
+    setSavedInputs();
     addEventListenerToCheckboxes()
     processInitialData();
     getDataListings();
 });
+
+function setSavedInputs() {
+    try {
+        const dataTableSearchName = JSON.parse(localStorage.getItem('DataTables_clients_/users/clients')).columns[2].search.search;
+        const dataTableSearchIdentCode = JSON.parse(localStorage.getItem('DataTables_clients_/users/clients')).columns[1].search.search;
+        if (dataTableSearchName) {
+            $('#client_name').val(dataTableSearchName);
+        }
+        if (dataTableSearchIdentCode) {
+            $('#ident_code').val(dataTableSearchIdentCode);
+        }
+    } catch (e) {
+        console.log(e);
+    }
+}
 
 function processInitialData() {
     let url = `/api/getAllClients`;

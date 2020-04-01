@@ -28,3 +28,4 @@ table a:not(.fc-more):not(.fc-end):hover:before {
     -webkit-transform: scaleX(1);
     transform: scaleX(1);
 }
+
