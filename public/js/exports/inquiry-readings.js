@@ -392,15 +392,16 @@ function showReadingsChart(data) {
             _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
+                let t = date;
                 for (let hr in data[el]) {
                     if (index >= 2) {
-                        let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
                             y: data[el][hr]
                         }
                         tempActualArr.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+                        t = incrementHoursOne(date);
                     }
                     index += 1;
                 }
@@ -577,7 +578,7 @@ function sumValuesForDifferentClients(tempActualArr) {
     let sumArr = [];
     for (let i = 0; i < tempActualArr.length; i += 1) {
         const currDateObj = new Date(tempActualArr[i].t);
-        const normalDate = `${currDateObj.getFullYear()}, ${currDateObj.getMonth()}, ${currDateObj.getDate()}, ${currDateObj.getHours()}`;
+        const normalDate = `${currDateObj.getFullYear()}, ${currDateObj.getMonth()}, ${currDateObj.getDate()}, ${currDateObj.getHours()-1}`;
         const currObj = {
             t: normalDate,
             y: tempActualArr[i].y
@@ -587,11 +588,12 @@ function sumValuesForDifferentClients(tempActualArr) {
             sumArr.push(currObj);
         }
     }
+
     for (let x = 0; x < sumArr.length; x += 1) {
         const dateElements = sumArr[x].t.split(', ');
         sumArr[x].t = new Date(dateElements[0], dateElements[1], dateElements[2], dateElements[3]);
     }
-    console.log(sumArr);
+
     return sumArr;
 }
 

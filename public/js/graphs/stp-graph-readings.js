@@ -6,7 +6,7 @@ $(document).ready(function () {
 });
 
 function getGraphReadings(data) {
-    const readingType = 'stp-graph-hour-prediction';
+    /* const readingType = 'stp-graph-hour-prediction';
     let i = 0;
     for (let el in data) {
         const date = data[el]['date'];
@@ -41,7 +41,7 @@ function getGraphReadings(data) {
         retrieve: true
     });
     $('#tBody').addClass('text-center');
-    $('#list-readings > thead').addClass('text-center');
+    $('#list-readings > thead').addClass('text-center'); */
 }
 
 function getDataListing() {
@@ -121,36 +121,107 @@ function listGraphReadingsFiltered(arr) {
         ] = arr;
     }
     notification('Loading...', 'loading');
-    $.ajax({
-        url: `/api/filter/list-stp-graph-readings`,
-        method: 'POST',
-        data: {
-            fromDate,
-            toDate,
-            name,
-            ident_code: clientID,
-            erp
+    dataTable = $('#stp-graph-readings-table').DataTable({
+        destroy: false,
+        "paging": true,
+        stateSave: true,
+        sAjaxDataProp: 'data',
+        "order": [
+            [0, "asc"]
+        ],
+        "processing": true,
+        "serverSide": true,
+        "columnDefs": [{
+            "className": "dt-center",
+            "targets": "_all"
+        }],
+        ajax: {
+            dataFilter: function (data) {
+                var json = jQuery.parseJSON(data);
+                json.recordsTotal = json.total;
+                json.recordsFiltered = json.total;
+                json.data = json.list;
+
+                return JSON.stringify(json); // return JSON string
+            },
+            url: "/api/filter/list-stp-graph-readings",
+            data: {
+                fromDate,
+                toDate,
+                name,
+                ident_code: clientID,
+                erp
+            },
+            dataSrc: "",
+            type: 'POST',
         },
-        dataType: 'json',
-        success: function (data) {
-            getGraphReadings(data);
-        },
-        error: function (jqXhr, textStatus, errorThrown) {
-            console.log(errorThrown);
-        }
+        columns: [{
+                data: "id",
+                render: function (data, type, row) {
+                    const date = row['date'];
+                    const fullDate = new Date(date);
+                    const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+                    return `<td><a href=/users/clients/graphs-stp-hour-prediction/monthly/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
+                }
+            },
+            {
+                data: "ident_code",
+                render: function (data, type, row) {
+                    const readingType = 'stp-graph-hour-prediction';
+                    const date = row['date'];
+                    const fullDate = new Date(date);
+                    const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
+                    return `<td><a href=/users/clients/info/${row['cId']}?date=${formattedDate}&type=${readingType}>${row['ident_code']}</a></td>`;
+                },
+
+            }, {
+                data: "client_name",
+                render: function (data, type, row) {
+                    return '<td>' + row['client_name'] + '</td>';
+                },
+            }, {
+                data: "date",
+                render: function (data, type, row) {
+                    const date = row['date'];
+                    const fullDate = new Date(date);
+                    const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
+                    const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
+                    return '<td>' + fixedDate + '</td>'
+                },
+            },
+            {
+                data: "erp_type",
+                render: function (data, type, row) {
+                    const erpType = row['erp_type'] == 1 ? 'ИВН' : row['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
+                    return '<td>' + erpType + '</td>';
+                }
+            },
+            {
+                data: "amount"
+            },
+        ],
+        retrieve: true
     });
+    /*  $.ajax({
+         url: `/api/filter/list-stp-graph-readings`,
+         method: 'POST',
+         data: {
+             fromDate,
+             toDate,
+             name,
+             ident_code: clientID,
+             erp
+         },
+         dataType: 'json',
+         success: function (data) {
+             getGraphReadings(data);
+         },
+         error: function (jqXhr, textStatus, errorThrown) {
+             console.log(errorThrown);
+         }
+     }); */
     toastr.clear();
 };
-
-function findGetParameter(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
 
 function getThisAndLastMonthDates() {
     let today = new Date();
@@ -169,34 +240,6 @@ function removeDuplicatesFromArr(arr) {
     });
     return uniqueNames;
 }
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
-};
 
 function visualizeAllInputFromGetParams() {
     visualizeCheckboxesFromHistoryLocation();

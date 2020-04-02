@@ -396,15 +396,16 @@ function showGraphsChart(data) {
             _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
+                let t = date;
                 for (let hr in data[el]) {
                     if (index >= 2) {
-                        let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
                             y: data[el][hr]
                         }
                         tempActualArr.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+                        t = incrementHoursOne(date);
                     }
                     index += 1;
                 }
