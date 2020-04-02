@@ -6,12 +6,19 @@ const {
 
 router.post('/api/filter/getAllHourReadingsTable', (req, res) => {
     let {
+        search,
+        start,
+        length,
+        order,
         fromDate,
         toDate,
         name,
         ident_code,
         erp
     } = req.body;
+    const columnNum = order[0].column;
+    const columnType = getColumnType(columnNum)
+    const orderType = order[0].dir;
 
     let sql = `SELECT hour_readings.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, hour_readings.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero) as amount FROM hour_readings
     INNER JOIN clients ON clients.id = hour_readings.client_id 
@@ -40,8 +47,11 @@ router.post('/api/filter/getAllHourReadingsTable', (req, res) => {
     } else if (erp == undefined) {
         return res.send(JSON.stringify([]));
     }
-    sql += ' ORDER BY hour_readings.id';
-    console.log(sql);
+    search.value ? sql += ` AND '${search.value}' IN (hour_readings.id, clients.ident_code, 
+        clients.client_name, clients.erp_type, hour_readings.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero)) ` : '';
+    sql += ` ORDER BY ${columnType} ${orderType}`;
+    sql += ` LIMIT ${start},${length}`;
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -49,6 +59,32 @@ router.post('/api/filter/getAllHourReadingsTable', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
+
+function getColumnType(columnNum) {
+    let result = 'stp_hour_readings.id';
+
+    switch (columnNum) {
+        case '0':
+            result = 'hour_readings.id'
+            break;
+        case '1':
+            result = 'clients.ident_code'
+            break;
+        case '2':
+            result = 'clients.client_name'
+            break;
+        case '3':
+            result = 'hour_readings.date'
+            break;
+        case '4':
+            result = 'clients.erp_type'
+            break;
+        case '5':
+            result = 'amount'
+            break;
+    }
+    return result
+}
 
 router.get('/api/data-listings/hour-readings', (req, res) => {
     let sql = `SELECT DISTINCT clients.id, clients.client_name, ident_code

@@ -6,13 +6,20 @@ const {
 
 router.post('/api/filter/list-stp-graph-readings', (req, res) => {
     let {
+        search,
+        start,
+        length,
+        order,
         fromDate,
         toDate,
         name,
         ident_code,
         erp
     } = req.body;
-    //  TODO
+    const columnNum = order[0].column;
+    const columnType = getColumnType(columnNum)
+    const orderType = order[0].dir;
+
     let sql = `SELECT prediction.id, clients.id as cId,clients.ident_code, clients.client_name, clients.erp_type, prediction.date, prediction.amount FROM prediction
     INNER JOIN clients ON clients.id = prediction.client_id 
     WHERE 1=1 `;
@@ -39,15 +46,43 @@ router.post('/api/filter/list-stp-graph-readings', (req, res) => {
     } else if (erp == undefined) {
         return res.send(JSON.stringify([]));
     }
-    sql += ' ORDER BY prediction.id';
+    search.value ? sql += ` AND '${search.value}' IN (prediction.id, clients.ident_code, 
+        clients.client_name, clients.erp_type, prediction.date, prediction.amount) ` : '';
+    sql += ` ORDER BY ${columnType} ${orderType}`;
+    sql += ` LIMIT ${start},${length}`;
     let rex = db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(rex.sql)
         return res.send(JSON.stringify(result));
     });
 });
+
+function getColumnType(columnNum) {
+    let result = 'prediction.id';
+
+    switch (columnNum) {
+        case '0':
+            result = 'prediction.id'
+            break;
+        case '1':
+            result = 'clients.ident_code'
+            break;
+        case '2':
+            result = 'clients.client_name'
+            break;
+        case '3':
+            result = 'prediction.date'
+            break;
+        case '4':
+            result = 'clients.erp_type'
+            break;
+        case '5':
+            result = 'prediction.amount'
+            break;
+    }
+    return result
+}
 
 router.get('/api/data-listings/graphs-stp-readings', (req, res) => {
     let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
