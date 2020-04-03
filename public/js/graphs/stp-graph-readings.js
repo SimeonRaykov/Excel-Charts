@@ -1,48 +1,9 @@
 ;
 $(document).ready(function () {
     visualizeAllInputFromGetParams();
-    getDataListing();
+    getDataListing(); 
     listGraphReadingsFiltered();
 });
-
-function getGraphReadings(data) {
-    /* const readingType = 'stp-graph-hour-prediction';
-    let i = 0;
-    for (let el in data) {
-        const date = data[el]['date'];
-        const fullDate = new Date(date);
-        const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-        const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
-        const erpType = data[el]['erp_type'] == 1 ? 'ИВН' : data[el]['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
-        const amount = data[el]['amount'];
-        let currRow = $('<tr>').attr('role', 'row');
-        if (i % 2 == 1) {
-            currRow.addClass('even');
-        } else {
-            currRow.addClass('odd');
-        }
-        i += 1;
-        currRow
-            .append(`<td><a href=/users/clients/graphs-stp-hour-prediction/monthly/s?id=${data[el]['id']}&date=${fixedDate}>${data[el]['id']}</td>`)
-            .append($(`<td><a href=/users/clients/info/${data[el]['cId']}?date=${formattedDate}&type=${readingType}>${data[el]['ident_code']}</a></td>`))
-            .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + fixedDate + '</td>'))
-            .append($('<td>' + erpType + '</td>'))
-            .append($('<td>' + amount + '</td>'))
-            .append($('</tr>'));
-        currRow.appendTo($('#tBody'));
-    }
-    // Order DESC
-    dataTable = $('#stp-graph-readings-table').DataTable({
-        stateSave: true,
-        "order": [
-            [0, "asc"]
-        ],
-        retrieve: true
-    });
-    $('#tBody').addClass('text-center');
-    $('#list-readings > thead').addClass('text-center'); */
-}
 
 function getDataListing() {
     $.ajax({
@@ -136,14 +97,6 @@ function listGraphReadingsFiltered(arr) {
             "targets": "_all"
         }],
         ajax: {
-            dataFilter: function (data) {
-                var json = jQuery.parseJSON(data);
-                json.recordsTotal = json.total;
-                json.recordsFiltered = json.total;
-                json.data = json.list;
-
-                return JSON.stringify(json); // return JSON string
-            },
             url: "/api/filter/list-stp-graph-readings",
             data: {
                 fromDate,
@@ -152,7 +105,6 @@ function listGraphReadingsFiltered(arr) {
                 ident_code: clientID,
                 erp
             },
-            dataSrc: "",
             type: 'POST',
         },
         columns: [{
@@ -202,44 +154,8 @@ function listGraphReadingsFiltered(arr) {
         ],
         retrieve: true
     });
-    /*  $.ajax({
-         url: `/api/filter/list-stp-graph-readings`,
-         method: 'POST',
-         data: {
-             fromDate,
-             toDate,
-             name,
-             ident_code: clientID,
-             erp
-         },
-         dataType: 'json',
-         success: function (data) {
-             getGraphReadings(data);
-         },
-         error: function (jqXhr, textStatus, errorThrown) {
-             console.log(errorThrown);
-         }
-     }); */
     toastr.clear();
 };
-
-function getThisAndLastMonthDates() {
-    let today = new Date();
-    let thisMonthDate = `${today.getFullYear()}-${Number(today.getMonth())+1}-${today.getDay()}`;
-    let lastMonthDate = `${today.getFullYear()}-${Number(today.getMonth())}-${today.getDay()}`;
-    if (Number(today.getMonth()) - 1 === -1) {
-        lastMonthDate = `${Number(today.getFullYear())-1}-${Number(today.getMonth())+12}-${today.getDay()}`;
-    }
-    return [thisMonthDate, lastMonthDate];
-}
-
-function removeDuplicatesFromArr(arr) {
-    let uniqueNames = [];
-    $.each(arr, function (i, el) {
-        if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
-    });
-    return uniqueNames;
-}
 
 function visualizeAllInputFromGetParams() {
     visualizeCheckboxesFromHistoryLocation();
