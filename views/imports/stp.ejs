@@ -33,7 +33,7 @@
             <h2>Избери тип:</h2>
             <div class="row justify-content-center">
                 <label class="radio mr-5" data-toggle="tooltip" data-placement="left" container="body"
-                title data-original-title="Опцията за ИВН е сложена в импорти - Фактуриране">Почасово мерене
+                title data-original-title="Опцията за EVN е сложена в импорти - Фактуриране">Почасово мерене
                     <input type="radio" id="hour-reading" name="importDataType">
                     <span class="checkmark"></span>
                 </label>
@@ -45,7 +45,7 @@
             </div>
             <h2>Избери ЕРП:</h2>
             <div class="row justify-content-center">
-                <label class="radio mr-5">ИВН
+                <label class="radio mr-5">EVN
                     <input type="radio" id="data-evn" name="data-erp">
                     <span class="checkmark"></span>
                 </label>
@@ -64,6 +64,9 @@
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                 <i class="fas fa-upload"></i>
             </div>
+            <div>
+                <input type="file" id="upload-stp" name="filename">
+            </div> 
         </div>
         <div id="profiles" class="tab-pane fade">
             <h2 class="text-center mb-4">Импортиране на профили</h2>
@@ -73,7 +76,7 @@
             </div>
             <h2 class="text-center">Избери ЕРП:</h2>
             <div class="row justify-content-center">
-                <label class="radio mr-5">ИВН
+                <label class="radio mr-5">EVN
                     <input type="radio" id="profiles-evn" name="radio">
                     <span class="checkmark"></span>
                 </label>
@@ -92,7 +95,11 @@
                 <textarea class="form-control" id="profiles" rows="3">
                 </textarea>
                 <i class="fas fa-upload"></i>
+                <div>
+                    <input type="file" id="upload-profiles" name="filename">
+                </div> 
             </div>
+            
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>

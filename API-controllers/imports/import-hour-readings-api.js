@@ -32,8 +32,7 @@ router.post('/api/addHourReadings', async (req, res) => {
     let readingsFiltered = await filterHourReadings(req.body);
     if (readingsFiltered != [] && readingsFiltered != undefined && readingsFiltered.length && readingsFiltered != null) {
         let sql = 'INSERT INTO hour_readings (client_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, energy_type, created_date, diff) VALUES ?';
-        let rex = db.query(sql, [readingsFiltered], (err, result) => {
-            console.log(readingsFiltered);
+        db.query(sql, [readingsFiltered], (err, result) => {
             if (err) {
                 throw err;
             }

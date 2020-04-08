@@ -42,7 +42,7 @@ router.get('/api/getClientInfo/:id', (req, res) => {
     let sql = `SELECT clients.id, stp_profiles.profile_name, client_name, ident_code, metering_type, is_manufacturer, profile_id, erp_type FROM clients
     INNER JOIN stp_profiles on clients.profile_id = stp_profiles.id
     WHERE clients.id = ${clientID}`;
-    let query = db.query(sql, (err, result) => {
+     db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
@@ -56,7 +56,6 @@ router.get('/api/getClientInfo/:id', (req, res) => {
                 return res.send(result[0]);
             })
         } else {
-            console.log(2);
             return res.send(result[0]);
         }
     });
@@ -75,11 +74,10 @@ router.get('/api/hour-readings/:fromDate/:toDate/:clientID', (req, res) => {
     } else if (toDate != -1 && fromDate == -1) {
         sql += `AND date<='${toDate}' `;
     }
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });
@@ -97,11 +95,10 @@ router.get('/api/stp-hour-readings/:fromDate/:toDate/:clientID', (req, res) => {
     } else if (toDate != -1 && fromDate == -1) {
         sql += `AND date<='${toDate}' `;
     }
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });
@@ -119,11 +116,10 @@ router.get('/api/graph-predictions/:fromDate/:toDate/:clientID', (req, res) => {
     } else if (toDate != -1 && fromDate == -1) {
         sql += `AND date<='${toDate}' `;
     }
-    let query = db.query(sql, (err, result) => {
+     db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });
@@ -144,11 +140,10 @@ router.get('/api/stp-graph-predictions/:fromDate/:toDate/:clientID', (req, res) 
     } else if (toDate != -1 && fromDate == -1) {
         sql += `AND profile_coef.date<='${toDate}' `;
     }
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });

@@ -70,11 +70,10 @@ router.post('/api/filter/inquiry-readings/', (req, res) => {
     if (profileID!=-1 && metering_type == 'stp_hour_readings') {
         sql +=` AND profile_id = ${profileID}`
     }
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         return res.send(JSON.stringify(result));
     });
 });

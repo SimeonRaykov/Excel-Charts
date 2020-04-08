@@ -68,7 +68,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const datavendPort = '192.168.1.114';
+const datavendPort = '192.168.1.113';
 
 // PORT 
 const PORT = process.env.PORT || 3000;

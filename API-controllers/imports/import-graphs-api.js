@@ -12,7 +12,6 @@ router.post('/api/getSingleClient', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log(result);
         return res.send(JSON.stringify(result[0].id));
     });
 });

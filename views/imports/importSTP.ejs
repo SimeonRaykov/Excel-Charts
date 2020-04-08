@@ -9,7 +9,7 @@
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-    </script> 
+    </script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
@@ -27,7 +27,7 @@
         <h2>Избери ЕРП: </h2>
         <div class="row justify-content-center">
             <label class="radio mr-5" data-toggle="tooltip" data-placement="left" container="body"
-            data-original-title="При избиране на тази опция има възможност за импорт на мерения + стп почасови мерения, ако имат профил клиентите">EVN
+                data-original-title="При избиране на тази опция има възможност за импорт на мерения + стп почасови мерения, ако имат профил клиентите">EVN
                 <input type="radio" id="evn" name="radio">
                 <span class="checkmark"></span>
             </label>
@@ -48,8 +48,11 @@
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                 <i class="fas fa-upload"></i>
             </div>
+            <div>
+                <input type="file" id="upload-excel" name="filename">
+            </div>
             <div class="clients-no-profile"></div>
-    </div>
+    </div> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
     <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
     <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>

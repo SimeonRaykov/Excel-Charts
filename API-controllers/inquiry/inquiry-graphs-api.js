@@ -88,11 +88,10 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
             return res.send(JSON.stringify([]));
         }
     }
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         return res.send(JSON.stringify(result));
     });
 });

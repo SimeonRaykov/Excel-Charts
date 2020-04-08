@@ -6,12 +6,11 @@ const {
 
 router.get('/api/getAllClients', (req, res) => {
     
-    let sql = `SELECT clients.id, client_name, ident_code, metering_type FROM clients`;
-    let query = db.query(sql, (err, result) => {
+    let sql = `SELECT clients.id, client_name, ident_code, metering_type, erp_type FROM clients`;
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });
@@ -36,11 +35,10 @@ router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
         }
     }
 
-    let query = db.query(sql, (err, result) => {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }
-        console.log(query.sql);
         res.send(result);
     });
 });
