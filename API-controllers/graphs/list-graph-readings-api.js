@@ -61,10 +61,9 @@ router.post('/api/filter/list-readings-graph/', (req, res) => {
         return res.send(JSON.stringify([]));
     }
     if (search.value) {
-        sql += ` AND '${search.value}' IN (hour_prediction.id, clients.ident_code, 
-            clients.client_name, clients.erp_type, hour_prediction.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero)) `;
-        countFilteredSql += ` AND '${search.value}' IN (hour_prediction.id, clients.ident_code, 
-                clients.client_name, clients.erp_type, hour_prediction.date, ( hour_one + hour_two + hour_three + hour_four + hour_five + hour_six + hour_seven + hour_eight + hour_nine + hour_ten + hour_eleven+ hour_twelve + hour_thirteen + hour_fourteen + hour_fifteen + hour_sixteen + hour_seventeen + hour_eighteen + hour_nineteen + hour_twenty + hour_twentyone + hour_twentytwo + hour_twentythree + hour_zero)) `;
+        sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
+           
+        countFilteredSql += ` AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `;
     }
     sql += ` ORDER BY ${columnType} ${orderType}`;
     sql += ` LIMIT ${start},${length}`;

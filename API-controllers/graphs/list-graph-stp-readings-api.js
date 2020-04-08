@@ -61,10 +61,9 @@ router.post('/api/filter/list-stp-graph-readings', (req, res) => {
         return res.send(JSON.stringify([]));
     }
     if (search.value) {
-        sql += ` AND '${search.value}' IN (prediction.id, clients.ident_code, 
-        clients.client_name, clients.erp_type, prediction.date, prediction.amount) `;
-        countFilteredSql += ` AND '${search.value}' IN (prediction.id, clients.ident_code, 
-            clients.client_name, clients.erp_type, prediction.date, prediction.amount) `;
+        sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
+           
+        countFilteredSql += ` AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `;
     }
     sql += ` ORDER BY ${columnType} ${orderType}`;
     sql += ` LIMIT ${start},${length}`;
