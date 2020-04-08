@@ -50,6 +50,7 @@ Array.prototype.insert = function (index, item) {
 };
 $(document).ready(function () {
     document.getElementById('profile-import').addEventListener('drop', processFile, false);
+    document.getElementById('upload-profiles').addEventListener('change', processFile, false);
 });
 
 function processFile(e) {
@@ -57,11 +58,22 @@ function processFile(e) {
     notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files,
-        f = '';
-    f = files[0];
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-profiles').files,
+            f = document.getElementById('upload-profiles').files[0];
+    }
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+    try {
+        fileName = e.dataTransfer.files[0].name
+    } catch (e) {
+        fileName = document.getElementById('upload-profiles').files[0].name;
+    }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
     if (extension === 'xlsx' || extension === 'xls') {
         reader.onload = function (e) {

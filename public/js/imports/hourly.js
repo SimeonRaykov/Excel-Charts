@@ -97,10 +97,22 @@ function processHourReadingCEZ(e) {
 
     e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files,
-        f = files[0];
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-excel').files,
+            f = document.getElementById('upload-excel').files[0];
+    }
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+        try {
+            fileName = e.dataTransfer.files[0].name
+        } catch (e) {
+            fileName = document.getElementById('upload-excel').files[0].name;
+        }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
     if (extension === 'xlsx' || extension === 'xls') {
         reader.onload = function (e) {
@@ -179,15 +191,27 @@ function processHourReadingEVN_EnergoPRO(e) {
     const isManufacturer = 0;
     e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files,
-        f = '';
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-excel').files,
+            f = document.getElementById('upload-excel').files[0];
+    }
     let allHourReadings = [];
     let clientIDs = [];
     let clientsALL = [];
     for (let z = 0; z < files.length; z += 1) {
         f = files[z];
         var reader = new FileReader();
-        var fileName = e.dataTransfer.files[z].name;
+        let fileName = '';
+        try {
+            fileName = e.dataTransfer.files[z].name
+        } catch (e) {
+            fileName = document.getElementById('upload-excel').files[z].name;
+        }
         let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
         if (extension === 'xlsx' || extension === 'xls') {
             reader.onload = function (e) {
@@ -278,10 +302,22 @@ function processGraphFile(e) {
     const profileID = 0;
     const isManufacturer = 0;
 
-    const files = e.dataTransfer.files,
-        f = files[0];
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-excel').files,
+            f = document.getElementById('upload-excel').files[0];
+    }
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+    try {
+        fileName = e.dataTransfer.files[z].name
+    } catch (e) {
+        fileName = document.getElementById('upload-excel').files[0].name;
+    }
     let helperDate = fileName.split('.');
     let documentDate = `${helperDate[1]}.${helperDate[0]}.${helperDate[2]}`;
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
@@ -624,9 +660,12 @@ function validateDocumentForGraphFunc() {
 function addDropEventListener(dataImportType) {
     if (dataImportType == importTypes.hour_reading.CEZ) {
         document.getElementById('hourly-import').addEventListener('drop', processHourReadingCEZ, false);
+        document.getElementById('upload-excel').addEventListener('change', processHourReadingCEZ, false);
     } else if (dataImportType == importTypes.hour_reading.EVN_EnergoPRO) {
         document.getElementById('hourly-import').addEventListener('drop', processHourReadingEVN_EnergoPRO, false);
+        document.getElementById('upload-excel').addEventListener('change', processHourReadingEVN_EnergoPRO, false);
     } else if (dataImportType == importTypes.graph) {
         document.getElementById('hourly-import').addEventListener('drop', processGraphFile, false);
+        document.getElementById('upload-excel').addEventListener('change', processGraphFile, false);
     }
 }

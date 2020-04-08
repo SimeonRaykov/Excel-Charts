@@ -147,10 +147,20 @@ function processHourReadingFile(e) {
     const profileID = 0;
     const isManufacturer = 0;
     const erp_type = company.getErpType();
-    var files = e.dataTransfer.files,
-        f = files[0];
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-stp').files,
+            f = document.getElementById('upload-stp').files[0];
+    }
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+        try {
+            fileName = e.dataTransfer.files[0].name
+        } catch (e) {
+            fileName = document.getElementById('upload-stp').files[0].name;
+        }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     if (extension === 'xlsx' || extension === 'xls') {
@@ -277,10 +287,20 @@ async function processPredictionFile(e) {
     e.stopPropagation();
     e.preventDefault();
     await notification('Loading..', 'loading');
-    var files = e.dataTransfer.files,
-        f = files[0];
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-stp').files,
+            f = document.getElementById('upload-stp').files[0];
+    }
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+        try {
+            fileName = e.dataTransfer.files[0].name
+        } catch (e) {
+            fileName = document.getElementById('upload-stp').files[0].name;
+        }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     if (extension === 'xlsx' || extension === 'xls') {
@@ -329,7 +349,6 @@ async function processPredictionFile(e) {
                         let dateHelper = arr[0][y].split('.');
                         let currAmount = arr[i][y];
                         let date = `${dateHelper[1]}-${dateHelper[0]}-01`;
-                        console.log(date);
                         let createdDate = new Date();
                         stpPredictionReading.push(clientID, `${date}`, currAmount, type, createdDate);
                         allSTPpredictions.push(stpPredictionReading);
@@ -576,10 +595,13 @@ function openDataImportTab() {
 function addDropEventListener(dataImportType) {
     if (dataImportType == importTypes.graph) {
         document.getElementById('data-import').addEventListener('drop', processGraphFile, false);
+        document.getElementById('upload-stp').addEventListener('change', processGraphFile, false);
     } else if (dataImportType == importTypes.hour_reading) {
         document.getElementById('data-import').addEventListener('drop', processHourReadingFile, false);
+        document.getElementById('upload-stp').addEventListener('change', processHourReadingFile, false);
     } else if (dataImportType == importTypes.prediction) {
         document.getElementById('data-import').addEventListener('drop', processPredictionFile, false);
+        document.getElementById('upload-stp').addEventListener('change', processPredictionFile, false);
     }
 }
 

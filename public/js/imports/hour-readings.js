@@ -3,11 +3,10 @@ Array.prototype.insert = function (index, item) {
 };
 $(document).ready(function () {
     document.getElementById('input-excel').addEventListener('drop', processFile, false);
+    document.getElementById('upload-excel').addEventListener('change', processFile, false);
 });
 
 function processFile(e) {
-    let cl;
-    let clientIds = [];
     const operator = 2;
     const meteringType = 1; // Hour-Reading
     const profileID = 0;

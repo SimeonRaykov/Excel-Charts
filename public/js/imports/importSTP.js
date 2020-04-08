@@ -30,29 +30,39 @@ let company = new Company();
 }));
 $(document).ready(function () {
     document.getElementById('input-excel').addEventListener('drop', processFile, false);
+    document.getElementById('upload-excel').addEventListener('change', processFile, false);
 });
 
 function processFile(e) {
-
     const meteringType = 2; // STP metering_type = 2
-
+    console.log(e);
     let cl;
     let clientIds = [];
-
     e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files,
-        f = files[0];
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-excel').files,
+            f = document.getElementById('upload-excel').files[0];
+    }
+
     var reader = new FileReader();
-    var fileName = e.dataTransfer.files[0].name;
+    let fileName = '';
+    try {
+        fileName = e.dataTransfer.files[0].name
+    } catch (e) {
+        fileName = document.getElementById('upload-excel').files[0].name;
+    }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     let clientsAll = []
     let readingsAll = []
-
     if (extension === 'xls' || extension === 'xlsx') {
         reader.onload = function (e) {
-
             var data = new Uint8Array(e.target.result);
             var workbook = XLSX.read(data, {
                 type: 'array'

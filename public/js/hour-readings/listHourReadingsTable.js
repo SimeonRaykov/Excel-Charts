@@ -146,7 +146,7 @@ function listAllHourReadings(arr) {
             {
                 data: "erp_type",
                 render: function (data, type, row) {
-                    const erpType = row['erp_type'] == 1 ? 'ИВН' : row['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
+                    const erpType = row['erp_type'] == 1 ? 'EVN' : row['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
                     return '<td>' + erpType + '</td>';
                 }
             },

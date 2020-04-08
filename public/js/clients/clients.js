@@ -142,12 +142,13 @@ function visualizeDataTable(data) {
         i += 1;
         const meteringType = data[el]['metering_type'];
         const erpType = data[el]['erp_type'];
+        console.log(erpType);
         currRow
             .append($('<td>' + data[el]['id'] + '</td>'))
             .append($(`<td><a href=/users/clients/info/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + (erpType === 1 ? 'ИВН' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))
-            .append($('<td>' + (meteringType === 2 ? 'СТП' : 'По часови') + '</td>'))
+            .append($('<td>' + (erpType === 1 ? 'EVN' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))
+            .append($('<td>' + (meteringType === 2 ? 'СТП' : 'Почасови') + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
     }

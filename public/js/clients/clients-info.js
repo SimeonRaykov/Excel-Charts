@@ -746,7 +746,7 @@ function visualizeClientInfo(data) {
     $(`<option value="${data['profile_name'] == undefined ? '0' : data['profile_name']}">${data['profile_name'] == undefined ? '0' : data['profile_name']}</option>`).appendTo(`#input-profile-name`)
     $('#info div:nth-child(3) > input').val(data['profile_name'] == undefined ? '0' : data['profile_name']);
     $('#info div:nth-child(4) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
-    $('#info div:nth-child(5) > input').val(data['erp_type'] == 1 ? 'ИВН' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
+    $('#info div:nth-child(5) > input').val(data['erp_type'] == 1 ? 'EVN' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
     if (data['is_manufacturer']) {
         $('#squaredThree').prop('checked', true);
     }

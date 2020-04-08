@@ -37,6 +37,7 @@ Array.prototype.insert = function (index, item) {
 };
 $(document).ready(function () {
     document.getElementById('input-excel').addEventListener('drop', processFile, false);
+    document.getElementById('upload-excel').addEventListener('change', processFile, false);
 });
 
 function processFile(e) {
@@ -45,15 +46,27 @@ function processFile(e) {
     const isManufacturer = 0;
     e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files,
-        f = '';
+    let files = '';
+    let f = '';
+    try {
+        files = e.dataTransfer.files,
+            f = files[0];
+    } catch (e) {
+        files = document.getElementById('upload-excel').files,
+            f = document.getElementById('upload-excel').files[0];
+    }
     let allHourReadings = [];
     let clientIDs = [];
     let clientsALL = [];
     for (let z = 0; z < files.length; z += 1) {
         f = files[z];
         var reader = new FileReader();
-        var fileName = e.dataTransfer.files[z].name;
+        let fileName = '';
+        try {
+            fileName = e.dataTransfer.files[z].name
+        } catch (e) {
+            fileName = document.getElementById('upload-excel').files[z].name;
+        }
         let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
         if (extension === 'xlsx' || extension === 'xls') {
             reader.onload = function (e) {
