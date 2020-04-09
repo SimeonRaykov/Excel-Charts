@@ -147,7 +147,7 @@ $('#searchBtn').on('click', (event) => {
     getPredictions([fromDate, toDate, nameOfClient, clientID, profile_name]);
     showCalendar();
 });
-
+let initialCalendarDate = new Date();
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar-predictions');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         allDaySlot: false,
         eventOrder: 'groupId',
         events: getPredictions(),
+        defaultDate: initialCalendarDate,
         plugins: ['dayGrid', 'timeGrid'],
         header: {
             left: 'prev,next today',
@@ -236,10 +237,13 @@ function getPredictions(arr) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            window.location.href.includes('profile_coef') ? client.setMeteringType(2) : client.setMeteringType(1)
-            showGraphsChart(data);
-            calendarData = getPredictionDataForCalendar(data);
-            addPredictionsToTable(calendarData);
+            if (data != '') {
+                initialCalendarDate = new Date(data[0].date);
+                window.location.href.includes('profile_coef') ? client.setMeteringType(2) : client.setMeteringType(1)
+                showGraphsChart(data);
+                calendarData = getPredictionDataForCalendar(data);
+                addPredictionsToTable(calendarData);
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -273,38 +277,42 @@ function addPredictionsToTable(data) {
     }
 
     function renderColsTable() {
-
-
-        let firstID = data[0].id;
         let firstDate = new Date(data[0].start);
         const firstDateFormatted = `${firstDate.getFullYear()}-${firstDate.getMonth()+1}-${firstDate.getDate()} : ${firstDate.getHours()}:00 ч.`;
         firstRow.push('Идентификационен код', firstDateFormatted);
+        let repeatCounter = 0;
         for (let i = 1; i < data.length; i += 1) {
             let currentStartDate = new Date(data[i].start);
             if (currentStartDate.getFullYear() == firstDate.getFullYear() &&
                 currentStartDate.getMonth() == firstDate.getMonth() &&
                 currentStartDate.getDate() == firstDate.getDate() &&
                 currentStartDate.getHours() == firstDate.getHours()) {
-                break;
+                repeatCounter += 1;
+                if (repeatCounter > 1) {
+                    break;
+                }
             }
             let formattedStartDate = `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`;
             firstRow.push(formattedStartDate);
         }
         allReadings.push(firstRow);
-
         let currentID = data[0].id;
         let currentRow = [];
+        let firstRowLength = firstRow.length - 1;
+        let counter = 0;
         for (let obj of data) {
             let newID = obj.id;
-            if (newID != currentID) {
+            let currValue = obj.title;
+            currentRow.push(currValue);
+            counter += 1;
+            if (counter % firstRowLength == 0 && counter != 0) {
                 allReadings.push(currentRow);
                 currentRow.unshift(currentID);
                 currentRow = [];
                 currentID = newID;
             }
-            let currValue = obj.title;
-            currentRow.push(currValue);
         }
+
     }
     renderColsTable();
     initializeHandsOnTable(allReadings);
@@ -352,6 +360,7 @@ function initializeHandsOnTable(data) {
 
 
 function showGraphsChart(data) {
+    console.log(data);
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let actualHourData = [];
@@ -392,7 +401,7 @@ function showGraphsChart(data) {
                 }
                 index = 0;
             }
-        } else if (data.length != 1) {
+        } else {
             _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
@@ -482,6 +491,7 @@ function getPredictionDataForCalendar(data) {
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: color
                 }
+
                 dataArr.push(currHourReading);
                 incrementHoursOne(currHourDate);
             }

@@ -294,7 +294,6 @@ function showHourReadingChart(data) {
             tooltips: {
                 callbacks: {
                     label: function (tooltipItem, data) {
-                        console.log(tooltipItem);
                         return "Стойност: " + tooltipItem.yLabel + '\n';
                     },
                 }
@@ -323,7 +322,7 @@ function showHourReadingChart(data) {
 
     $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(4) > label > input').click((e) => {
         var temp = jQuery.extend(true, {}, config);
-        console.log(HourReadingsChart.config.type);
+
         if (HourReadingsChart.config.type == 'line') {
             temp.type = 'bar';
         } else {
@@ -602,7 +601,7 @@ function visualizeChartsAutomatically() {
             eventOrder: 'groupId',
             defaultDate: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? readingDate : formattedToday,
             defaultView: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? 'timeGridDay' : 'dayGridMonth',
-            events: getSTPMonthlyPredictionData(),
+            events: getGraphsData(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
                 left: 'prev,next today',
@@ -644,7 +643,7 @@ function visualizeChartsAutomatically() {
         setTimeout(function () {
             calendar.render();
         }, 0);
-        console.log(readingType);
+
         if (readingType == readingTypes.GRAPH_HOUR_READING || readingType == readingTypes.STP_GRAPH_HOUR_READING) {
             $('body > div.container.mt-3 > ul > li:nth-child(3) > a').click();
         } else if (readingDate == null && readingType == null) {
@@ -677,7 +676,7 @@ function visualizeChartsAutomatically() {
     });
 }());
 
-function getSTPMonthlyPredictionData() {
+function getGraphsData() {
     getClientInfo();
     let clientID = getClientID();
     let url = client.getMeteringType() == 2 ? `/api/stp-hour-readings/getClient/${clientID}` :
@@ -689,7 +688,7 @@ function getSTPMonthlyPredictionData() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            dataArr = [...processDataHourly(data)];
+            data != '' ? dataArr = [...processDataHourly(data)] : '';
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -710,7 +709,7 @@ function getGraphPredictions() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            dataArr = [...processDataGraphPredictions(data)];
+            data!=''?dataArr = [...processDataGraphPredictions(data)]:'';
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -730,8 +729,7 @@ function getImbalances() {
         dataType: 'json',
         async: false,
         success: function (data) {
-
-            dataArr = [...processDataImbalances(data)];
+            data!='' ? dataArr = [...processDataImbalances(data)] : '';
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -800,6 +798,7 @@ function processDataHourly(data) {
 }
 
 function processDataGraphPredictions(data) {
+    writeGraphHeading(data[0]['ident_code']);
     let dataArr = [];
     let currHourReading = [];
     //  Hour Predictions
@@ -841,7 +840,8 @@ function processDataGraphPredictions(data) {
 }
 
 function processDataImbalances(data) {
-    console.log(data);
+
+    writeImbalancesHeading(data[0]['ident_code']);
     const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
     const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
     let dataArr = [];
@@ -899,7 +899,6 @@ function writeReadingsHeading(data) {
 }
 
 function writeGraphHeading(data) {
-    console.log(2);
     if (data) {
         $('#graphHeading').text(`График за клиент: ${data}`);
     } else {
@@ -909,7 +908,6 @@ function writeGraphHeading(data) {
 }
 
 function writeImbalancesHeading(data) {
-    console.log(1);
     if (data) {
         $('#imbalancesHeading').text(`Небаланси за клиент: ${data}`)
     } else {

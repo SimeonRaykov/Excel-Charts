@@ -27,11 +27,19 @@ let company = new Company();
     } else if ($('#evn').is(':checked')) {
         company.setCompany('EVN');
     }
+    if (company.getCompany() != '') {
+        showUploadBlocks();
+    }
 }));
 $(document).ready(function () {
     document.getElementById('input-excel').addEventListener('drop', processFile, false);
     document.getElementById('upload-excel').addEventListener('change', processFile, false);
 });
+
+function showUploadBlocks() {
+    $('#input-excel').removeClass('invisible');
+    $('body > div.container.mt-3 > div > div:nth-child(5)').removeClass('invisible');
+}
 
 function processFile(e) {
     const meteringType = 2; // STP metering_type = 2

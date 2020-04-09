@@ -37,7 +37,27 @@ let profile = new Profile();
     } else if ($('#profiles-cez').is(':checked')) {
         profile.setCompany('CEZ');
     }
+    const checker = validateProfileInput();
+    checker ? showUploadBlocksProfiles() : '';
 }));
+
+function showUploadBlocksProfiles() {
+    $('#profile-import').removeClass('invisible');
+}
+
+function validateProfileInput() {
+    let importDataType = false;
+    $("input[name='radio']").each(function () {
+        const checked = $(this).prop('checked');
+        checked ? importDataType = true : '';
+    });
+    let profileName = $("#profile-name").val();
+
+    if (profileName && importDataType != '') {
+        return true;
+    }
+    return false;
+}
 
 Date.prototype.removeDays = function (days) {
     var date = new Date(this.valueOf());
@@ -271,8 +291,8 @@ function createProfile() {
             console.log('Profile saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText,'success');
-          //  console.log('error in client save');
+            notification(jqXhr.responseText, 'success');
+            //  console.log('error in client save');
         }
     });
 }
@@ -301,8 +321,8 @@ function getProfileID() {
         },
         async: false,
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText,'success');
-         //   console.log('error in get profileID');
+            notification(jqXhr.responseText, 'success');
+            //   console.log('error in get profileID');
         }
     });
     return id;
@@ -321,7 +341,7 @@ function saveProfileReadingsToDB(readings) {
             notification('Everything is good', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText,'success');
+            notification(jqXhr.responseText, 'success');
         }
     });
 };

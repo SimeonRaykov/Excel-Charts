@@ -138,7 +138,32 @@ $(document).ready(function () {
         company.setCompany('CEZ').setErpType(2);
         stpPrediction.setCompany('CEZ').setType(2).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2);
     }
+    const checker = validateSTPInput();
+    checker ? showUploadBlocksSTP() : '';
 }));
+
+function showUploadBlocksSTP() {
+    $('#data-import').removeClass('invisible');
+    $('#data > div:nth-child(7)').removeClass('invisible');
+}
+
+function validateSTPInput() {
+    let importDataType = false;
+    $("input[name='importDataType']").each(function () {
+        const checked = $(this).prop('checked');
+        checked ? importDataType = true : '';
+    });
+    let importDataERP = false;
+    $("input[name='data-erp']").each(function () {
+        const checked = $(this).prop('checked');
+        checked ? importDataERP = true : '';
+    });
+
+    if (importDataERP && importDataType) {
+        return true;
+    }
+    return false;
+}
 
 function processHourReadingFile(e) {
     e.stopPropagation();
@@ -156,11 +181,11 @@ function processHourReadingFile(e) {
     }
     var reader = new FileReader();
     let fileName = '';
-        try {
-            fileName = e.dataTransfer.files[0].name
-        } catch (e) {
-            fileName = document.getElementById('upload-stp').files[0].name;
-        }
+    try {
+        fileName = e.dataTransfer.files[0].name
+    } catch (e) {
+        fileName = document.getElementById('upload-stp').files[0].name;
+    }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     if (extension === 'xlsx' || extension === 'xls') {
@@ -296,11 +321,11 @@ async function processPredictionFile(e) {
     }
     var reader = new FileReader();
     let fileName = '';
-        try {
-            fileName = e.dataTransfer.files[0].name
-        } catch (e) {
-            fileName = document.getElementById('upload-stp').files[0].name;
-        }
+    try {
+        fileName = e.dataTransfer.files[0].name
+    } catch (e) {
+        fileName = document.getElementById('upload-stp').files[0].name;
+    }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
 
     if (extension === 'xlsx' || extension === 'xls') {

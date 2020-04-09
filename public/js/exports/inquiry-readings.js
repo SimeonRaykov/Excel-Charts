@@ -189,29 +189,37 @@ $('#searchBtn').on('click', (event) => {
     showCalendar();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar-readings');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        eventLimit: true,
-        eventLimit: 1,
-        eventLimitText: 'Има мерене',
-        eventLimitClick: 'day',
-        allDaySlot: false,
-        eventOrder: 'groupId',
-        events: getReadings(),
-        plugins: ['dayGrid', 'timeGrid'],
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next',
 
-        },
-        contentHeight: 'auto'
+let initialCalendarDate = new Date();
+
+(function () {
+    const today = new Date();
+    const formattedToday = `${today.getFullYear()}-${today.getMonth()+1<10?`0${today.getMonth()+1}`:today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`;
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar-readings');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            eventLimit: true,
+            eventLimit: 1,
+            eventLimitText: 'Има мерене',
+            eventLimitClick: 'day',
+            allDaySlot: false,
+            eventOrder: 'groupId',
+            events: getReadings(),
+            defaultDate: initialCalendarDate,
+            plugins: ['dayGrid', 'timeGrid'],
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'prev, dayGridMonth,timeGridDay, next',
+
+            },
+            contentHeight: 'auto'
+        });
+        setTimeout(function () {
+            calendar.render();
+        }, 0);
     });
-    setTimeout(function () {
-        calendar.render();
-    }, 0);
-});
+})();
 
 function getReadings(arr) {
     let calendarData = [];
@@ -278,10 +286,13 @@ function getReadings(arr) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            window.location.href.includes('stp_hour_readings') ? client.setMeteringType(2) : client.setMeteringType(1)
-            showReadingsChart(data);
-            calendarData = getReadingsDataForCalendar(data);
-            addReadingsToTable(calendarData);
+            if (data != '') {
+                initialCalendarDate = new Date(data[0].date);
+                window.location.href.includes('stp_hour_readings') ? client.setMeteringType(2) : client.setMeteringType(1)
+                showReadingsChart(data);
+                calendarData = getReadingsDataForCalendar(data);
+                addReadingsToTable(calendarData);
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -315,35 +326,41 @@ function addReadingsToTable(data) {
     }
 
     function renderColsTable() {
-        let firstID = data[0].id;
         let firstDate = new Date(data[0].start);
         const firstDateFormatted = `${firstDate.getFullYear()}-${firstDate.getMonth()+1}-${firstDate.getDate()} : ${firstDate.getHours()}:00 ч.`;
         firstRow.push('Идентификационен код', firstDateFormatted);
+        let repeatCounter = 0;
         for (let i = 1; i < data.length; i += 1) {
             let currentStartDate = new Date(data[i].start);
             if (currentStartDate.getFullYear() == firstDate.getFullYear() &&
                 currentStartDate.getMonth() == firstDate.getMonth() &&
                 currentStartDate.getDate() == firstDate.getDate() &&
                 currentStartDate.getHours() == firstDate.getHours()) {
-                break;
+                repeatCounter += 1;
+                if (repeatCounter > 1) {
+                    break;
+                }
             }
+
             let formattedStartDate = `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`;
             firstRow.push(formattedStartDate);
         }
         allReadings.push(firstRow);
-
+        let firstRowLength = firstRow.length - 1;
+        let counter = 0;
         let currentID = data[0].id;
         let currentRow = [];
         for (let obj of data) {
             let newID = obj.id;
-            if (newID != currentID) {
+            let currValue = obj.title;
+            currentRow.push(currValue);
+            counter += 1;
+            if (counter % firstRowLength == 0 && counter != 0) {
                 allReadings.push(currentRow);
                 currentRow.unshift(currentID);
                 currentRow = [];
                 currentID = newID;
             }
-            let currValue = obj.title;
-            currentRow.push(currValue);
         }
     }
     renderColsTable();
@@ -388,7 +405,7 @@ function showReadingsChart(data) {
                 }
                 index = 0;
             }
-        } else if (data.length != 1) {
+        } else {
             _IS_MULTIPLE_DAYS_READINGS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);

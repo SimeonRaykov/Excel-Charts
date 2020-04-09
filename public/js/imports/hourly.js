@@ -62,6 +62,11 @@ Array.prototype.insert = function (index, item) {
     this.splice(index, 0, item);
 };
 
+function showUploadBlocks() {
+    $('#hourly-import').removeClass('invisible');
+    $('body > div.container.mt-3 > div > div:nth-child(7)').removeClass('invisible');
+}
+
 ($('body > div.container').click(() => {
     if ($('#energo-pro').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
@@ -87,7 +92,26 @@ Array.prototype.insert = function (index, item) {
             graphPrediction.setCompany('CEZ').setType(2);
         }
     }
+    const radioChecker = validateRadioBTNs();
+    radioChecker ? showUploadBlocks() : '';
 }));
+
+function validateRadioBTNs() {
+    let importDataType = false;
+    $("input[name='importDataType']").each(function () {
+        const checked = $(this).prop('checked');
+        checked ? importDataType = true : '';
+    });
+    let importDataERP = false;
+    $("input[name='data-erp']").each(function () {
+        const checked = $(this).prop('checked');
+        checked ? importDataERP = true : '';
+    });
+    if (importDataERP && importDataType) {
+        return true;
+    }
+    return false;
+}
 
 function processHourReadingCEZ(e) {
     const operator = 2;
@@ -108,11 +132,11 @@ function processHourReadingCEZ(e) {
     }
     var reader = new FileReader();
     let fileName = '';
-        try {
-            fileName = e.dataTransfer.files[0].name
-        } catch (e) {
-            fileName = document.getElementById('upload-excel').files[0].name;
-        }
+    try {
+        fileName = e.dataTransfer.files[0].name
+    } catch (e) {
+        fileName = document.getElementById('upload-excel').files[0].name;
+    }
     let extension = fileName.slice(fileName.lastIndexOf('.') + 1);
     if (extension === 'xlsx' || extension === 'xls') {
         reader.onload = function (e) {
@@ -347,7 +371,7 @@ function processGraphFile(e) {
             for (let i = 1; i < arr.length; i += 1) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
-                if (clientIdentCode != null && clientIdentCode != undefined && clientName!= null && clientName != undefined) {
+                if (clientIdentCode != null && clientIdentCode != undefined && clientName != null && clientName != undefined) {
                     client.push(0, clientName, clientIdentCode, meteringType, profileID, graphPrediction.getType(), isManufacturer, new Date());
                     clientsAll.push(client);
                     client = [];

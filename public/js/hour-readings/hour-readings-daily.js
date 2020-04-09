@@ -74,14 +74,12 @@ function showChartDaily(data) {
         if (data.length == 1) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                console.log(date);
                 for (let hr in data[el]) {
                     if (index >= startingIndex) {
                         if (index > endIndex) {
                             break;
                         }
                         let t = index == 2 ? date : incrementHoursOne(date)
-                        console.log(t);
                         let hourObj = {
                             t,
                             y: data[el][hr],

@@ -142,7 +142,6 @@ function visualizeDataTable(data) {
         i += 1;
         const meteringType = data[el]['metering_type'];
         const erpType = data[el]['erp_type'];
-        console.log(erpType);
         currRow
             .append($('<td>' + data[el]['id'] + '</td>'))
             .append($(`<td><a href=/users/clients/info/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
