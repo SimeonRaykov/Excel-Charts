@@ -5,10 +5,10 @@ const {
 } = require('../../db.js');
 
 router.get('/api/data-listings/imbalances', (req, res) => {
-    let sql = `(SELECT DISTINCT clients.ident_code, clients.client_name
+    let sql = `(SELECT clients.ident_code, clients.client_name
         FROM clients
         WHERE metering_type = 2
-        AND profile_id != 0)
+        )
         UNION
         (SELECT clients.ident_code, clients.client_name FROM clients 
          WHERE metering_type = 1)`;

@@ -5,7 +5,44 @@ const {
 } = require('../../db.js'); 
 
 router.get('/api/graphs/hour-prediction/daily/:id/:date', (req, res) => {
-    let sql = `SELECT *,hour_prediction.id AS hrID FROM hour_prediction
+    let sql = `SELECT hour_prediction.id,
+    client_id,
+    date,
+    hour_zero,
+    hour_one,
+    hour_two,
+    hour_three,
+    hour_four,
+    hour_five,
+    hour_six,
+    hour_seven,
+    hour_eight,
+    hour_nine,
+    hour_ten,
+    hour_eleven,
+    hour_twelve,
+    hour_thirteen,
+    hour_fourteen,
+    hour_fifteen,
+    hour_sixteen,
+    hour_seventeen,
+    hour_eighteen,
+    hour_nineteen,
+    hour_twenty,
+    hour_twentyone,
+    hour_twentytwo,
+    hour_twentythree,
+    type,
+    erp,
+    created_date,
+    client_name,
+    client_number,
+    ident_code,
+    metering_type,
+    erp_type,
+    profile_id,
+    is_manufacturer,
+    date_created, hour_prediction.id AS hrID FROM hour_prediction
     INNER JOIN clients on hour_prediction.client_id = clients.id
     WHERE hour_prediction.date = '${req.params.date}' AND hour_prediction.id = '${req.params.id}'
     ORDER BY hour_prediction.id

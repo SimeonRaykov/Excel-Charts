@@ -4,7 +4,7 @@ const {
     db,
     dbSync
 } = require('../../db.js');
-
+ 
 router.post('/api/filter/inquiry-graphs/', (req, res) => {
     let {
         fromDate,
@@ -27,7 +27,7 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
     }
 
     if (metering_type === 'hour_prediction') {
-        sql = `SELECT clients.ident_code,${metering_type}.date, ${metering_type}.hour_one AS 'hr0',${metering_type}.hour_two AS 'hr1',  ${metering_type}.hour_three AS 'hr2', ${metering_type}.hour_four AS 'hr3', ${metering_type}.hour_five AS 'hr4', ${metering_type}.hour_six AS 'hr5', ${metering_type}.hour_seven AS 'hr6', ${metering_type}.hour_eight AS 'hr7', ${metering_type}.hour_nine AS 'hr8', ${metering_type}.hour_ten AS 'hr9', ${metering_type}.hour_eleven AS 'hr10', ${metering_type}.hour_twelve AS 'hr11', ${metering_type}.hour_thirteen AS 'hr12', ${metering_type}.hour_fourteen AS 'hr13', ${metering_type}.hour_fifteen AS 'hr14', ${metering_type}.hour_sixteen AS 'hr15', ${metering_type}.hour_seventeen AS 'hr16', ${metering_type}.hour_eighteen AS 'hr17', ${metering_type}.hour_nineteen AS 'hr18', ${metering_type}.hour_twenty AS 'hr19', ${metering_type}.hour_twentyone AS 'hr20', ${metering_type}.hour_twentytwo AS 'hr21', ${metering_type}.hour_twentythree AS 'hr22', ${metering_type}.hour_zero AS 'hr23' FROM clients
+        sql = `SELECT clients.ident_code,${metering_type}.date, ${metering_type}.hour_zero AS 'hr0',${metering_type}.hour_one AS 'hr1',  ${metering_type}.hour_two AS 'hr2', ${metering_type}.hour_three AS 'hr3', ${metering_type}.hour_four AS 'hr4', ${metering_type}.hour_five AS 'hr5', ${metering_type}.hour_six AS 'hr6', ${metering_type}.hour_seven AS 'hr7', ${metering_type}.hour_eight AS 'hr8', ${metering_type}.hour_nine AS 'hr9', ${metering_type}.hour_ten AS 'hr10', ${metering_type}.hour_eleven AS 'hr11', ${metering_type}.hour_twelve AS 'hr12', ${metering_type}.hour_thirteen AS 'hr13', ${metering_type}.hour_fourteen AS 'hr14', ${metering_type}.hour_fifteen AS 'hr15', ${metering_type}.hour_sixteen AS 'hr16', ${metering_type}.hour_seventeen AS 'hr17', ${metering_type}.hour_eighteen AS 'hr18', ${metering_type}.hour_nineteen AS 'hr19', ${metering_type}.hour_twenty AS 'hr20', ${metering_type}.hour_twentyone AS 'hr21', ${metering_type}.hour_twentytwo AS 'hr22', ${metering_type}.hour_twentythree AS 'hr23' FROM clients
     INNER JOIN ${metering_type} on clients.id = ${metering_type}.client_id 
     WHERE 1=1 `;
         if (fromDate != -1 && toDate != -1) {
@@ -53,7 +53,7 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
         } else if (erp == undefined) {
             return res.send(JSON.stringify([]));
         }
-        console.log(profileID);
+
         if (profileID != -1 && metering_type == 'stp_hour_readings') {
             sql += ` AND profile_id = ${profileID}`
         }
