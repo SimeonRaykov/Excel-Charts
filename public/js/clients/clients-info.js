@@ -34,6 +34,7 @@ client = new Client();
     $('#searchBtnHourlyGraph').on('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
+        $('#hour-readings > div.hour-readings-graph-div > form > h3').remove();
         const fromDate = document.querySelector('input[name=fromDate]').value;
         const toDate = document.querySelector('input[name=toDate]').value;
         getHourReadingsChartFilterData(fromDate, toDate, getClientID());
@@ -44,6 +45,7 @@ client = new Client();
     $('#searchBtnGraphPrediction').on('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
+        $('#graph > div.graph-prediction-div > form h3').remove();
         const fromDate = document.querySelector('input[name=fromDateGraphPrediction]').value;
         const toDate = document.querySelector('input[name=toDateGraphPrediction]').value;
         getGraphPredictionsFilterData(fromDate, toDate, getClientID());
@@ -237,6 +239,7 @@ function showHourReadingChart(data) {
     let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
+            writeReadingsPeriodHeading(data[0]['date']);
             _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
@@ -343,6 +346,7 @@ function showGraphPredictionChart(data) {
     let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
+            writeHourReadingsPeriodHeading(data[0]['date']);
             _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
                 let amount = data[el]['amount'] || 1;
@@ -709,7 +713,7 @@ function getGraphPredictions() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            data!=''?dataArr = [...processDataGraphPredictions(data)]:'';
+            data != '' ? dataArr = [...processDataGraphPredictions(data)] : '';
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -729,7 +733,7 @@ function getImbalances() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            data!='' ? dataArr = [...processDataImbalances(data)] : '';
+            data != '' ? dataArr = [...processDataImbalances(data)] : '';
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -959,6 +963,20 @@ function visualizeDefaultInputForGraphs() {
     $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
 }
 
+function writeHourReadingsPeriodHeading(input) {
+    const date = new Date(input);
+    const formattedDate = formatDate(date);
+    let chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedDate}<h3>`);
+    $('#graph > div.graph-prediction-div > form').append(chartDailyPeriod);
+}
+
+function writeReadingsPeriodHeading(input) {
+    const date = new Date(input);
+    const formattedDate = formatDate(date)
+    let chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedDate}<h3>`);
+    $('#hour-readings > div.hour-readings-graph-div > form').append(chartDailyPeriod);
+}
+
 function formatTodayDate() {
     return `${new Date().getFullYear()}-${(new Date().getMonth()+1)<10?`0${new Date().getMonth()+1}`:new Date().getMonth()+1}-${new Date().getDate()<10?`0${new Date().getDate()}`:new Date().getDate()}`
 }
@@ -1053,6 +1071,10 @@ function notification(msg, type) {
         toastr.info(msg);
     }
 };
+
+function formatDate(date) {
+    return `${date.getFullYear()}-${date.getMonth()+1<10?`0${date.getMonth()+1}`:date.getMonth()+1}-${date.getDate()<10?`0${date.getDate()}`:date.getDate()}`;
+}
 
 function validateProfileName(profileName) {
     if (profileName == undefined || profileName == '') {
