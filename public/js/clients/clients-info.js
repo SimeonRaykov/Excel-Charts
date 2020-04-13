@@ -56,6 +56,7 @@ client = new Client();
     $('#searchBtnGraphImbalance').on('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
+        $('#imbalance > div.imbalance-graph-div > form h3').remove();
         const fromDate = document.querySelector('input[name=fromDateImbalanceGraph]').value;
         const toDate = document.querySelector('input[name=toDateImbalanceGraph]').value;
         getImbalancesChartFilterData(fromDate, toDate, getClientID());
@@ -232,14 +233,22 @@ function getImbalancesChartFilterData(fromDate, toDate, clientID) {
 }
 
 function showHourReadingChart(data) {
+    if (data != '') {
+        const maxDate = getMaxDate(data);
+        const minDate = getMinDate(data);
+        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+        if (equalDates) {
+            writeDailyPeriodHeading(maxDate, null, 'reading');
+        } else {
+            writeDailyPeriodHeading(minDate, maxDate, 'reading');
+        }
+    }
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let chartData = [];
     let index = 0;
-    let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
-            writeReadingsPeriodHeading(data[0]['date']);
             _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
@@ -275,7 +284,6 @@ function showHourReadingChart(data) {
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
     }
@@ -339,14 +347,22 @@ function showHourReadingChart(data) {
 }
 
 function showGraphPredictionChart(data) {
+    if (data != '') {
+        const maxDate = getMaxDate(data);
+        const minDate = getMinDate(data);
+        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+        if (equalDates) {
+            writeDailyPeriodHeading(maxDate, null, 'graph');
+        } else {
+            writeDailyPeriodHeading(minDate, maxDate, 'graph');
+        }
+    }
     let _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
     let labels = [];
     let chartData = [];
     let index = 0;
-    let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
-            writeHourReadingsPeriodHeading(data[0]['date']);
             _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
                 let amount = data[el]['amount'] || 1;
@@ -382,7 +398,6 @@ function showGraphPredictionChart(data) {
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
     }
@@ -437,13 +452,22 @@ function showGraphPredictionChart(data) {
 }
 
 function showImbalanceChart(data) {
+    if (data != '') {
+        const maxDate = getMaxDate(data);
+        const minDate = getMinDate(data);
+        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+        if (equalDates) {
+            writeDailyPeriodHeading(maxDate, null, 'imbalance');
+        } else {
+            writeDailyPeriodHeading(minDate, maxDate, 'imbalance');
+        }
+    }
     let _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
     let labels = [];
     let actualHourData = [];
     let predictionData = [];
     let imbalancesData = [];
     let index = 0;
-    let dataIterator = 0;
     const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
     let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
     let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
@@ -490,25 +514,43 @@ function showImbalanceChart(data) {
             }
         } else if (data.length != 1) {
             _IS_MULTIPLE_DAYS_IMBALANCES_CHART = true;
-            for (let el in data) {
-                let date = new Date(data[el]['date']);
-                for (let hr in data[el]) {
-                    if (index >= 2) {
-                        let t = index == 2 ? date : incrementHoursOne(date)
-                        let hourObj = {
-                            t,
-                            y: data[el][hr]
-                        }
-                        actualHourData.push(hourObj);
-                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+            for (let el of data) {
+                indexActualData = client.getMeteringType() == 2 ? 3 : 2;
+                indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
+                const amount = el['amount'] || 1;
+                let date = new Date(el['date']);
+                let isManufacturer = el['is_manufacturer'];
+                let valuesData = Object.values(el);
+                for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
+
+                    const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                    let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
+                    let actualHourObj = {
+                        t,
+                        y: valuesData[indexActualData]
                     }
+                    let predictionObj = {
+                        t,
+                        y: valuesData[indexPrediction]
+                    }
+                    let imbalanceData = {
+                        t,
+                        y: currImbalance
+                    }
+                    actualHourData.push(actualHourObj);
+                    predictionData.push(predictionObj);
+                    imbalancesData.push(imbalanceData);
+                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+
+                    indexActualData += 1;
+                    indexPrediction += 1;
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
     }
+
     var ctx = document.getElementById('imbalance-chart').getContext('2d');
     var config = {
         type: 'line',
@@ -963,26 +1005,27 @@ function visualizeDefaultInputForGraphs() {
     $('#hour-readings > div.hour-readings-graph-div > form > div > div:nth-child(2) > input[type=date]').val(`${today.getFullYear()}-${(today.getMonth()+1)<10? `0${today.getMonth()+1}`: today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`);
 }
 
-function writeHourReadingsPeriodHeading(input) {
-    const date = new Date(input);
-    const formattedDate = formatDate(date);
-    let chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedDate}<h3>`);
-    $('#graph > div.graph-prediction-div > form').append(chartDailyPeriod);
-}
+function writeDailyPeriodHeading(firstDate, secondDate, type) {
+    const formattedFirstDate = formatDate(firstDate);
+    let chartDailyPeriod = '';
+    if (secondDate === null) {
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedFirstDate}<h3>`);
+    } else {
+        const formattedSecondDate = formatDate(secondDate);
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">От: ${formattedFirstDate} До: ${formattedSecondDate}<h3>`);
+    }
 
-function writeReadingsPeriodHeading(input) {
-    const date = new Date(input);
-    const formattedDate = formatDate(date)
-    let chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedDate}<h3>`);
-    $('#hour-readings > div.hour-readings-graph-div > form').append(chartDailyPeriod);
-}
-
-function formatTodayDate() {
-    return `${new Date().getFullYear()}-${(new Date().getMonth()+1)<10?`0${new Date().getMonth()+1}`:new Date().getMonth()+1}-${new Date().getDate()<10?`0${new Date().getDate()}`:new Date().getDate()}`
-}
-
-function formatLastWeekDate() {
-    return `${getLastWeek().getFullYear()}-${(getLastWeek().getMonth()+1)<10?`0${getLastWeek().getMonth()+1}`:getLastWeek().getMonth()+1}-${getLastWeek().getDate()<10?`0${getLastWeek().getDate()}`:getLastWeek().getDate()}`
+    switch (type) {
+        case 'reading':
+            $('#hour-readings > div.hour-readings-graph-div > form').append(chartDailyPeriod);
+            break;
+        case 'graph':
+            $('#graph > div.graph-prediction-div > form').append(chartDailyPeriod);
+            break;
+        case 'imbalance':
+            $('#imbalance > div.imbalance-graph-div > form').append(chartDailyPeriod);
+            break;
+    }
 }
 
 function visualizeDefaultInputsForHourReadingsGraph(lastWeekDate, today) {
@@ -1006,22 +1049,6 @@ function hideGraphs() {
     $('#imbalance > div.imbalance-graph-div').css('display', 'none');
 }
 
-function findGetParameter(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
-function getLastWeek() {
-    var today = new Date();
-    var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-    return lastWeek;
-}
-
 function refreshURL() {
     location.reload();
 }
@@ -1042,38 +1069,6 @@ function visualizeAllDefaultInputs() {
 
 function goBack() {
     window.history.back();
-}
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
-};
-
-function formatDate(date) {
-    return `${date.getFullYear()}-${date.getMonth()+1<10?`0${date.getMonth()+1}`:date.getMonth()+1}-${date.getDate()<10?`0${date.getDate()}`:date.getDate()}`;
 }
 
 function validateProfileName(profileName) {

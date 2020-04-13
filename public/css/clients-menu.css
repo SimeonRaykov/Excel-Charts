@@ -1,3 +1,7 @@
-#clients_wrapper>div.dataTables_scroll>div.dataTables_scrollBody {
+/* #clients_wrapper>div.dataTables_scroll>div.dataTables_scrollBody {
     overflow: hidden !important;
+} */
+
+#hmg-icon{
+    position: fixed;
 }

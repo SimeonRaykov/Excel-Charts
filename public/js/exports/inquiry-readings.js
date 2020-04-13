@@ -268,8 +268,8 @@ function getReadings(arr) {
     if (clientID == '') {
         clientID = -1;
     }
+    console.log(fromDate, toDate);
     let url = `/api/filter/inquiry-readings/`;
-    let isFirst = !window.location.href.includes('?');
     notification('Loading...', 'loading');
     $.ajax({
         url,
@@ -367,14 +367,36 @@ function addReadingsToTable(data) {
     initializeHandsOnTable(allReadings);
 }
 
+function writeDailyPeriodHeading(firstDate, secondDate) {
+    const formattedFirstDate = formatDate(firstDate);
+    let chartDailyPeriod = '';
+    if (secondDate === null) {
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedFirstDate}<h3>`);
+    } else {
+        const formattedSecondDate = formatDate(secondDate);
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">От: ${formattedFirstDate} До: ${formattedSecondDate}<h3>`);
+    }
+    $('#info > div.container.clients.text-center > div.readings-graph-div').prepend(chartDailyPeriod);
+}
+
 function showReadingsChart(data) {
+    if (data != '') {
+        const maxDate = getMaxDate(data);
+        const minDate = getMinDate(data);
+        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+        if (equalDates) {
+            writeDailyPeriodHeading(maxDate, null);
+        } else {
+            writeDailyPeriodHeading(minDate, maxDate);
+        }
+    }
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let tempActualArr = [];
     let index = 0;
 
     if (data != undefined) {
-        if (findGetParameter('fromDate') == findGetParameter('toDate')) {
+        if ((findGetParameter('fromDate') == findGetParameter('toDate')) && findGetParameter('fromDate')) {
             _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
                 const startingIndexActualHourData = 2;
