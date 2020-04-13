@@ -28,7 +28,6 @@ function renderInfo() {
 
 
 function initializeHandsOnTable(data) {
-    console.log(data);
     var container = document.getElementById('handsontable-imbalances');
     var hot = new Handsontable(container, {
         htMiddle: true,
@@ -236,7 +235,6 @@ function getImbalances(arr) {
         clientID = -1;
     }
     let url = `/api/filter/calculate-imbalances/`;
-    let isFirst = !window.location.href.includes('?');
     notification('Loading...', 'loading');
     $.ajax({
         url,
@@ -289,183 +287,156 @@ function addImbalancesToTable(data) {
     }
 
     function renderColsTable() {
-        let firstID = data[0].id;
         let firstDate = new Date(data[0].start);
         const firstDateFormatted = `${firstDate.getFullYear()}-${firstDate.getMonth()+1}-${firstDate.getDate()} : ${firstDate.getHours()}:00 ч.`;
         firstRow.push('Идентификационен код', firstDateFormatted);
+        let repeatCounter = 0;
         for (let i = 1; i < data.length; i += 1) {
             let currentStartDate = new Date(data[i].start);
             if (currentStartDate.getFullYear() == firstDate.getFullYear() &&
                 currentStartDate.getMonth() == firstDate.getMonth() &&
                 currentStartDate.getDate() == firstDate.getDate() &&
                 currentStartDate.getHours() == firstDate.getHours()) {
-                break;
+                repeatCounter += 1;
+                if (repeatCounter > 1) {
+                    break;
+                }
             }
             let formattedStartDate = `${currentStartDate.getFullYear()}-${currentStartDate.getMonth()+1}-${currentStartDate.getDate()} : ${currentStartDate.getHours()}:00 ч.`;
             firstRow.push(formattedStartDate);
         }
         allReadings.push(firstRow);
-
         let currentID = data[0].id;
         let currentRow = [];
+        let firstRowLength = firstRow.length - 1;
+        let counter = 0;
         for (let obj of data) {
             let newID = obj.id;
-            if (newID != currentID) {
+            let currValue = obj.title;
+            currentRow.push(currValue);
+            counter += 1;
+            if (counter % firstRowLength == 0 && counter != 0) {
                 allReadings.push(currentRow);
                 currentRow.unshift(currentID);
                 currentRow = [];
                 currentID = newID;
             }
-            let currValue = obj.title;
-            currentRow.push(currValue);
         }
     }
-    renderRowsTable();
+    renderColsTable();
     initializeHandsOnTable(allReadings);
 }
 
+function writeDailyPeriodHeading(firstDate, secondDate) {
+    const formattedFirstDate = formatDate(firstDate);
+    let chartDailyPeriod = '';
+    if (secondDate === null) {
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">Дата: ${formattedFirstDate}<h3>`);
+    } else {
+        const formattedSecondDate = formatDate(secondDate);
+        chartDailyPeriod = $(`<h3 class="text-center mb-3">От: ${formattedFirstDate} До: ${formattedSecondDate}<h3>`);
+    }
+    $('#info > div.container.clients.text-center > div.imbalance-graph-div').prepend(chartDailyPeriod);
+}
+
 function showImbalanceChart(data) {
+    if (data != '') {
+        const maxDate = getMaxDate(data);
+        const minDate = getMinDate(data);
+        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+        if (equalDates) {
+            writeDailyPeriodHeading(maxDate, null, 'imbalance');
+        } else {
+            writeDailyPeriodHeading(minDate, maxDate, 'imbalance');
+        }
+    }
+    let _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
     let labels = [];
     let actualHourData = [];
     let predictionData = [];
     let imbalancesData = [];
-
-    let tempActualArr = [];
-    let tempPredictionArr = [];
-    let tempImbalances = [];
-
     let index = 0;
-    let dataIterator = 0;
-
+    const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
+    let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
+    let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
+    const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
+    const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
     if (data != undefined) {
-        if (true /*data.length == 1*/ ) {
+        if (data.length == 1) {
+            _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
             for (let el in data) {
-                const startingIndexActualHourData = client.getMeteringType() == 2 ? 3 : 2;
-                let indexActualData = client.getMeteringType() == 2 ? 3 : 2;
-                let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
-                const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
-                const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
                 const amount = data[el]['amount'] || 1;
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
-                let t = date;
                 for (let val of valuesData) {
                     if (index >= startingIndexActualHourData && index <= endIndexPrediction) {
                         if (index > finalIndex) {
                             break;
                         }
                         const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                        let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
                             y: valuesData[indexActualData]
                         }
-                        if (actualHourObj.y != undefined) {
-                            tempActualArr.push(actualHourObj);
-                        }
-
                         let predictionObj = {
                             t,
                             y: valuesData[indexPrediction]
                         }
-                        if (predictionObj.y != undefined) {
-                            tempPredictionArr.push(predictionObj);
-                        }
-
                         let imbalanceData = {
                             t,
                             y: currImbalance
                         }
-                        if (imbalanceData.y != undefined) {
-                            tempImbalances.push(imbalanceData);
-                        }
+                        actualHourData.push(actualHourObj);
+                        predictionData.push(predictionObj);
+                        imbalancesData.push(imbalanceData);
+                        labels.push(`${t.getHours()} ч.`);
 
                         indexActualData += 1;
                         indexPrediction += 1;
-                        labels.push(`${t.getHours()} ч.`);
-                        t = incrementHoursOne(date);
                     }
                     index += 1;
                 }
                 index = 0;
             }
-        } else if (false) {
-            for (let el in data) {
-                let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
-                for (let hr in data[el]) {
-                    if (index >= 2) {
-                        let t = index == 2 ? date : incrementHoursOne(date)
-                        let hourObj = {
-                            t,
-                            y: data[el][hr]
-                        }
-                        actualHourData.push(hourObj);
+        } else if (data.length != 1) {
+            _IS_MULTIPLE_DAYS_IMBALANCES_CHART = true;
+            for (let el of data) {
+                indexActualData = client.getMeteringType() == 2 ? 3 : 2;
+                indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
+                const amount = el['amount'] || 1;
+                let date = new Date(el['date']);
+                let isManufacturer = el['is_manufacturer'];
+                let valuesData = Object.values(el);
+                for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
+
+                    const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                    let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
+                    let actualHourObj = {
+                        t,
+                        y: valuesData[indexActualData]
                     }
+                    let predictionObj = {
+                        t,
+                        y: valuesData[indexPrediction]
+                    }
+                    let imbalanceData = {
+                        t,
+                        y: currImbalance
+                    }
+                    actualHourData.push(actualHourObj);
+                    predictionData.push(predictionObj);
+                    imbalancesData.push(imbalanceData);
+                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+
+                    indexActualData += 1;
+                    indexPrediction += 1;
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
-    }
-
-    let sumOfAllReadingsActual = [];
-    let sumOfAllPredictions = [];
-    let sumOfAllImbalances = [];
-
-    let actualDataSorted = tempActualArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
-    let predictionDataSorted = tempPredictionArr.sort((a, b) => (a.t > b.t) ? 1 : -1);
-    let imbalancesDataSorted = tempImbalances.sort((a, b) => (a.t > b.t) ? 1 : -1);
-
-    let currReadingActual;
-    let currReadingPrediction;
-    let currReadingImbalance;
-
-    let currStart;
-    let iterationsCount = 0;
-    let y = 1;
-
-    for (let i = 0; i < actualDataSorted.length; i += 1) {
-        currStart = actualDataSorted[i].t;
-        currReadingActual = {
-            t: actualDataSorted[i].t,
-            y: actualDataSorted[i].y
-        }
-        currReadingPrediction = {
-            t: predictionDataSorted[i].t,
-            y: predictionDataSorted[i].y
-        }
-
-        currReadingImbalance = {
-            t: imbalancesDataSorted[i].t,
-            y: imbalancesDataSorted[i].y
-        }
-
-        if (actualDataSorted[i + y]) {
-            while (currStart.getHours() == actualDataSorted[i + y].t.getHours() &&
-                currStart.getDate() == actualDataSorted[i + y].t.getDate() &&
-                currStart.getFullYear() == actualDataSorted[i + y].t.getFullYear() &&
-                currStart.getMonth() == actualDataSorted[i + y].t.getMonth()) {
-                currStart = actualDataSorted[i + y].t;
-                currReadingActual.y += actualDataSorted[i + y].y;
-                currReadingPrediction.y += predictionDataSorted[i + y].y;
-                currReadingImbalance.y += imbalancesDataSorted[i + y].y;
-                y += 1;
-                iterationsCount += 1;
-                if (!actualDataSorted[i + y]) {
-                    break;
-                }
-            }
-        }
-        i += iterationsCount;
-        iterationsCount = 0;
-        y = 1;
-        sumOfAllReadingsActual.push(currReadingActual);
-        sumOfAllPredictions.push(currReadingPrediction);
-        sumOfAllImbalances.push(currReadingImbalance);
     }
     let labelsNoDuplicates = removeDuplicatesFromArr(labels);
     var ctx = document.getElementById('imbalance-chart').getContext('2d');
@@ -475,20 +446,20 @@ function showImbalanceChart(data) {
             labels: labelsNoDuplicates,
             datasets: [{
                 label: 'Настоящи',
-                data: sumOfAllReadingsActual,
+                data: actualHourData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
             }, {
                 label: 'Прогнози',
-                data: sumOfAllPredictions,
+                data: predictionData,
                 borderWidth: 2,
                 backgroundColor: "#9c1de7",
                 borderColor: "#1e2a78",
                 hidden: true
             }, {
                 label: 'Небаланс',
-                data: sumOfAllImbalances,
+                data: imbalancesData,
                 borderWidth: 2,
                 backgroundColor: "#f3f169",
                 borderColor: "#ffd615",
@@ -497,24 +468,37 @@ function showImbalanceChart(data) {
         options: {
             scales: {
                 xAxes: [{
-                    offset: true
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_IMBALANCES_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
                 }]
             },
             maintainAspectRatio: false,
             responsive: false
         }
     }
-    var myChart = new Chart(ctx, config);
+    try {
+        ImbalancesChart.destroy();
+    } catch (e) {}
+    var ImbalancesChart = new Chart(ctx, config);
 
     $('#switch-bar-line').click((e) => {
-        myChart.destroy();
+        ImbalancesChart.destroy();
         var temp = jQuery.extend(true, {}, config);
-        if (myChart.config.type == 'line') {
+        if (ImbalancesChart.config.type == 'line') {
             temp.type = 'bar';
         } else {
             temp.type = 'line';
         }
-        myChart = new Chart(ctx, temp);
+        setTimeout(function () {
+            ImbalancesChart.destroy();
+            ImbalancesChart = new Chart(ctx, temp)
+        }, 0)
     })
 }
 
@@ -538,7 +522,7 @@ function calculateImbalances(data) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
                 const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
                 currHourReading = {
-                    id: iterator,
+                    id: data[el].ident_code,
                     title: currImbalance,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
@@ -558,11 +542,11 @@ function calculateImbalances(data) {
     let currStart;
     let iterationsCount = 0;
     let y = 1;
-    let idCounter = 1;
+
     for (let i = 0; i < dataArrSorted.length; i += 1) {
         currStart = dataArrSorted[i].start;
         currReading = {
-            id: idCounter++,
+            id: dataArrSorted[i].id,
             title: dataArrSorted[i].title,
             start: dataArrSorted[i].start,
             end: dataArrSorted[i].end,
@@ -582,57 +566,10 @@ function calculateImbalances(data) {
         i += iterationsCount;
         iterationsCount = 0;
         y = 1;
-        //  console.log(sumOfAllArrs);
         sumOfAllArrs.push(currReading);
     }
     return sumOfAllArrs;
 }
-
-function getThisAndLastMonthDates() {
-    let today = new Date();
-    let thisMonthDate = `${today.getFullYear()}-${Number(today.getMonth())+1}-${today.getDay()}`;
-    let lastMonthDate = `${today.getFullYear()}-${Number(today.getMonth())}-${today.getDay()}`;
-    if (Number(today.getMonth()) - 1 === -1) {
-        lastMonthDate = `${Number(today.getFullYear())-1}-${Number(today.getMonth())+12}-${today.getDay()}`;
-    }
-    return [thisMonthDate, lastMonthDate];
-}
-
-function removeDuplicatesFromArr(arr) {
-    let uniqueNames = [];
-    $.each(arr, function (i, el) {
-        if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
-    });
-    return uniqueNames;
-}
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
-};
 
 function visualizeAllInputFromGetParams() {
     visualizeCheckboxesFromHistoryLocation();
@@ -660,10 +597,8 @@ function visualizeCheckboxesFromHistoryLocation() {
     }
     if (!location.includes('hourly_imbalances')) {
         $('#stp_imbalances').prop('checked', true);
-        //   $('#hourly_imbalances').prop('checked',false);
     } else {
         $('#hourly_imbalances').prop('checked', true);
-        // $('#stp_imbalances').prop('checked',false);
     }
 }
 

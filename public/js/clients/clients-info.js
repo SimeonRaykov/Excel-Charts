@@ -724,7 +724,7 @@ function visualizeChartsAutomatically() {
 
 function getGraphsData() {
     getClientInfo();
-    let clientID = getClientID();
+    const clientID = getClientID();
     let url = client.getMeteringType() == 2 ? `/api/stp-hour-readings/getClient/${clientID}` :
         `/api/hour-readings/getClient/${clientID}`;
     let dataArr = [];
@@ -745,7 +745,7 @@ function getGraphsData() {
 
 function getGraphPredictions() {
     getClientInfo();
-    let clientID = getClientID();
+    const clientID = getClientID();
     const url = client.getMeteringType() == 2 ? `/api/stp-graph-predictions/getClient/${clientID}` :
         `/api/graph-predictions/getClient/${clientID}`;
     let dataArr = [];
