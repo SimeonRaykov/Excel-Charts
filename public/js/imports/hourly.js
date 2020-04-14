@@ -558,29 +558,6 @@ function saveClientsToDB(clients) {
         }
     });
 };
-
-function getClientsFromDB(clients) {
-    notification('Loading..', 'loading');
-    let retVal;
-    $.ajax({
-        url: '/api/getClients',
-        method: 'POST',
-        contentType: 'application/json',
-        dataType: 'json',
-        async: false,
-        data: JSON.stringify(clients),
-        success: function (data) {
-            console.log('Got clients');
-            retVal = data;
-        },
-        error: function (jqXhr, textStatus, errorThrown) {
-            notification(errorThrown, 'error');
-            console.log('error');
-        }
-    });
-    return retVal;
-};
-
 function saveHourReadingsToDB(readings) {
     $.ajax({
         url: '/api/addHourReadings',

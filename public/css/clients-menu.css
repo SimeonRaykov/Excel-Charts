@@ -2,6 +2,10 @@
     overflow: hidden !important;
 } */
 
-#hmg-icon{
+#hmg-icon {
     position: fixed;
+}
+
+.nav-sidebar>.nav-item .nav-icon{
+    width: auto;
 }

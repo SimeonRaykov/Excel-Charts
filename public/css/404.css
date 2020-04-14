@@ -1,14 +1,11 @@
-body {
-  font-family: 'Roboto', sans-serif;
-}
+
 
 .mini {
   font-size: 2em;
   color: black;
   line-height: 9em;
-  text-indent: 2.5em;
   position: absolute;
-  left: 45%;
+  left: 50%;
   top: 60%;
 }
 
