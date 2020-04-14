@@ -1,3 +1,4 @@
+;
 const express = require('express');
 const router = express.Router();
 const {
@@ -5,171 +6,106 @@ const {
     dbSync
 } = require('../../db.js');
 
-router.post('/api/getSingleClient', (req, res) => {
-    let ident_code = req.body.ident_code;
-    let sql = `SELECT * FROM clients WHERE ident_code = '${ident_code}'`;
-    db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
-        }
-        return res.send(JSON.stringify(result[0].id));
-    });
-});
-
-router.post('/api/saveGraphHourReadings', async (req, res) => {
-    let graphHourReadingsFiltered = await filterGraphHourReadings(req.body);
-
-    if (graphHourReadingsFiltered != [] && graphHourReadingsFiltered != '' && graphHourReadingsFiltered != undefined && graphHourReadingsFiltered != null) {
-        let sql = 'INSERT INTO hour_prediction (client_id, date, hour_zero, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, type, erp, created_date) VALUES ?';
-        db.query(sql, [graphHourReadingsFiltered], (err, result) => {
+router.post('/api/addEsoHourReadings', async (req, res) => {
+    let readingsFiltered = await filterEsoHourReadings(req.body);
+    if (readingsFiltered != [] && readingsFiltered != undefined && readingsFiltered.length && readingsFiltered != null) {
+        let sql = 'INSERT IGNORE INTO hour_readings_eso (date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date) VALUES ?';
+        db.query(sql, [readingsFiltered], (err, result) => {
             if (err) {
                 throw err;
             }
-            console.log('Graph Hour Readings inserted');
-            return res.send("Graph Hour Readings added");
+            console.log('Данните от ЕСО са импортирани');
+            return res.send("Данните от ЕСО са импортирани");
         });
     } else {
-        console.log('Result list exists / error');
-        return res.send('Result list exists / error');
+        console.log('Данните вече съществуват')
+        return res.send('Данните вече съществуват')
     }
 });
 
-async function filterGraphHourReadings(allProfileHourReadings) {
+function checkIfFirstAndAddToInsertQuery(isFirst, updateQuery) {
+    if (isFirst) {
+        isFirst = false;
+    } else if (!isFirst) {
+        updateQuery += ' , ';
+    }
+    return [isFirst, updateQuery];
+}
+
+async function filterEsoHourReadings(allHourReadingsESO) {
     let readingsFiltered = [];
     let addToFinalReadings;
-    for (let i = 0; i < allProfileHourReadings.length; i += 1) {
+    for (let i = 0; i < allHourReadingsESO.length; i += 1) {
         addToFinalReadings = true;
-        let currHourReading = allProfileHourReadings[i];
+        let currHourReading = allHourReadingsESO[i];
         let hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight,
             hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen,
             hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone,
             hour_twentytwo, hour_twentythree, hour_zero;
         hour_one = hour_two = hour_three = hour_four = hour_five = hour_six = hour_seven = hour_eight = hour_nine = hour_ten = hour_eleven = hour_twelve = hour_thirteen = hour_fourteen = hour_fifteen = hour_sixteen = hour_seventeen = hour_eighteen = hour_nineteen = hour_twenty = hour_twentyone = hour_twentytwo = hour_twentythree = hour_zero = -1;
-
         let filteredHourReading = [];
-        let currID = currHourReading[0];
-        let date = currHourReading[1].split('-');
-        let helperDate = new Date(currHourReading[1]);
-        let currDate = `${helperDate.getFullYear()}-${helperDate.getMonth()+1}-${helperDate.getDate()}`;
-        let type = currHourReading[3];
-        let ERP = currHourReading[4];
+        const typeEnergy = currHourReading[2];
+        let date = new Date(currHourReading[0]);
+        let currDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
         if (currDate.includes('undefined')) {
             currDate = `${date[0].split('.')[2]}-${date[0].split('.')[1]}-${date[0].split('.')[0]}`
         }
-        let createdDate = currHourReading[5];
-        for (let z = 0; z < currHourReading[2].length; z += 1) {
-            switch (currHourReading[2][z].currHour) {
-                case '1:00':
-                case '01:00':
-                case 1:
-                    hour_one = currHourReading[2][z].currValue;
-                    break;
-                case '2:00':
-                case '02:00':
-                case 2:
-                    hour_two = currHourReading[2][z].currValue;
-                    break;
-                case '3:00':
-                case '03:00':
-                case 3:
-                    hour_three = currHourReading[2][z].currValue;
-                    break;
-                case '4:00':
-                case '04:00':
-                case 4:
-                    hour_four = currHourReading[2][z].currValue;
-                    break;
-                case '5:00':
-                case '05:00':
-                case 5:
-                    hour_five = currHourReading[2][z].currValue;
-                    break;
-                case '6:00':
-                case '06:00':
-                case 6:
-                    hour_six = currHourReading[2][z].currValue;
-                    break;
-                case '7:00':
-                case '07:00':
-                case 7:
-                    hour_seven = currHourReading[2][z].currValue;
-                    break;
-                case '8:00':
-                case '08:00':
-                case 8:
-                    hour_eight = currHourReading[2][z].currValue;
-                    break;
-                case '9:00':
-                case '09:00':
-                case 9:
-                    hour_nine = currHourReading[2][z].currValue;
-                    break;
-                case '10:00':
-                case 10:
-                    hour_ten = currHourReading[2][z].currValue;
-                    break;
-                case '11:00':
-                case 11:
-                    hour_eleven = currHourReading[2][z].currValue;
-                    break;
-                case '12:00':
-                case 12:
-                    hour_twelve = currHourReading[2][z].currValue;
-                    break;
-                case '13:00':
-                case 13:
-                    hour_thirteen = currHourReading[2][z].currValue;
-                    break;
-                case '14:00':
-                case 14:
-                    hour_fourteen = currHourReading[2][z].currValue;
-                    break;
-                case '15:00':
-                case 15:
-                    hour_fifteen = currHourReading[2][z].currValue;
-                    break;
-                case '16:00':
-                case 16:
-                    hour_sixteen = currHourReading[2][z].currValue;
-                    break;
-                case '17:00':
-                case 17:
-                    hour_seventeen = currHourReading[2][z].currValue;
-                    break;
-                case '18:00':
-                case 18:
-                    hour_eighteen = currHourReading[2][z].currValue;
-                    break;
-                case '19:00':
-                case 19:
-                    hour_nineteen = currHourReading[2][z].currValue;
-                    break;
-                case '20:00':
-                case 20:
-                    hour_twenty = currHourReading[2][z].currValue;
-                    break;
-                case '21:00':
-                case 21:
-                    hour_twentyone = currHourReading[2][z].currValue;
-                    break;
-                case '22:00':
-                case 22:
-                    hour_twentytwo = currHourReading[2][z].currValue;
-                    break;
-                case '23:00':
-                case 23:
-                    hour_twentythree = currHourReading[2][z].currValue;
-                    break;
-                case '0:00':
-                case '00:00':
-                case 0:
-                    hour_zero = currHourReading[2][z].currValue;
-                    break;
+        const createdDate = currHourReading[3];
+        for (let z = 0; z < currHourReading[1].length; z += 1) {
+            if (currHourReading[1][z].currHour === '1:00' || currHourReading[1][z].currHour === '01:00' || currHourReading[1][z].currHour == 1) {
+                hour_one = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '2:00' || currHourReading[1][z].currHour === '02:00' || currHourReading[1][z].currHour == '2') {
+                hour_two = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '3:00' || currHourReading[1][z].currHour === '03:00' || currHourReading[1][z].currHour == '3') {
+                hour_three = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '4:00' || currHourReading[1][z].currHour === '04:00' || currHourReading[1][z].currHour == '4') {
+                hour_four = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '5:00' || currHourReading[1][z].currHour === '05:00' || currHourReading[1][z].currHour == '5') {
+                hour_five = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '6:00' || currHourReading[1][z].currHour === '06:00' || currHourReading[1][z].currHour == '6') {
+                hour_six = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '7:00' || currHourReading[1][z].currHour === '07:00' || currHourReading[1][z].currHour == '7') {
+                hour_seven = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '8:00' || currHourReading[1][z].currHour === '08:00' || currHourReading[1][z].currHour == '8') {
+                hour_eight = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '9:00' || currHourReading[1][z].currHour === '09:00' || currHourReading[1][z].currHour == '9') {
+                hour_nine = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '10:00' || currHourReading[1][z].currHour === '10:00' || currHourReading[1][z].currHour == '10') {
+                hour_ten = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '11:00' || currHourReading[1][z].currHour === '11:00' || currHourReading[1][z].currHour == '11') {
+                hour_eleven = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '12:00' || currHourReading[1][z].currHour === '12:00' || currHourReading[1][z].currHour == '12') {
+                hour_twelve = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '13:00' || currHourReading[1][z].currHour === '13:00' || currHourReading[1][z].currHour == '13') {
+                hour_thirteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '14:00' || currHourReading[1][z].currHour === '14:00' || currHourReading[1][z].currHour == '14') {
+                hour_fourteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '15:00' || currHourReading[1][z].currHour === '15:00' || currHourReading[1][z].currHour == '15') {
+                hour_fifteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '16:00' || currHourReading[1][z].currHour === '16:00' || currHourReading[1][z].currHour == '16') {
+                hour_sixteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '17:00' || currHourReading[1][z].currHour === '17:00' || currHourReading[1][z].currHour == '17') {
+                hour_seventeen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '18:00' || currHourReading[1][z].currHour === '18:00' || currHourReading[1][z].currHour == '18') {
+                hour_eighteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '19:00' || currHourReading[1][z].currHour === '19:00' || currHourReading[1][z].currHour == '19') {
+                hour_nineteen = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '20:00' || currHourReading[1][z].currHour === '20:00' || currHourReading[1][z].currHour == '20') {
+                hour_twenty = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '21:00' || currHourReading[1][z].currHour === '21:00' || currHourReading[1][z].currHour == '21') {
+                hour_twentyone = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '22:00' || currHourReading[1][z].currHour === '22:00' || currHourReading[1][z].currHour == '22') {
+                hour_twentytwo = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '23:00' || currHourReading[1][z].currHour === '23:00' || currHourReading[1][z].currHour == '23') {
+                hour_twentythree = currHourReading[1][z].currValue;
+            } else if (currHourReading[1][z].currHour === '0:00' || currHourReading[1][z].currHour === '00:00' || currHourReading[1][z].currHour == '0') {
+                hour_zero = currHourReading[1][z].currValue;
             }
         }
-        let selectReading = `SELECT * FROM hour_prediction 
-        WHERE hour_prediction.date = '${currDate}'
-        AND client_id = '${currID}'`;
+        let selectReading = `SELECT * FROM hour_readings_eso 
+        WHERE date = '${currDate}'
+        AND type = '${typeEnergy}'
+        LIMIT 1`;
         let result = dbSync.query(selectReading);
         if (result.length != 0 && result[0] != undefined && result[0].length != 0) {
             if (result[0].hour_one != -1 && result[0].hour_two != -1 && result[0].hour_three != -1 && result[0].hour_four != -1 && result[0].hour_five != -1 && result[0].hour_six != -1 && result[0].hour_seven != -1 && result[0].hour_eight != -1 && result[0].hour_nine != -1 && result[0].hour_ten != -1 && result[0].hour_eleven != -1 && result[0].hour_twelve != -1 && result[0].hour_thirteen != -1 && result[0].hour_fourteen != -1 && result[0].hour_fifteen != -1 && result[0].hour_sixteen != -1 && result[0].hour_seventeen != -1 && result[0].hour_eighteen != -1 && result[0].hour_nineteen != -1 && result[0].hour_twenty != -1 && result[0].hour_twentyone != -1 && result[0].hour_twentytwo != -1 && result[0].hour_twentythree != -1 && result[0].hour_zero != -1) {
@@ -180,7 +116,6 @@ async function filterGraphHourReadings(allProfileHourReadings) {
                     // Insert updateValue as new row
                     hasEverything = true;
                     addToFinalReadings = true;
-                    diff = 1;
                 } else {
                     addToFinalReadings = false;
                 }
@@ -190,7 +125,7 @@ async function filterGraphHourReadings(allProfileHourReadings) {
                 addToFinalReadings = false;
                 let isChanged = false;
                 let isFirst = true;
-                let updateQuery = `UPDATE profile_coef SET`;
+                let updateQuery = `UPDATE hour_readings SET`;
                 if (result[0].hour_one == -1 && result[0].hour_one != hour_one) {
                     updateQuery = checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)[1];
                     isFirst = checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)[0];
@@ -335,7 +270,7 @@ async function filterGraphHourReadings(allProfileHourReadings) {
                     updateQuery += `hour_zero = '${hour_zero}' `;
                     isChanged = true;
                 }
-                updateQuery += `WHERE date = '${currDate}' AND profile_id = ${currID};`;
+                updateQuery += `WHERE date = '${currDate}' AND client_id = ${currID} AND type = ${typeEnergy};`;
                 if (isChanged) {
                     dbSync.query(updateQuery);
                     addToFinalReadings = false;
@@ -346,25 +281,16 @@ async function filterGraphHourReadings(allProfileHourReadings) {
             addToFinalReadings = true;
         }
         if (addToFinalReadings) {
-            filteredHourReading = [currID, currDate, hour_zero, hour_one, hour_two, hour_three, hour_four,
+            filteredHourReading = [currDate, hour_one, hour_two, hour_three, hour_four,
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
                 hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen,
                 hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone,
-                hour_twentytwo, hour_twentythree, type, ERP, createdDate
+                hour_twentytwo, hour_twentythree, hour_zero, typeEnergy, createdDate
             ];
             readingsFiltered.push(filteredHourReading);
         }
     }
     return readingsFiltered;
-}
-
-function checkIfFirstAndAddToInsertQuery(isFirst, updateQuery) {
-    if (isFirst) {
-        isFirst = false;
-    } else if (!isFirst) {
-        updateQuery += ' , ';
-    }
-    return [isFirst, updateQuery];
 }
 
 module.exports = router;

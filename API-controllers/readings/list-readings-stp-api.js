@@ -3,7 +3,6 @@ const router = express.Router();
 const {
     db
 } = require('../../db.js');
-const NodeTable = require('nodetable');
 
 router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
     let sql = `SELECT *,stp_hour_readings.id AS hrID FROM stp_hour_readings
@@ -20,7 +19,7 @@ router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
-
+ 
 router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     let {
         search,

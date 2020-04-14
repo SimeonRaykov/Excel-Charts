@@ -108,19 +108,25 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="/users/import/stp" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-file-upload nav-icon"></i>
                                         <p>СТП</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/users/import/hourly" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-file-upload nav-icon"></i>
                                         <p>Почасови</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a href="/users/import/eso" class="nav-link">
+                                        <i class="fas fa-file-upload nav-icon"></i>
+                                        <p>ЕСО - Почасови</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="/users/import/invoicing" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
+                                        <i class="fas fa-file-upload nav-icon"></i>
                                         <p>Фактуриране</p>
                                     </a>
                                 </li>
@@ -149,7 +155,13 @@
                                 <li class="nav-item">
                                     <a id="readings-href" href="/users/list/hour-readings" class="nav-link">
                                         <i class="fas fa-clock pl-1"></i>
-                                        <p>Почасови</p>
+                                        <p>&nbsp&nbspПочасови</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="readings-eso" href="/users/list/eso-hour-readings" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>EСО</p>
                                     </a>
                                 </li>
                             </ul>
@@ -173,10 +185,16 @@
                                 <li class="nav-item">
                                     <a id="graph-readings-href" href="/users/list/graph-readings/" class="nav-link">
                                         <i class="fas fa-clock pl-1"></i>
-                                        <p>Почасови</p>
+                                        <p> &nbsp&nbspПочасови</p>
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a id="profiles-href" href="/users/profiles" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Профили</p>
+                            </a>
                         </li>
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">

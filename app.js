@@ -73,14 +73,6 @@ const datavendPort = '192.168.1.113';
 // PORT 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, datavendPort, console.log(`Server started on port ${PORT}`));
-/* 
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Mysql connected');
-}); */
-
 app.disable('view cache');
 const nocache = require('nocache');
 app.use(nocache());
@@ -104,6 +96,7 @@ app.use(require('./API-controllers/imports/import-stp-hour-readings-api'));
 app.use(require('./API-controllers/imports/import-stp-hour-predictions-api'));
 app.use(require('./API-controllers/imports/import-graphs-api'));
 app.use(require('./API-controllers/imports/import-profiles-api'));
+app.use(require('./API-controllers/imports/import-hour-readings-eso-api'));
 
 //  Clients - Menu
 app.use(require('./API-controllers/clients/clients-menu-table-api'));
@@ -112,11 +105,16 @@ app.use(require('./API-controllers/clients/clients-info-page-api'));
 //  Readings - Menu 
 app.use(require('./API-controllers/readings/list-readings-stp-api'));
 app.use(require('./API-controllers/readings/list-hour-readings-api'));
+app.use(require('./API-controllers/readings/list-eso-hour-readings-api'));
+app.use(require('./API-controllers/readings/list-eso-hour-readings-daily-api'));
 
 //  Graphs - Menu
 app.use(require('./API-controllers/graphs/list-graph-stp-readings-api'));
 app.use(require('./API-controllers/graphs/list-graph-readings-api'));
 app.use(require('./API-controllers/graphs/graph-hour-predictions-daily-api'));
+
+//  Profiles - Menu
+app.use(require('./API-controllers/profiles/list-profiles-api'));
 
 //  Invoices
 app.use(require('./API-controllers/invoices/stp-list-readings-api'));
