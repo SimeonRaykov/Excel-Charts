@@ -114,7 +114,7 @@ app.use(require('./API-controllers/graphs/list-graph-readings-api'));
 app.use(require('./API-controllers/graphs/graph-hour-predictions-daily-api'));
 
 //  Profiles - Menu
-app.use(require('./API-controllers/profiles/list-profiles-api'));
+app.use(require('./API-controllers/profiles/profiles-api'));
 
 //  Invoices
 app.use(require('./API-controllers/invoices/stp-list-readings-api'));
@@ -125,6 +125,7 @@ app.use(require('./API-controllers/invoices/stp-reading-details-api'));
 app.use(require('./API-controllers/inquiry/inquiry-readings-api'));
 app.use(require('./API-controllers/inquiry/inquiry-graphs-api'));
 app.use(require('./API-controllers/inquiry/inquiry-imbalances-api'));
+app.use(require('./API-controllers/inquiry/inquiry-missing-information-api'));
 
 //  404 Not Found
 app.get('*', (req, res) => res.render('./handle-errors/404-not-found.ejs', {

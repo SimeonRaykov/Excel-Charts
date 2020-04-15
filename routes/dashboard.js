@@ -113,6 +113,9 @@ router.get('/users/graphs/STP/:id', (req, res) => res.render('./Graphs/GraphSTP-
 router.get('/users/profiles', (req, res) => res.render('./profiles/list-profiles-table.ejs', {
     name: user.getName()
 }));
+router.get('/users/profiles/:id', (req, res) => res.render('./profiles/profile-details.ejs', { //./hour-readings/clients-hour-readings.ejs'
+    name: user.getName()
+}));
 
 // Clients
 router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
@@ -161,17 +164,20 @@ router.get('/users/invoicing/preview', (req, res) => res.render('./invoicing/inv
     name: user.getName()
 }));
 
-//  Exports Inquiry
-router.get('/users/inquiry', (req, res) => res.render('./exports/inquirySTP.ejs', {
+//  Inquiry 
+router.get('/users/inquiry', (req, res) => res.render('./inquiry/inquirySTP.ejs', {
     name: user.getName()
 }));
-router.get('/users/inquiry/readings', (req, res) => res.render('./exports/inquiry-readings.ejs', {
+router.get('/users/inquiry/readings', (req, res) => res.render('./inquiry/inquiry-readings.ejs', {
     name: user.getName()
 }));
-router.get('/users/inquiry/graphs', (req, res) => res.render('./exports/inquiry-graphs.ejs', {
+router.get('/users/inquiry/graphs', (req, res) => res.render('./inquiry/inquiry-graphs.ejs', {
     name: user.getName()
 }));
-router.get('/users/inquiry/imbalances', (req, res) => res.render('./exports/inquiry-imbalances.ejs', {
+router.get('/users/inquiry/imbalances', (req, res) => res.render('./inquiry/inquiry-imbalances.ejs', {
+    name: user.getName()
+}));
+router.get('/users/inquiry/missing-information', (req, res) => res.render('./inquiry/inquiry-missing-information.ejs', {
     name: user.getName()
 }));
 

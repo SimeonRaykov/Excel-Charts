@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.0/fullcalendar.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href='../../../AdminLTE-master/plugins/fullcalendar/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.css' rel='stylesheet' />
+    <script src='../../../AdminLTE-master/plugins/fullcalendar/main.js'></script>
+    <script src='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.js'></script>
+    <script src="../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
+    <link rel="stylesheet" href="../../../AdminLTE-master/css/custom-calendar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <script src="../../../js/datatables/datatables.js"></script>
+    <link rel="stylesheet" href="../../../css/checkboxes.css">
+    <link rel="stylesheet" href="../../../css/radio-btns.css">
+    <link rel="stylesheet" href="../../../css/inquiry-graphs.css">
+    <link rel="stylesheet" href="../../../css/handsontable.css">
+    <title>Справка - Графици</title>
+</head>
+
+<body>
+
+    <ul class="nav nav-tabs row justify-content-around text-center">
+        <li><a class="nav-link" data-toggle="tab" href="#info">Информация</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#export-table">Експорт</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2 class="text-center">Графици</h2>
+                </div>
+                <div class="card-body">
+                    <form action="" method="GET">
+                        <div class="row justify-content-around">
+                            <div class="text-heading">От дата<input id="fromDate" name="fromDate" class="ml-2"
+                                    type="date" type="search"></input>
+                            </div>
+                            <div class="text-heading">До дата<input id="toDate" name="toDate" class="ml-2" type="date"
+                                    type="search"></input>
+                            </div>
+                            <div><span class="text-heading">Име на клиент</span> <input id="nameOfClient"
+                                    list="stp-hour-predictions-clients" name="name" autocomplete="off" class="ml-2"
+                                    type="search"></input>
+                                <datalist id="stp-hour-predictions-clients">
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="row my-3 justify-content-around">
+                            <div class="mt-3 text-heading mr-2"> Идентификационен код <input id="clientID"
+                                    name="clientID" class="ml-3" autocomplete="off" list="idList" type="search"></input>
+                                <datalist id="idList">
+                                </datalist>
+                            </div>
+                            <span class="mt-3 text-heading">Вид ЕРП:</span>
+                            <label class="checkbox">
+                                <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
+                                <span>EVN</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="erp_type" value="cez" id="cez" checked>
+                                <span>ЧЕЗ</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="erp_type" value="energoPRO" id="energoPRO" checked>
+                                <span>ЕнергоПРО</span>
+                            </label>
+                        </div>
+                        <div class="row justify-content-around">
+                            <span class="mt-3 text-heading">Вид Мерене:</span>
+                            <label class="radio mr-5">СТП
+                                <input type="radio" id="profile_coef" value="profile_coef" name="predictions">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="radio">Почасови
+                                <input type="radio" id="hour_prediction" value="hour_prediction" name="predictions">
+                                <span class="checkmark"></span>
+                            </label>
+                            <div class="mt-3 text-heading" aria-haspopup="true" aria-expanded="true"
+                                data-toggle="tooltip" data-placement="bottom" container="body"
+                                title="Избиране на име на профил за СТП">
+                                Име на профил<input id="profile_name" class="ml-3" name="profile_name"
+                                    autocomplete="off" list="profile_names" type="search"></input>
+                                <datalist id="profile_names">
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <button type="submit" class="btn-primary btn-lg ml-3 mt-3">Търсене</button>
+                        </div>
+                </div>
+                </form>
+            </div>
+            <div class="container clients text-center">
+                <div class="row">
+                    <div class="offset-md-2">
+                        <label class="switch red-border">
+                            <input class="switch-input" id="switch-calendar-predictions" type="checkbox" checked />
+                            <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+                    </div>
+                    <div class="offset-md-6">
+                        <label class="switch red-border">
+                            <input id="switch-bar-line" class="switch-input" type="checkbox" checked />
+                            <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+                    </div>
+                </div>
+                <div id="calendar-predictions" class="col-md-12">
+                </div>
+                <div class="readings-prediction-div">
+                    <canvas id="predictions-chart" class="mb-5" width="1100" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="export-table" class="tab-pane fade">
+            <h2 class="text-center my-3">Експорт на данни</h2>
+            <div class="row justify-content-around">
+                <div>
+                    <span class="mr-5">Име на файл</span><input id="table-input" class="text-center" type="text"
+                        placeholder="excel-predictions" />
+                </div>
+                <div data-toggle="tooltip" data-placement="right" container="body"
+                    title="Преди отваряне в excel клетките трябва да се разделят със запетайка">
+                    <button id="export-table-btn" class="btn btn-success btn-lg">Свали екселска таблица</button>
+                </div>
+            </div>
+
+            <div class="container mt-5">
+                <div class="row justify-content-around">
+                    <button class="btn btn-lg ml-5" id="hide_dataTable">
+                        <i class="fas fa-2x fa-window-close"></i>
+                    </button>
+                    <h2 class="mt-2 text-center">Преглед - Графици</h2>
+                    <button class="btn btn-lg mr-5" id="show_dataTable">
+                        <i class="fas fa-2x fa-check-square"></i>
+                    </button>
+                </div>
+                <div class="mt-3 row justify-content-center">
+                    <div id="handsontable-predictions"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet"
+        media="screen">
+    <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
+    <script src="../../../../js/helper-functions/find-get-parameter.js"></script>
+    <script src="../../../../js/helper-functions/date-manipulations.js"></script>
+    <script src="../../../../js/inquiry/inquiry-graphs.js"></script>
+    <script src="../../../../js/exportFunctions/exportTable.js"></script>
+
+</body>
+
+</html>
