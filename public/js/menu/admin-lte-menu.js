@@ -48,6 +48,8 @@ function setDefaultDateForLinks() {
     $('#stp-graph-readings-href').attr('href', `/users/list/stp-graph-readings/?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO`);
     $('#graph-readings-href').attr('href', `/users/list/graph-readings/?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO`);
 
+    //  Change profiles href
+    $('#profiles-href').attr('href', '/users/profiles?name=&erp_type=evn&erp_type=cez&erp_type=energoPRO');
     //  Invoicing href
     $('#invoicing-readings-href').attr('href', `/users/invoicing?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
 

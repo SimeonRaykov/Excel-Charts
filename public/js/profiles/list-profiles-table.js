@@ -46,19 +46,14 @@ function visualizeDataListings(arr) {
 $('#searchBtn').on('click', (event) => {
     event.preventDefault();
     dataTable.clear().destroy();
-    let fromDate = $('#fromDate').val();
-    let toDate = $('#toDate').val();
     let nameOfProfile = $('#name').val();
     let erp = $('#erp').val();
-    listProfiles([fromDate, toDate, nameOfProfile, clientID, erp]);
+    listProfiles([nameOfProfile, clientID, erp]);
 });
 
 function listProfiles(arr) {
     if (!arr) {
         var name = findGetParameter('name');
-        var fromDate = findGetParameter('fromDate');
-        var toDate = findGetParameter('toDate');
-        var clientID = findGetParameter('clientID');
         var erp = []
         if (window.location.href.includes('energoPRO')) {
             erp.push(3);
@@ -72,8 +67,6 @@ function listProfiles(arr) {
 
     } else {
         var [
-            fromDate,
-            toDate,
             name,
             erp
         ] = arr;
@@ -96,8 +89,6 @@ function listProfiles(arr) {
         ajax: {
             url: "/api/filter/profiles/",
             data: {
-                fromDate,
-                toDate,
                 name,
                 erp
             },
@@ -109,21 +100,12 @@ function listProfiles(arr) {
                     const date = row['date'];
                     const fullDate = new Date(date);
                     const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-                    return `<td><a href=/users/profiles/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
+                    return `<td><a href=/users/profiles/${row['id']}>${row['id']}</td>`
                 }
             }, {
                 data: "profile_name",
                 render: function (data, type, row) {
                     return '<td>' + row['profile_name'] + '</td>';
-                },
-            }, {
-                data: "date",
-                render: function (data, type, row) {
-                    const date = row['date'];
-                    const fullDate = new Date(date);
-                    const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
-                    const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-                    return '<td>' + fixedDate + '</td>'
                 },
             },
             {
@@ -145,8 +127,6 @@ function visualizeAllInputFromGetParams() {
 }
 
 function visualizeInputFromGetParams() {
-    findGetParameter('fromDate') === null ? '' : $('#fromDate').val(findGetParameter('fromDate'));
-    findGetParameter('toDate') === null ? '' : $('#toDate').val(findGetParameter('toDate'));
     findGetParameter('name') === null ? '' : $('#nameOfClient').val(findGetParameter('name'));
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
     findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
