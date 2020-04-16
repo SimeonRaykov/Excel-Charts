@@ -172,14 +172,13 @@ function showReadingsChart(data) {
     const maxLabels = 60;
     const setLimit = data.length > 60 ? true : false;
     const labelsToSkip = setLimit ? (data.length - maxLabels) * 24 : 0;
-
+    const limitLabels = setLimit ? 5 : 1;
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let tempActualArr = [];
     let index = 0;
 
     if (data != undefined) {
-        console.log(data);
         if ((findGetParameter('fromDate') == findGetParameter('toDate')) && findGetParameter('fromDate')) {
             _IS_MULTIPLE_DAYS_READINGS_CHART = false;
             for (let el in data) {
@@ -233,6 +232,7 @@ function showReadingsChart(data) {
         }
     }
     let labelsNoDuplicates = removeDuplicatesFromArr(labels);
+
     for (let i = 0; i < labelsToSkip; i += 1) {
         labelsNoDuplicates.splice(Math.floor(Math.random() * labelsNoDuplicates.length), 1);
     }
@@ -257,7 +257,7 @@ function showReadingsChart(data) {
                     ticks: {
                         userCallback: _IS_MULTIPLE_DAYS_READINGS_CHART ? function (item, index) {
                             if (index === 12) return item.substring(0, item.length - 6);
-                            if ((index + 12) % 24 === 0) return item.substring(0, item.length - 6);
+                            if ((index + 12) % (24 * limitLabels) === 0) return item.substring(0, item.length - 6);
                         } : '',
                         autoSkip: false
                     }
