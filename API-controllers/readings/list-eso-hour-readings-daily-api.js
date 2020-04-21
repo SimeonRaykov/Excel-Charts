@@ -37,8 +37,7 @@ router.get('/api/eso-hour-readings/daily/:id/:date', (req, res) => {
     WHERE hour_readings_eso.date = '${req.params.date}'
     AND hour_readings_eso.id = '${req.params.id}'`;
 
-    let rex = db.query(sql, (err, result) => {
-        console.log(rex.sql);
+   db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }

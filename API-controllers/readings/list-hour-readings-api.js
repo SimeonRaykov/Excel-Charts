@@ -62,7 +62,7 @@ router.post('/api/filter/getAllHourReadingsTable', (req, res) => {
     } else if (erp == undefined) {
         return res.send(JSON.stringify([]));
     }
-    console.log(search.value)
+
     if (search.value) {
         sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
            
@@ -71,7 +71,7 @@ router.post('/api/filter/getAllHourReadingsTable', (req, res) => {
 
     sql += ` ORDER BY ${columnType} ${orderType}`;
     sql += ` LIMIT ${start},${length}`;
-    console.log(sql);
+
     const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
 
     db.query(countSQL, (err, countTotal) => {

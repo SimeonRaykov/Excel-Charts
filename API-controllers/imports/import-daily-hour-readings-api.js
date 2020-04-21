@@ -3,7 +3,7 @@ const router = express.Router();
 const {
     db
 } = require('../../db.js');
-
+ 
 router.get('/api/hour-readings/daily/:id/:date', (req, res) => {
     let sql = `SELECT hour_readings.id,
     client_id,
