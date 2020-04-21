@@ -93,7 +93,7 @@ function processFile(e) {
                     }
                 }
             }
-            console.log(allHourReadings);
+
             saveClientsToDB(allClients);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
             changeClientIdForHourReadings(allHourReadings, cl);

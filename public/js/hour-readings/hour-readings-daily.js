@@ -183,7 +183,8 @@ function processCalendarData(data) {
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
-                    backgroundColor: diff === 0 ? colors.blue : colors.red
+                    backgroundColor: value === -1 ? colors.red : colors.blue,
+                    textColor: value === -1 ? 'white' : 'black'
                 }
                 incrementHoursOne(currHourDate);
             }

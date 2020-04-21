@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
             left: '',
             center: 'title',
             right: '',
-
         }
     });
     calendar.render();
@@ -158,13 +157,11 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    console.log(data);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
-        let diff = data[el].diff;
         let type = data[el].type;
         let i = 0;
         const startIndex = 2;
@@ -175,12 +172,13 @@ function processCalendarData(data) {
             }
             if (i >= startIndex && i <= endIndex) {
                 currHourReading = {
-                    groupId: diff,
+                    groupId: key,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===1?'Потребена':'Произведена'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
-                    backgroundColor: type === 1 ? colors.blue : colors.red
+                    backgroundColor: value === -1 ? colors.red : colors.blue,
+                    textColor: value === -1 ? 'white' : 'black'
                 }
                 incrementHoursOne(currHourDate);
             }
@@ -189,6 +187,7 @@ function processCalendarData(data) {
         }
         i = 0;
     }
+    console.log(dataArr);
     return dataArr;
 }
 

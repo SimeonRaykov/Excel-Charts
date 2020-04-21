@@ -196,10 +196,8 @@ function processHourReadingCEZ(e) {
                     }
                 }
             }
-            console.log(allHourReadings);
             saveClientsToDB(allClients);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
-            console.log(cl);
             changeClientIdForHourReadings(allHourReadings, cl);
             saveHourReadingsToDB(allHourReadings);
         };

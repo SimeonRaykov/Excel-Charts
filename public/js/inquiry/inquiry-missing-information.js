@@ -121,21 +121,14 @@ const ESO_TABLE_COLUMNS = [{
             return '<td>' + formattedDate + '</td>'
         },
     },
-    missingInfoType.getReadingType() === readingTypes.HOUR_READING_ESO ? {
+    {
         data: "type",
         render: function (data, type, row) {
             const energyType = row['type'] == 1 ? 'Потребена' : 'Произведена';
             return '<td>' + energyType + '</td>';
         }
-    } : {
-        data: "erp_type",
-        render: function (data, type, row) {
-            const erpType = row['erp_type'] == 1 ? 'EVN' : row['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО';
-            return '<td>' + erpType + '</td>';
-        }
     },
 ]
-
 
 function renderTableHeadings() {
     const type = missingInfoType.getReadingType();
@@ -152,7 +145,6 @@ function renderTableHeadings() {
     }
     $('#inquiry-missing-information-table > thead > tr').append(tHeadSettings);
 }
-
 
 function getDataListing() {
     $.ajax({
@@ -309,9 +301,9 @@ function getURLForAPI() {
             case dataTypes.GRAPH:
                 switch (readingType) {
                     case readingTypes.GRAPH_READING:
-                        return `/api/filter/inquiry-missing-information/stp-graphs`;
+                        return `/api/filter/inquiry-missing-information/graphs`;
                     case readingTypes.STP_GRAPH_READING:
-                        return `/api/filter/inquiry-missing-information/graphs`;;
+                        return `/api/filter/inquiry-missing-information/stp-graphs`;;
                 }
     }
 }
@@ -456,6 +448,9 @@ function configurateInputs() {
         case 'data_graphs':
             missingInfoType.setDataType(dataTypes.GRAPH);
             removeESORadioOption();
+            showERPCheckboxes();
+            showClientNameInput();
+            showClientsIdentCodeInput();
             switch (selected) {
                 case 'hour_readings':
                     configurateInputsForGraphReadings();
