@@ -252,12 +252,12 @@ function getImbalances(arr) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            if(data!=''){
-            initialCalendarDate = new Date(data[0].date);
-            window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
-            showImbalanceChart(data);
-            calendarData = calculateImbalances(data);
-            addImbalancesToTable(calendarData);
+            if (data != '') {
+                initialCalendarDate = new Date(data[0].date);
+                window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
+                showImbalanceChart(data);
+                calendarData = calculateImbalances(data);
+                addImbalancesToTable(calendarData);
             }
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -345,14 +345,14 @@ function writeDailyPeriodHeading(firstDate, secondDate) {
 }
 
 function showImbalanceChart(data) {
-        const maxDate = getMaxDate(data);
-        const minDate = getMinDate(data);
-        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
-        if (equalDates) {
-            writeDailyPeriodHeading(maxDate, null, 'imbalance');
-        } else {
-            writeDailyPeriodHeading(minDate, maxDate, 'imbalance');
-        }
+    const maxDate = getMaxDate(data);
+    const minDate = getMinDate(data);
+    const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+    if (equalDates) {
+        writeDailyPeriodHeading(maxDate, null, 'imbalance');
+    } else {
+        writeDailyPeriodHeading(minDate, maxDate, 'imbalance');
+    }
     let _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
     let labels = [];
     let actualHourData = [];

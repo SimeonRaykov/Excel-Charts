@@ -174,7 +174,7 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: key,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===1?'Потребена':'Произведена'}`,
                     start: Number(currHourDate),
                     end: Number(currHourDate) + 3600000,
                     backgroundColor: value === -1 ? colors.red : colors.blue,

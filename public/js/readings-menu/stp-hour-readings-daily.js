@@ -53,6 +53,7 @@ function getHourReadingsDailyData() {
         dataType: 'json',
         async: false,
         success: function (data) {
+            console.log(data);
             showChartDaily(data);
             dataArr = [...processCalendarData(data)];
         },
@@ -208,16 +209,6 @@ function writeHourReadingsDailyHeading(data) {
 
 function writeClientNameHeading(data) {
     $('#client-heading').text(`Клиент: ${data}`);
-}
-
-function findGetParameter(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
 function fixDateForFullCallendar(date) {

@@ -98,11 +98,6 @@ client = new Client();
 
 const colors = {
     blue: '#aa62ea',
-    red: '#ff4d4d',
-    yellow: '#faee1c',
-    pink: '#ea7dc7',
-    orange: '#eac100',
-    light_blue: '#00d1ff'
 }
 
 function hideGraph() {
@@ -204,7 +199,7 @@ let initialCalendarDate = new Date();
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            events: getReadings(), 
+            events: getReadings(),
             defaultDate: initialCalendarDate,
             plugins: ['dayGrid', 'timeGrid'],
             header: {
@@ -380,14 +375,14 @@ function writeDailyPeriodHeading(firstDate, secondDate) {
 }
 
 function showReadingsChart(data) {
-        const maxDate = getMaxDate(data);
-        const minDate = getMinDate(data);
-        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
-        if (equalDates) {
-            writeDailyPeriodHeading(maxDate, null);
-        } else {
-            writeDailyPeriodHeading(minDate, maxDate);
-        }
+    const maxDate = getMaxDate(data);
+    const minDate = getMinDate(data);
+    const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+    if (equalDates) {
+        writeDailyPeriodHeading(maxDate, null);
+    } else {
+        writeDailyPeriodHeading(minDate, maxDate);
+    }
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let tempActualArr = [];
@@ -505,7 +500,7 @@ function getReadingsDataForCalendar(data) {
         let currHourDate = new Date(data[el].date);
         let objVals = Object.values(data[el]);
         let iterator = 0;
-        const color = randomProperty(colors)
+        const color = colors.blue;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
@@ -521,7 +516,39 @@ function getReadingsDataForCalendar(data) {
             iterator += 1;
         }
     }
-    return dataArr;
+    let sumOfAllArrs = [];
+    let dataArrSorted = dataArr.sort((a, b) => (a.start > b.start) ? 1 : -1);
+    let currReading;
+    let currStart;
+    let iterationsCount = 0;
+    let y = 1;
+
+    for (let i = 0; i < dataArrSorted.length; i += 1) {
+        currStart = dataArrSorted[i].start;
+        currReading = {
+            id: dataArrSorted[i].id,
+            title: dataArrSorted[i].title,
+            start: dataArrSorted[i].start,
+            end: dataArrSorted[i].end,
+            backgroundColor: colors.blue
+        }
+        if (dataArrSorted[i + y]) {
+            while (currStart == dataArrSorted[i + y].start) {
+                currStart = dataArrSorted[i + y].start;
+                currReading.title += dataArrSorted[i + y].title;
+                y += 1;
+                iterationsCount += 1;
+                if (!dataArrSorted[i + y]) {
+                    break;
+                }
+            }
+        }
+        i += iterationsCount;
+        iterationsCount = 0;
+        y = 1;
+        sumOfAllArrs.push(currReading);
+    }
+    return sumOfAllArrs;
 }
 
 var randomProperty = function (obj) {

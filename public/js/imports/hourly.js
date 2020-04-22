@@ -503,6 +503,28 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
     });
 };
 
+function getClientsFromDB(clients) {
+    notification('Loading..', 'loading');
+    let retVal;
+    $.ajax({
+        url: '/api/getClients',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        async: false,
+        data: JSON.stringify(clients),
+        success: function (data) {
+            console.log('Got clients');
+            retVal = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(errorThrown, 'error');
+            console.log('error');
+        }
+    });
+    return retVal;
+};
+
 function convertClientIDsToString(clientIDs) {
     return clientIDs.map(clientID => convertClientIDToString(clientID));
 }
