@@ -5,7 +5,43 @@ const {
 } = require('../../db.js');
 
 router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
-    let sql = `SELECT *,stp_hour_readings.id AS hrID FROM stp_hour_readings
+    let sql = `SELECT stp_hour_readings.id,
+    client_id,
+    date,
+    hour_zero,
+    hour_one,
+    hour_two,
+    hour_three,
+    hour_four,
+    hour_five,
+    hour_six,
+    hour_seven,
+    hour_eight,
+    hour_nine,
+    hour_ten,
+    hour_eleven,
+    hour_twelve,
+    hour_thirteen,
+    hour_fourteen,
+    hour_fifteen,
+    hour_sixteen,
+    hour_seventeen,
+    hour_eighteen,
+    hour_nineteen,
+    hour_twenty,
+    hour_twentyone,
+    hour_twentytwo,
+    hour_twentythree,
+    created_date,
+    diff,
+    client_name,
+    client_number,
+    ident_code,
+    metering_type,
+    clients.erp_type,
+    profile_id,
+    is_manufacturer,
+    date_created ,stp_hour_readings.id AS hrID FROM stp_hour_readings
     INNER JOIN clients on stp_hour_readings.client_id = clients.id
     WHERE stp_hour_readings.date = '${req.params.date}' 
     AND stp_hour_readings.id = '${req.params.id}'
@@ -19,7 +55,7 @@ router.get('/api/daily/stp-hour-reading/:id/:date', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
- 
+
 router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     let {
         search,
@@ -81,7 +117,7 @@ router.post('/api/filter/getAllSTPHourReadingsTable', (req, res) => {
     }
     if (search.value) {
         sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
-           
+
         countFilteredSql += ` AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `;
     }
     sql += ` ORDER BY ${columnType} ${orderType}`;
