@@ -225,7 +225,7 @@ function saveSTPpredictionsToDB(STPPredictions) {
             console.log('error in save readings');
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function notification(msg, type) {

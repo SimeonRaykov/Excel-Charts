@@ -67,7 +67,7 @@ function showUploadBlocks() {
     $('body > div.container.mt-3 > div > div:nth-child(7)').removeClass('invisible');
 }
 
-($('body > div.container').click(() => {
+($('body').click(() => {
     if ($('#energo-pro').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
             addDropEventListener(importTypes.hour_reading.EVN_EnergoPRO);
@@ -91,6 +91,7 @@ function showUploadBlocks() {
             addDropEventListener(importTypes.graph);
             graphPrediction.setCompany('CEZ').setType(2);
         }
+        company.setCompany('CEZ').setErpType(2);
     }
     const radioChecker = validateRadioBTNs();
     radioChecker ? showUploadBlocks() : '';
@@ -148,7 +149,7 @@ function processHourReadingCEZ(e) {
             var worksheet = workbook.Sheets[first_sheet_name];
             let colSize = getCols(workbook['Sheets'][`${first_sheet_name}`])[0].length;
             let nameOfFirstCell = worksheet['A1'].v;
-            validateDocumentForCEZFunc(colSize, nameOfFirstCell);
+            //    validateDocumentForCEZFunc(colSize, nameOfFirstCell);
 
             let cl = [];
             let clientsIDs = [];
@@ -578,6 +579,7 @@ function saveClientsToDB(clients) {
         }
     });
 };
+
 function saveHourReadingsToDB(readings) {
     $.ajax({
         url: '/api/addHourReadings',
@@ -589,11 +591,14 @@ function saveHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function saveGraphHourReadingsToDB(readings) {
@@ -607,11 +612,14 @@ function saveGraphHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function notification(msg, type) {

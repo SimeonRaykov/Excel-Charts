@@ -166,6 +166,7 @@ function validateSTPInput() {
 }
 
 function processHourReadingFile(e) {
+    notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
     const meteringType = 2; // STP Hourly
@@ -245,7 +246,6 @@ function processHourReadingFile(e) {
                 saveClientsToDB(allClients);
                 cl = getClientsHourlyFromDB(convertClientIDsToString(clientsIDs));
                 changeClientIdForHourReadings(allSTPHourReadings, cl);
-                notification('loading', 'loading');
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.ENERGO_PRO) {
 
@@ -296,7 +296,6 @@ function processHourReadingFile(e) {
                 saveClientsToDB(allClients);
                 cl = getClientsHourlyFromDB(convertClientIDsToString(clientsIDs));
                 changeClientIDForReadings(allSTPHourReadings, cl);
-                notification('loading', 'loading');
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.EVN) {
                 console.log('TODO');
@@ -307,11 +306,11 @@ function processHourReadingFile(e) {
         throwErrorForInvalidFileFormat();
     }
 }
-
-async function processPredictionFile(e) {
+ 
+function processPredictionFile(e) {
+    notification('Loading..', 'loading');
     e.stopPropagation();
-    e.preventDefault();
-    await notification('Loading..', 'loading');
+    e.preventDefault(); 
     try {
         files = e.dataTransfer.files,
             f = files[0];
@@ -361,7 +360,6 @@ async function processPredictionFile(e) {
                     client = [];
                 }
             }
-            notification('Loading..', 'loading');
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
@@ -381,7 +379,6 @@ async function processPredictionFile(e) {
                     }
                 }
             }
-            notification('Loading..', 'loading');
             saveSTPpredictionsToDB(allSTPpredictions);
             return;
         };
@@ -479,7 +476,7 @@ function filterClients(clientsAll) {
 }
 
 function saveClientsToDB(clients) {
-    notification('Loading..', 'loading');
+    //notification('Loading..', 'loading');
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -491,8 +488,7 @@ function saveClientsToDB(clients) {
             console.log('Clients saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //  notification(errorThrown, 'error');
-            console.log('error in save clients');
+            notification(jqXhr.responseText,'success');
         }
     });
 };
@@ -553,11 +549,10 @@ function saveGraphHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
+            notification(jqXhr.responseText, 'success');
             console.log('error in save readings');
         }
     });
-    notification('Everything is good', 'success');
 };
 
 function saveSTPHourReadingsToDB(readings) {
@@ -571,11 +566,9 @@ function saveSTPHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            notification(jqXhr.responseText,'success');
         }
     });
-    notification('Everything is good', 'success');
 };
 
 function saveSTPpredictionsToDB(STPPredictions) {
@@ -589,11 +582,10 @@ function saveSTPpredictionsToDB(STPPredictions) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            console.log('error in save readings');
+            notification(jqXhr.responseText, 'success');
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function validateGraphDocument() {

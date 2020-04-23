@@ -658,12 +658,10 @@ function saveReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            //  console.log('error in save readings');
             notification(jqXhr.responseText, 'success');
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function saveSTPHourReadingsToDB(readings) {
@@ -682,7 +680,7 @@ function saveSTPHourReadingsToDB(readings) {
             notification(jqXhr.responseText, 'success');
         }
     });
-    notification('Everything is good', 'success');
+    notification('Данните се обработват', 'success');
 };
 
 function changeClientIdForHourReadings(allSTPHourReadings, cl) {

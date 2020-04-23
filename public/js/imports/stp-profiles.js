@@ -338,7 +338,7 @@ function saveProfileReadingsToDB(readings) {
         data: JSON.stringify(readings),
         success: function (data) {
             console.log('Profiles saved');
-            notification('Everything is good', 'success');
+            notification('Данните се обработват', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');

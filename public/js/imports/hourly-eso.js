@@ -156,7 +156,11 @@ function saveEsoHourReadingsToDB(readings) {
         data: JSON.stringify(readings),
         success: function () {},
         error: function (jqXhr) {
-            notification(jqXhr.responseText, 'success');
+            if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
         }
     });
     notification('Данните се обработват', 'success');
