@@ -5,7 +5,7 @@ const {
 } = require('../../db.js');
 
 router.get('/api/getAllClients', (req, res) => {
-    
+
     let sql = `SELECT clients.id, client_name, ident_code, metering_type, erp_type FROM clients`;
     db.query(sql, (err, result) => {
         if (err) {
@@ -46,6 +46,22 @@ router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
 router.get('/api/data-listings/all-clients', (req, res) => {
     let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
      FROM clients`;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    });
+});
+
+router.get('/api/data-listings/ident-codes/:clientName', (req, res) => {
+    let {
+        clientName
+    } = req.params;
+    let sql = `SELECT DISTINCT clients.ident_code
+     FROM clients
+     WHERE clients.client_name LIKE '%${clientName}%'`;
 
     db.query(sql, (err, result) => {
         if (err) {

@@ -34,10 +34,11 @@ router.get('/api/getProfile/:ident_code', (req, res) => {
     let identCode = req.params.ident_code;
     let sql = `SELECT profile_id FROM clients WHERE ident_code = ${identCode}`;
     db.query(sql, (err, result) => {
-        if (err) {
-            throw err;
+        if (result && result[0].profile_id) {
+            return res.send(JSON.stringify(result[0].profile_id));
+        } else {
+            return res.send(JSON.stringify(0));
         }
-        return res.send(JSON.stringify(result[0].profile_id));
     });
 });
 
