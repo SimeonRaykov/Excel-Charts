@@ -166,6 +166,7 @@ function validateSTPInput() {
 }
 
 function processHourReadingFile(e) {
+    $('.clients-no-profile').remove();
     notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
@@ -306,11 +307,12 @@ function processHourReadingFile(e) {
         throwErrorForInvalidFileFormat();
     }
 }
- 
+
 function processPredictionFile(e) {
+    $('.clients-no-profile').remove();
     notification('Loading..', 'loading');
     e.stopPropagation();
-    e.preventDefault(); 
+    e.preventDefault();
     try {
         files = e.dataTransfer.files,
             f = files[0];
@@ -363,9 +365,13 @@ function processPredictionFile(e) {
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
+            let clientsWithoutProfile = [];
             let startingIndexOfLoadValues = stpPrediction.getStartingIndexOfAmountValues();
             for (let i = 1; i < arr.length; i += 1) {
                 let ident_code = arr[i][clientIdentCodeIndex];
+                if (getProfile(ident_code) === 0) {
+                    clientsWithoutProfile.push(ident_code);
+                }
                 for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientsFromDB(ident_code);
@@ -378,6 +384,12 @@ function processPredictionFile(e) {
                         stpPredictionReading = [];
                     }
                 }
+            }
+            if (clientsWithoutProfile.length > 0) {
+                let clientsNoProfile = $('<div class="clients-no-profile mt-5"></div>');
+                clientsNoProfile.text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили, за да се изчислят графиците!');
+                clientsNoProfile.appendTo($('#data'));
+                console.log('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
             }
             saveSTPpredictionsToDB(allSTPpredictions);
             return;
@@ -488,7 +500,7 @@ function saveClientsToDB(clients) {
             console.log('Clients saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText,'success');
+            notification(jqXhr.responseText, 'success');
         }
     });
 };
@@ -566,7 +578,7 @@ function saveSTPHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText,'success');
+            notification(jqXhr.responseText, 'success');
         }
     });
 };
@@ -627,4 +639,23 @@ function validateDocumentSTPPrediction() {
         notification('Избери компания', 'error');
         throw new Error('Избери компания');
     }
+}
+
+function getProfile(identCode) {
+    notification('Loading..', 'loading');
+    let profile;
+    $.ajax({
+        url: `/api/getProfile/${identCode}`,
+        method: 'GET',
+        contentType: 'application/json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            profile = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(jqXhr.responseText, 'success');
+        }
+    });
+    return profile;
 }

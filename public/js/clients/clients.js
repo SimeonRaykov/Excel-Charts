@@ -65,7 +65,7 @@ function processInitialData() {
         const table = $('#clients').DataTable();
         table.column(2).search(clientNameVal).draw();
     })
-}())
+}());
 
 (function filterClientsByIdentCode() {
     $('#ident_code').on('change', () => {
@@ -73,7 +73,7 @@ function processInitialData() {
         const table = $('#clients').DataTable();
         table.column(1).search(identCodeVal).draw();
     })
-}())
+}());
 
 function getDataListings() {
     $.ajax({
@@ -89,7 +89,41 @@ function getDataListings() {
     });
 }
 
+function getClientIdentCodeListings(clientName) {
+    $.ajax({
+        url: `/api/data-listings/ident-codes/${clientName}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeClientIdentCodes(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            getDataListings();
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeClientIdentCodes(data) {
+    $('#ident_codes').remove();
+    let identCodesDataListing = $('<datalist id="ident_codes" >');
+    let identCodes = [];
+    for (let obj of data) {
+        identCodes.push(obj.ident_code);
+    }
+    const filteredIdentCodes = identCodes.filter((v, i, a) => a.indexOf(v) === i);
+
+    for (let identCode of filteredIdentCodes) {
+        let currIdentCode = $(`<option>${identCode}</option>`);
+        currIdentCode.appendTo(identCodesDataListing);
+    }
+    identCodesDataListing.append('</datalist>');
+    $('#ident_code').append(identCodesDataListing);
+}
+
 function visualizeDataListings(data) {
+    $('#client_names').remove();
+    $('#ident_codes').remove();
     let namesDataListing = $('<datalist id="client_names" >');
     let identCodesDataListing = $('<datalist id="ident_codes" >');
     let clNames = [];
@@ -256,3 +290,10 @@ function disableSTPCheckbox() {
 function disableHourlyCheckbox() {
     $('#hourly').prop('checked', false);
 }
+
+(function filterClientIdentCodesOnInputChange() {
+    $('#client_name').on('change', () => {
+        const clientName = $('#client_name').val();
+        getClientIdentCodeListings(clientName);
+    });
+}());

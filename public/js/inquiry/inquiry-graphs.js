@@ -3,7 +3,7 @@ $(document).ready(function () {
     renderInfo();
     hideGraph();
     visualizeAllInputFromGetParams();
-    getDataListing();
+    getDataListings();
 });
 
 (function removeDataTableEvent() {
@@ -80,7 +80,7 @@ function incrementHoursOne(date) {
     return new Date(date.setHours(date.getHours() + 1));
 }
 
-function getDataListing() {
+function getDataListings() {
     $.ajax({
         url: '/api/data-listings/imbalances',
         method: 'GET',
@@ -120,6 +120,7 @@ function convertDataToSet(data) {
 function visualizeDataListings(arr) {
     let clientNames = arr[0];
     let clientIds = arr[1];
+    $('#idList option').remove();
     for (let name of clientNames) {
         $('#stp-hour-predictions-clients').append(`<option value="${name}"></option>`);
     }
@@ -674,4 +675,43 @@ function processSumValues(nameKey, myArray, sumValue) {
         }
     }
     return false;
+}
+
+(function filterClientIdentCodesOnInputChange() {
+    $('#nameOfClient').on('change', () => {
+        const clientName = $('#nameOfClient').val();
+        getClientIdentCodeListings(clientName);
+    });
+}());
+
+function getClientIdentCodeListings(clientName) {
+    $.ajax({
+        url: `/api/data-listings/ident-codes/${clientName}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeClientIdentCodes(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            getDataListings();
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeClientIdentCodes(data) {
+    $('#idList').remove();
+    let identCodesDataListing = $('<datalist id="idList" >');
+    let identCodes = [];
+    for (let obj of data) {
+        identCodes.push(obj.ident_code);
+    }
+    const filteredIdentCodes = identCodes.filter((v, i, a) => a.indexOf(v) === i);
+
+    for (let identCode of filteredIdentCodes) {
+        let currIdentCode = $(`<option>${identCode}</option>`);
+        currIdentCode.appendTo(identCodesDataListing);
+    }
+    identCodesDataListing.append('</datalist>');
+    $('#clientID').append(identCodesDataListing);
 }

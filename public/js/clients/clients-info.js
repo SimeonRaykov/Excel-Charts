@@ -386,11 +386,12 @@ function showGraphPredictionChart(data) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
-                    if (index >= 2) {
+                    let amount = data[el]['amount'] || 1;
+                    if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: data[el][hr] * amount
                         }
                         chartData.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -947,10 +948,7 @@ function writeReadingsHeading(data) {
 function writeGraphHeading(data) {
     if (data) {
         $('#graphHeading').text(`График за клиент: ${data}`);
-    } else {
-        $('#graphHeading').text(`Няма график за клиент`);
     }
-
 }
 
 function writeImbalancesHeading(data) {
