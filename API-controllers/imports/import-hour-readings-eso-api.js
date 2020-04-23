@@ -18,8 +18,8 @@ router.post('/api/addEsoHourReadings', async (req, res) => {
             return res.send("Данните от ЕСО са импортирани");
         });
     } else {
-        console.log('Данните вече съществуват')
-        return res.send('Данните вече съществуват')
+        console.log('Данните вече съществуват / Грешка')
+        return res.send('Данните вече съществуват / Грешка')
     }
 });
 
@@ -125,7 +125,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                 addToFinalReadings = false;
                 let isChanged = false;
                 let isFirst = true;
-                let updateQuery = `UPDATE hour_readings SET`;
+                let updateQuery = `UPDATE hour_readings_eso SET`;
                 if (result[0].hour_one == -1 && result[0].hour_one != hour_one) {
                     updateQuery = checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)[1];
                     isFirst = checkIfFirstAndAddToInsertQuery(isFirst, updateQuery)[0];
@@ -270,7 +270,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                     updateQuery += `hour_zero = '${hour_zero}' `;
                     isChanged = true;
                 }
-                updateQuery += `WHERE date = '${currDate}' AND client_id = ${currID} AND type = ${typeEnergy};`;
+                updateQuery += `WHERE date = '${currDate}' AND type = ${typeEnergy};`;
                 if (isChanged) {
                     dbSync.query(updateQuery);
                     addToFinalReadings = false;
@@ -291,6 +291,6 @@ async function filterEsoHourReadings(allHourReadingsESO) {
         }
     }
     return readingsFiltered;
-}
-
+} 
+ 
 module.exports = router;

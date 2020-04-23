@@ -12,8 +12,8 @@ router.post('/api/STP-Predictions', (req, res) => {
             throw err;
         }
     }); 
-    console.log('STP Predictions inserted');
-    return res.send("STP Predictions added");
+    console.log('Данните за СТП Графици са качени в базата');
+    return res.send("Данните за СТП Графици са качени в базата");
 });
 
 module.exports = router;

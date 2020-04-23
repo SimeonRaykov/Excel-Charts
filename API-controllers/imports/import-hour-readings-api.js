@@ -7,23 +7,24 @@ const {
 } = require('../../db.js');
 
 router.post('/addclients', (req, res) => {
+    
     let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, erp_type, is_manufacturer ,date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;
         }
-        console.log('Clients inserted');
-        return res.send("Clients added");
+        console.log('Клиентите са добавени');
+        return res.send("Клиентите са добавени");
     });
-}); 
- 
+});
+
 router.post('/api/getClients', (req, res) => {
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join(', ')})`;
     db.query(sql, req.body.join(), (err, result) => {
         if (err) {
             throw err;
         }
-        console.log('Clients get'); 
+        console.log('Clients get');
         return res.send(JSON.stringify(result));
     });
 });
@@ -36,13 +37,12 @@ router.post('/api/addHourReadings', async (req, res) => {
             if (err) {
                 throw err;
             }
-
-            console.log('Hour Readings inserted');
-            return res.send("Hour Readings added");
+            console.log('Данните за почасови мерения са качени в базата');
+            return res.send("Данните за почасови мерения са качени в базата");
         });
     } else {
-        console.log('Result list exists / Error')
-        return res.send('Result list exists / Error')
+        console.log('Данните вече съществуват / Грешка')
+        return res.send('Данните вече съществуват / Грешка')
     }
 });
 

@@ -25,12 +25,12 @@ router.post('/api/saveGraphHourReadings', async (req, res) => {
             if (err) {
                 throw err;
             }
-            console.log('Graph Hour Readings inserted');
-            return res.send("Graph Hour Readings added");
+            console.log('Данните за графици са качени в базата');
+            return res.send("Данните за графици са качени в базата");
         });
     } else {
-        console.log('Result list exists / error');
-        return res.send('Result list exists / error');
+        console.log('Данните вече съществуват / Грешка');
+        return res.send('Данните вече съществуват / Грешка');
     }
 });
 

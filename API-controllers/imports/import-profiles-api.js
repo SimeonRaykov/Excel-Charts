@@ -13,8 +13,8 @@ router.post('/api/createProfile', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Profile inserted');
-        return res.send("Profile added");
+        console.log('Данните се обработват');
+        return res.send("Данните се обработват");
     });
 });
 
@@ -42,7 +42,10 @@ router.get('/api/getProfile/:ident_code', (req, res) => {
 });
 
 router.get('/api/getProfile-HourValue/:identCode/:date/', (req, res) => {
-    let {identCode, date} = req.params;
+    let {
+        identCode,
+        date
+    } = req.params;
 
     let sql = `SELECT hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven
     hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen,
@@ -56,7 +59,7 @@ router.get('/api/getProfile-HourValue/:identCode/:date/', (req, res) => {
         if (err) {
             throw err;
         }
-        for(let h in result[0]){
+        for (let h in result[0]) {
             resultArr.push(result[0][h])
         }
         return res.send(JSON.stringify(resultArr));
@@ -70,8 +73,8 @@ router.post('/api/saveProfileReadings', async (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Profile data inserted into db');
-        return res.send("Profile data inserted into db");
+        console.log('Данните за профили са вкарани в базата');
+        return res.send("Данните за профили са вкарани в базата");
     });
 });
 

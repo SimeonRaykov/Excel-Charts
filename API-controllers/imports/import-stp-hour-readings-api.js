@@ -12,10 +12,12 @@ router.post('/api/addSTPHourReadings', async (req, res) => {
     let sql = 'INSERT INTO stp_hour_readings (client_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, erp_type, diff, created_date) VALUES ?';
     db.query(sql, [stpHourReadingsFiltered], (err, result) => {
         if (err) {
-            throw err;
+            return res.send('Данните вече съществуват / Грешка')
         }
-        console.log('STP Hour Readings inserted');
-        return res.send("STP Hour Readings added");
+        else{
+        console.log('Данните за СТП Почасови са качени в базата');
+        return res.send("Данните за СТП Почасови са качени в базата");
+        } 
     });
 });
 
