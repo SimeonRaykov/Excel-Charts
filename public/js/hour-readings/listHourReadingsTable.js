@@ -1,7 +1,7 @@
 ;
 $(document).ready(function () {
     visualizeAllInputFromGetParams();
-    getDataListings();
+    getInitialDataListings();
     listAllHourReadings();
 });
 
@@ -223,4 +223,15 @@ function visualizeClientIdentCodes(data) {
     }
     identCodesDataListing.append('</datalist>');
     $('#clientID').append(identCodesDataListing);
+}
+
+function getInitialDataListings() {
+    const clientNameVal = $('#nameOfClient').val();
+    if (clientNameVal) {
+        console.log(clientNameVal);
+        getDataListings();
+        getClientIdentCodeListings(clientNameVal);
+    } else {
+        getDataListings();
+    }
 }

@@ -290,6 +290,8 @@ function getReadingsDataForCalendar(data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let objVals = Object.values(data[el]);
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         let iterator = 0;
         const color = colors.blue;
         for (let val of objVals) {
@@ -297,12 +299,20 @@ function getReadingsDataForCalendar(data) {
                 currHourReading = {
                     id: data[el].ident_code,
                     title: val,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: color
                 }
                 dataArr.push(currHourReading);
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
             }
             iterator += 1;
         }

@@ -2,7 +2,7 @@ $(document).ready(function () {
     setSavedInputs();
     addEventListenerToCheckboxes()
     processInitialData();
-    getDataListings();
+    getInitialDataListings();
 });
 
 function setSavedInputs() {
@@ -297,3 +297,13 @@ function disableHourlyCheckbox() {
         getClientIdentCodeListings(clientName);
     });
 }());
+
+function getInitialDataListings() {
+    const clientNameVal = $('#client_name').val();
+    if (clientNameVal) {
+        getDataListings();
+        getClientIdentCodeListings(clientNameVal);
+    } else {
+        getDataListings();
+    }
+}

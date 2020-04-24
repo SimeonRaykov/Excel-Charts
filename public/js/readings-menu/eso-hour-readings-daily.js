@@ -166,6 +166,8 @@ function processCalendarData(data) {
         let i = 0;
         const startIndex = 2;
         const endIndex = 25;
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         for (let [key, value] of Object.entries(data[el])) {
             if (i > endIndex) {
                 break;
@@ -175,19 +177,26 @@ function processCalendarData(data) {
                     groupId: key,
                     id: key,
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===1?'Потребена':'Произведена'}`,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: value === -1 ? colors.red : colors.blue,
                     textColor: value === -1 ? 'white' : 'black'
                 }
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
             }
             dataArr.push(currHourReading);
             i += 1;
         }
         i = 0;
     }
-    console.log(dataArr);
     return dataArr;
 }
 

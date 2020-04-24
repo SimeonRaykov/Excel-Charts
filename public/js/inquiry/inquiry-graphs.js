@@ -3,7 +3,7 @@ $(document).ready(function () {
     renderInfo();
     hideGraph();
     visualizeAllInputFromGetParams();
-    getDataListings();
+    getInitialDataListings();
 });
 
 (function removeDataTableEvent() {
@@ -370,16 +370,16 @@ function writeDailyPeriodHeading(firstDate, secondDate) {
     }
     $('#info > div.container.clients.text-center > div.readings-prediction-div').prepend(chartDailyPeriod);
 }
- 
+
 function showGraphsChart(data) {
-        const maxDate = getMaxDate(data);
-        const minDate = getMinDate(data);
-        const equalDates = checkIfDatesAreEqual(maxDate, minDate);
-        if (equalDates) {
-            writeDailyPeriodHeading(maxDate, null);
-        } else {
-            writeDailyPeriodHeading(minDate, maxDate);
-        }
+    const maxDate = getMaxDate(data);
+    const minDate = getMinDate(data);
+    const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+    if (equalDates) {
+        writeDailyPeriodHeading(maxDate, null);
+    } else {
+        writeDailyPeriodHeading(minDate, maxDate);
+    }
     let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
     let labels = [];
     let actualHourData = [];
@@ -500,19 +500,28 @@ function getPredictionDataForCalendar(data) {
         let currHourDate = new Date(data[el].date);
         let objVals = Object.values(data[el]);
         let iterator = 0;
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         const color = colors.blue;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
                     id: data[el].ident_code,
                     title: val,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: color
                 }
-
                 dataArr.push(currHourReading);
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
             }
             iterator += 1;
         }
@@ -714,4 +723,14 @@ function visualizeClientIdentCodes(data) {
     }
     identCodesDataListing.append('</datalist>');
     $('#clientID').append(identCodesDataListing);
+}
+
+function getInitialDataListings() {
+    const clientNameVal = $('#nameOfClient').val();
+    if (clientNameVal) {
+        getDataListings();
+        getClientIdentCodeListings(clientNameVal);
+    } else {
+        getDataListings();
+    }
 }

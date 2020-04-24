@@ -821,6 +821,8 @@ function processDataHourly(data) {
         let i = 0;
         const startIndexHourReadings = 11;
         const endIndexHourReadings = 34;
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         for (let [key, value] of Object.entries(data[el])) {
             if (i > endIndexHourReadings) {
                 break;
@@ -830,11 +832,19 @@ function processDataHourly(data) {
                     groupId: diff,
                     id: key,
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`, // ${type===0?'Активна':'Реактивна'}`,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
                 }
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
             }
             dataArr.push(currHourReading);
             i += 1;
@@ -863,6 +873,8 @@ function processDataGraphPredictions(data) {
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
         let i = 0;
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         for (let [key, value] of Object.entries(data[el])) {
             if (i > endIndexGraphPrediction) {
                 break;
@@ -872,11 +884,19 @@ function processDataGraphPredictions(data) {
                     groupId: diff,
                     id: key,
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value * amount}`,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: colors.blue
                 }
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
             }
             dataArr.push(currHourReading);
             i += 1;
@@ -902,19 +922,28 @@ function processDataImbalances(data) {
         let objVals = Object.values(data[el]);
         let iterator = 0;
         let isManufacturer = data[el]['is_manufacturer'];
-
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
                 const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: colors.blue
                 }
                 dataArr.push(currHourReading);
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
                 currHourReadingVal += 1;
                 currHourPredictionVal += 1;
             }

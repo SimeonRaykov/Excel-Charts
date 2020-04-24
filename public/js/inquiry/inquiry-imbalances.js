@@ -3,7 +3,7 @@ $(document).ready(function () {
     renderInfo();
     hideGraph();
     visualizeAllInputFromGetParams();
-    getDataListings();
+    getInitialDataListings();
 });
 
 function renderInfo() {
@@ -521,19 +521,28 @@ function calculateImbalances(data) {
         let objVals = Object.values(data[el]);
         let iterator = 0;
         let isManufacturer = data[el]['is_manufacturer'];
-
+        let timezoneOffset = false;
+        let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
                 const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
                 currHourReading = {
                     id: data[el].ident_code,
                     title: currImbalance,
-                    start: Number(currHourDate),
-                    end: Number(currHourDate) + 3600000,
+                    start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
+                    end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: colors.blue
                 }
                 dataArr.push(currHourReading);
-                incrementHoursOne(currHourDate);
+                let oldDate = new Date(currHourDate.getTime());
+                let newDate = incrementHoursOne(currHourDate);
+                if (timezoneOffset) {
+                    timezoneOffset = false;
+                    moveRestOneHr = true;
+                }
+                if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    timezoneOffset = true;
+                }
                 currHourReadingVal += 1;
                 currHourPredictionVal += 1;
             }
@@ -647,4 +656,14 @@ function visualizeClientIdentCodes(data) {
     }
     identCodesDataListing.append('</datalist>');
     $('#clientID').append(identCodesDataListing);
+}
+
+function getInitialDataListings() {
+    const clientNameVal = $('#nameOfClient').val();
+    if (clientNameVal) {
+        getDataListings();
+        getClientIdentCodeListings(clientNameVal);
+    } else {
+        getDataListings();
+    }
 }
