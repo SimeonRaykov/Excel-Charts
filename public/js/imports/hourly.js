@@ -70,25 +70,25 @@ function showUploadBlocks() {
 ($('body').click(() => {
     if ($('#energo-pro').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
-            addDropEventListener(importTypes.hour_reading.EVN_EnergoPRO);
+            handleEventListeners(importTypes.hour_reading.EVN_EnergoPRO);
         } else if ($('#graph').is(':checked')) {
-            addDropEventListener(importTypes.graph);
+            handleEventListeners(importTypes.graph);
         }
         company.setCompany('ENERGO_PRO').setErpType(3);
         graphPrediction.setCompany('ENERGO_PRO').setType(3);
     } else if ($('#evn').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
-            addDropEventListener(importTypes.hour_reading.EVN_EnergoPRO);
+            handleEventListeners(importTypes.hour_reading.EVN_EnergoPRO);
         } else if ($('#graph').is(':checked')) {
-            addDropEventListener(importTypes.graph);
+            handleEventListeners(importTypes.graph);
         }
         company.setCompany('EVN').setErpType(1);
         graphPrediction.setCompany('EVN').setType(1);
     } else if ($('#cez').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
-            addDropEventListener(importTypes.hour_reading.CEZ);
+            handleEventListeners(importTypes.hour_reading.CEZ);
         } else if ($('#graph').is(':checked')) {
-            addDropEventListener(importTypes.graph);
+            handleEventListeners(importTypes.graph);
             graphPrediction.setCompany('CEZ').setType(2);
         }
         company.setCompany('CEZ').setErpType(2);
@@ -119,7 +119,6 @@ function processHourReadingCEZ(e) {
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
-
     e.stopPropagation();
     e.preventDefault();
     let files = '';
@@ -171,9 +170,21 @@ function processHourReadingCEZ(e) {
                     let currDateHelper = `${arr[0][x]}`;
                     let currDate = new Date(currDateHelper.split(" ")[0]);
                     for (let val = 0; val < 24; val += 1) {
+                        let undefinedHour = undefined;
+                        try {
+                            var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            currHourValue = -1
+                        }
+
+                        if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+
                         currHourObj = {
                             currHour: val,
-                            currValue: arr[i][x]
+                            currValue: undefinedHour || arr[i][x] || -1
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -269,13 +280,25 @@ function processHourReadingEVN_EnergoPRO(e) {
                         let splitHelper = currDateHelper.split(" ")[0].split('.');
                         let currDate = new Date(`${splitHelper[1]}.${splitHelper[0]}.${splitHelper[2]}`);
                         for (let val = 0; val < 24; val += 1) {
+                            let undefinedHour = undefined;
+                            try {
+                                var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
+                            } catch (e) {
+                                currHourValue = -1
+                            }
+
+                            if (currHourValue != val) {
+                                undefinedHour = -1;
+                                x -= 1;
+                            }
+
                             currHourActiveEnergyObj = {
                                 currHour: val,
-                                currValue: arr[1][x]
+                                currValue: undefinedHour || arr[1][x]
                             }
                             currReactiveEnergyObj = {
                                 currHour: val,
-                                currValue: arr[2][x] == '' || arr[2][x] == undefined ? 0 : arr[2][x]
+                                currValue: undefinedHour ? -1 : arr[2][x] == '' || arr[2][x] == undefined ? 0 : arr[2][x]
                             }
                             currActiveEnergyValues.push(currHourActiveEnergyObj);
                             currReactiveEnergyValues.push(currReactiveEnergyObj);
@@ -391,6 +414,7 @@ function processGraphFile(e) {
                         if (currHour == -1) {
                             currHour = 23;
                         }
+
                         let currValue = arr[i][y];
                         let currHourObj = {
                             currHour,
@@ -466,7 +490,7 @@ function getCols(sheet) {
 }
 
 function getClientIDFromDB(client) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let retVal;
     $.ajax({
         url: '/api/getSingleClient',
@@ -482,7 +506,6 @@ function getClientIDFromDB(client) {
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(errorThrown, 'error');
-            console.log('error');
         }
     });
     return retVal;
@@ -505,7 +528,7 @@ function changeClientIdForHourReadings(allHourReadings, cl) {
 };
 
 function getClientsFromDB(clients) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let retVal;
     $.ajax({
         url: '/api/getClients',
@@ -515,12 +538,10 @@ function getClientsFromDB(clients) {
         async: false,
         data: JSON.stringify(clients),
         success: function (data) {
-            console.log('Got clients');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(errorThrown, 'error');
-            console.log('error');
         }
     });
     return retVal;
@@ -562,7 +583,6 @@ function filterClients(clientsAll) {
 }
 
 function saveClientsToDB(clients) {
-    notification('Loading..', 'loading');
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -571,11 +591,9 @@ function saveClientsToDB(clients) {
         async: false,
         data: JSON.stringify(clients),
         success: function data() {
-            console.log('Clients saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //  notification(errorThrown, 'error');
-            console.log('error in save clients');
+            console.log(jqXhr.responseText)
         }
     });
 };
@@ -588,7 +606,7 @@ function saveHourReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log('Readings saved');
+            console.log(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
@@ -598,7 +616,7 @@ function saveHourReadingsToDB(readings) {
             }
         }
     });
-    notification('Данните се обработват', 'success');
+    notification('Данните се обработват', 'loading');
 };
 
 function saveGraphHourReadingsToDB(readings) {
@@ -609,7 +627,6 @@ function saveGraphHourReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
@@ -619,35 +636,7 @@ function saveGraphHourReadingsToDB(readings) {
             }
         }
     });
-    notification('Данните се обработват', 'success');
-};
-
-function notification(msg, type) {
-    toastr.clear();
-    toastr.options = {
-        "closeButton": false,
-        "debug": false,
-        "newestOnTop": false,
-        "progressBar": false,
-        "positionClass": "toast-top-right",
-        "preventDuplicates": false,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    if (type == 'error') {
-        toastr.error(msg);
-    } else if (type == 'success') {
-        toastr.success(msg);
-    } else if (type == 'loading') {
-        toastr.info(msg);
-    }
+    notification('Данните се обработват', 'loading');
 };
 
 function validateDocumentForCEZFunc(colSize, nameOfFirstCell) {
@@ -686,15 +675,48 @@ function validateDocumentForGraphFunc() {
     }
 }
 
-function addDropEventListener(dataImportType) {
+function handleEventListeners(dataImportType) {
     if (dataImportType == importTypes.hour_reading.CEZ) {
-        document.getElementById('hourly-import').addEventListener('drop', processHourReadingCEZ, false);
-        document.getElementById('upload-excel').addEventListener('change', processHourReadingCEZ, false);
+        removeGraphEventListeners();
+        removeHourReadingsEVN_EnergoPROEventListeners();
+        addHourReadingsCEZEventListeners();
     } else if (dataImportType == importTypes.hour_reading.EVN_EnergoPRO) {
-        document.getElementById('hourly-import').addEventListener('drop', processHourReadingEVN_EnergoPRO, false);
-        document.getElementById('upload-excel').addEventListener('change', processHourReadingEVN_EnergoPRO, false);
+        removeGraphEventListeners();
+        removeHourReadingsCEZEventListeners();
+        addHourReadningsEVN_EnergoPROEventListeners();
     } else if (dataImportType == importTypes.graph) {
-        document.getElementById('hourly-import').addEventListener('drop', processGraphFile, false);
-        document.getElementById('upload-excel').addEventListener('change', processGraphFile, false);
+        removeHourReadingsCEZEventListeners();
+        removeHourReadingsEVN_EnergoPROEventListeners();
+        addGraphEventListeners();
     }
+}
+
+function addHourReadingsCEZEventListeners() {
+    document.getElementById('hourly-import').addEventListener('drop', processHourReadingCEZ, false);
+    document.getElementById('upload-excel').addEventListener('change', processHourReadingCEZ, false);
+}
+
+function removeHourReadingsCEZEventListeners() {
+    document.getElementById('hourly-import').removeEventListener('drop', processHourReadingCEZ, false);
+    document.getElementById('upload-excel').removeEventListener('change', processHourReadingCEZ, false);
+}
+
+function addHourReadningsEVN_EnergoPROEventListeners() {
+    document.getElementById('hourly-import').addEventListener('drop', processHourReadingEVN_EnergoPRO, false);
+    document.getElementById('upload-excel').addEventListener('change', processHourReadingEVN_EnergoPRO, false);
+}
+
+function removeHourReadingsEVN_EnergoPROEventListeners() {
+    document.getElementById('hourly-import').removeEventListener('drop', processHourReadingEVN_EnergoPRO, false);
+    document.getElementById('upload-excel').removeEventListener('change', processHourReadingEVN_EnergoPRO, false);
+}
+
+function addGraphEventListeners() {
+    document.getElementById('hourly-import').addEventListener('drop', processGraphFile, false);
+    document.getElementById('upload-excel').addEventListener('change', processGraphFile, false);
+}
+
+function removeGraphEventListeners() {
+    document.getElementById('hourly-import').removeEventListener('drop', processGraphFile, false);
+    document.getElementById('upload-excel').removeEventListener('change', processGraphFile, false);
 }

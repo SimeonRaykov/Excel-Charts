@@ -43,7 +43,6 @@ function showUploadBlocks() {
 
 function processFile(e) {
     const meteringType = 2; // STP metering_type = 2
-    console.log(e);
     let cl;
     let clientIds = [];
     e.stopPropagation();
@@ -395,7 +394,6 @@ function processFile(e) {
                     }
                 }
                 changeClientIdForHourReadings(finalSTPHourReadings, cl);
-                notification('loading', 'loading');
                 saveSTPHourReadingsToDB(finalSTPHourReadings);
             } else {
                 $('.clients-no-profile').text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил и заявката за СТП почасови мерения е отказана! Трябва да им се сложат профили.');
@@ -550,7 +548,7 @@ function filterClients(clientsAll) {
 }
 
 function saveClientsToDB(clients) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -562,15 +560,13 @@ function saveClientsToDB(clients) {
             console.log('Clients saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //  notification(errorThrown, 'error');
-            //  console.log('error in save clients');
             notification(jqXhr.responseText, 'success');
         }
     });
 };
 
 function getClientsFromDB(clients) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let retVal;
     $.ajax({
         url: '/getClient',
@@ -580,20 +576,17 @@ function getClientsFromDB(clients) {
         async: false,
         data: JSON.stringify(clients),
         success: function (data) {
-            console.log('Got clients');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            // notification(errorThrown, 'error');
             notification(jqXhr.responseText, 'success');
-            //  console.log('error');
         }
     });
     return retVal;
 };
 
 function getProfile(identCode) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let profile;
     $.ajax({
         url: `/api/getProfile/${identCode}`,
@@ -612,7 +605,7 @@ function getProfile(identCode) {
 }
 
 function getProfileAmount(identCode, date) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let amount;
     $.ajax({
         url: `/api/getProfile-HourValue/${identCode}/${date}`,
@@ -647,6 +640,7 @@ function mapClientsIDsToGetIdentCodeCorrectly(clientIds) {
 }
 
 function saveReadingsToDB(readings) {
+    notification('Данните се обработват', 'loading');
     $.ajax({
         url: '/addreadings',
         method: 'POST',
@@ -655,13 +649,11 @@ function saveReadingsToDB(readings) {
         async: false,
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
     });
-    notification('Данните се обработват', 'success');
 };
 
 function saveSTPHourReadingsToDB(readings) {
@@ -675,12 +667,10 @@ function saveSTPHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            //   notification(errorThrown, 'error');
-            //    console.log('error in save readings');
             notification(jqXhr.responseText, 'success');
         }
     });
-    notification('Данните се обработват', 'success');
+    notification('Данните се обработват', 'loading');
 };
 
 function changeClientIdForHourReadings(allSTPHourReadings, cl) {

@@ -74,8 +74,7 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
-
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     e.stopPropagation();
     e.preventDefault();
     let files = '';
@@ -275,8 +274,7 @@ function throwErrorForInvalidFileFormat() {
 }
 
 function createProfile() {
-
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     $.ajax({
         url: '/api/createProfile',
         method: 'POST',
@@ -288,11 +286,9 @@ function createProfile() {
             type: profile.getType()
         }),
         success: function data() {
-            console.log('Profile saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
-            //  console.log('error in client save');
         }
     });
 }
@@ -306,7 +302,7 @@ function convertClientIDToString(clientID) {
 }
 
 function getProfileID() {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let id = '';
     $.ajax({
         url: '/api/getProfileID',
@@ -322,14 +318,13 @@ function getProfileID() {
         async: false,
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
-            //   console.log('error in get profileID');
         }
     });
     return id;
 }
 
 function saveProfileReadingsToDB(readings) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     $.ajax({
         url: '/api/saveProfileReadings',
         method: 'POST',
@@ -337,7 +332,6 @@ function saveProfileReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log('Profiles saved');
             notification('Данните се обработват', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {

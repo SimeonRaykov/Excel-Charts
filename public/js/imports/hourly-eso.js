@@ -62,7 +62,7 @@ function processEsoHourReadings(e) {
                         }
                         usedHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[1][x] || 0
+                            currValue: undefinedHour || arr[1][x] || -1
                         }
                         producedHourObj = {
                             currHour: val,
@@ -163,7 +163,7 @@ function saveEsoHourReadingsToDB(readings) {
             }
         }
     });
-    notification('Данните се обработват', 'success');
+    notification('Данните се обработват', 'loading');
 };
 
 function addFileUploadEventListeners() {

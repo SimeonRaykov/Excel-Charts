@@ -122,10 +122,10 @@ $(document).ready(function () {
 ($('body > div.container').click(() => {
     if ($('#hour-reading').is(':checked')) {
         importType.setType(importTypes.hour_reading);
-        addDropEventListener(importTypes.hour_reading);
+        handleEventListeners(importTypes.hour_reading);
     } else if ($('#prediction').is(':checked')) {
         importType.setType(importTypes.prediction);
-        addDropEventListener(importTypes.prediction);
+        handleEventListeners(importTypes.prediction);
     }
 
     if ($('#data-energo-pro').is(':checked')) {
@@ -167,9 +167,9 @@ function validateSTPInput() {
 
 function processHourReadingFile(e) {
     $('.clients-no-profile').remove();
-    notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
+    notification('Зареждане', 'loading');
     const meteringType = 2; // STP Hourly
     const profileID = 0;
     const isManufacturer = 0;
@@ -299,7 +299,7 @@ function processHourReadingFile(e) {
                 changeClientIDForReadings(allSTPHourReadings, cl);
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.EVN) {
-                console.log('TODO');
+                notification('Опцията за EVN е преместена в импорти - фактуриране.', 'error');
             }
         };
         reader.readAsArrayBuffer(f);
@@ -310,9 +310,9 @@ function processHourReadingFile(e) {
 
 function processPredictionFile(e) {
     $('.clients-no-profile').remove();
-    notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
+    notification('Зареждане', 'loading');
     try {
         files = e.dataTransfer.files,
             f = files[0];
@@ -488,7 +488,7 @@ function filterClients(clientsAll) {
 }
 
 function saveClientsToDB(clients) {
-    //notification('Loading..', 'loading');
+    console.log(clients)
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -496,9 +496,7 @@ function saveClientsToDB(clients) {
         dataType: 'json',
         async: false,
         data: JSON.stringify(clients),
-        success: function data() {
-            console.log('Clients saved');
-        },
+        success: function data() {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
@@ -506,7 +504,6 @@ function saveClientsToDB(clients) {
 };
 
 function getClientsFromDB(client) {
-    notification('Loading..', 'loading');
     let retVal;
     $.ajax({
         url: '/api/getSingleClient',
@@ -522,14 +519,12 @@ function getClientsFromDB(client) {
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(errorThrown, 'error');
-            console.log('error');
         }
     });
     return retVal;
 };
 
 function getClientsHourlyFromDB(clients) {
-    notification('Loading..', 'loading');
     let retVal;
     $.ajax({
         url: '/api/getClients',
@@ -539,32 +534,29 @@ function getClientsHourlyFromDB(clients) {
         async: false,
         data: JSON.stringify(clients),
         success: function (data) {
-            console.log('Got clients');
             retVal = data;
         },
         error: function (jqXhr, textStatus, errorThrown) {
             notification(errorThrown, 'error');
-            console.log('error');
         }
     });
     return retVal;
 };
 
 function saveGraphHourReadingsToDB(readings) {
+    console.log(readings);
     $.ajax({
         url: '/api/saveGraphHourReadings',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(readings),
-        success: function (data) {
-            console.log('Readings saved');
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
-            console.log('error in save readings');
         }
     });
+    notification('Данните се обработват', 'loading');
 };
 
 function saveSTPHourReadingsToDB(readings) {
@@ -574,14 +566,14 @@ function saveSTPHourReadingsToDB(readings) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(readings),
-        success: function (data) {
-            console.log('Readings saved');
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
     });
+    notification('Данните се обработват', 'loading');
 };
+
 
 function saveSTPpredictionsToDB(STPPredictions) {
     $.ajax({
@@ -590,9 +582,7 @@ function saveSTPpredictionsToDB(STPPredictions) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(STPPredictions),
-        success: function (data) {
-            console.log('Readings saved');
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
@@ -621,17 +611,34 @@ function openDataImportTab() {
     $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
 }
 
-function addDropEventListener(dataImportType) {
-    if (dataImportType == importTypes.graph) {
-        document.getElementById('data-import').addEventListener('drop', processGraphFile, false);
-        document.getElementById('upload-stp').addEventListener('change', processGraphFile, false);
-    } else if (dataImportType == importTypes.hour_reading) {
-        document.getElementById('data-import').addEventListener('drop', processHourReadingFile, false);
-        document.getElementById('upload-stp').addEventListener('change', processHourReadingFile, false);
+function handleEventListeners(dataImportType) {
+    if (dataImportType == importTypes.hour_reading) {
+        removePredictionEventListeners();
+        addHourReadingEventListeners();
     } else if (dataImportType == importTypes.prediction) {
-        document.getElementById('data-import').addEventListener('drop', processPredictionFile, false);
-        document.getElementById('upload-stp').addEventListener('change', processPredictionFile, false);
+        removeHourReadingEventListeners();
+        addPredictionEventListeners();
     }
+}
+
+function addHourReadingEventListeners() {
+    document.getElementById('data-import').addEventListener('drop', processHourReadingFile, false);
+    document.getElementById('upload-stp').addEventListener('change', processHourReadingFile, false);
+}
+
+function addPredictionEventListeners() {
+    document.getElementById('data-import').addEventListener('drop', processPredictionFile, false);
+    document.getElementById('upload-stp').addEventListener('change', processPredictionFile, false);
+}
+
+function removePredictionEventListeners() {
+    document.getElementById('data-import').removeEventListener('drop', processPredictionFile, false);
+    document.getElementById('upload-stp').removeEventListener('change', processPredictionFile, false);
+}
+
+function removeHourReadingEventListeners() {
+    document.getElementById('data-import').removeEventListener('drop', processHourReadingFile, false);
+    document.getElementById('upload-stp').removeEventListener('change', processHourReadingFile, false);
 }
 
 function validateDocumentSTPPrediction() {
@@ -642,7 +649,6 @@ function validateDocumentSTPPrediction() {
 }
 
 function getProfile(identCode) {
-    notification('Loading..', 'loading');
     let profile;
     $.ajax({
         url: `/api/getProfile/${identCode}`,
