@@ -25,7 +25,7 @@ router.post('/api/getProfileID', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Got ProfileID');
+        console.log('Взето е ид-то на профила');
         return res.send(JSON.stringify(result[0].id));
     });
 });

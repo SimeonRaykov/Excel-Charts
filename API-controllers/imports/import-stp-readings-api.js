@@ -10,8 +10,8 @@ router.post('/addreadings', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Readings inserted');
-        return res.send("Readings added");
+        console.log('Данните за фактуриране са качени в базата');
+        return res.send("Данните за фактуриране са качени в базата");
     });
 })
 
@@ -21,7 +21,7 @@ router.post('/getClient', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Clients get');
+        console.log('Получени са ид-тата на клиентите');
         return res.send(JSON.stringify(result));
     });
 });

@@ -7,7 +7,7 @@ const {
 } = require('../../db.js');
 
 router.post('/addclients', (req, res) => {
-    
+
     let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, erp_type, is_manufacturer ,date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
@@ -24,7 +24,6 @@ router.post('/api/getClients', (req, res) => {
         if (err) {
             throw err;
         }
-        console.log('Clients get');
         return res.send(JSON.stringify(result));
     });
 });
