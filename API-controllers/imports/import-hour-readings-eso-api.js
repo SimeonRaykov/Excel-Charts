@@ -9,7 +9,33 @@ const {
 router.post('/api/addEsoHourReadings', async (req, res) => {
     let readingsFiltered = await filterEsoHourReadings(req.body);
     if (readingsFiltered != [] && readingsFiltered != undefined && readingsFiltered.length && readingsFiltered != null) {
-        let sql = 'INSERT IGNORE INTO hour_readings_eso (date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date) VALUES ?';
+        let sql = `INSERT INTO hour_readings_eso (date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date) VALUES ?
+        ON DUPLICATE KEY UPDATE
+        hour_zero = VALUES(hour_zero),
+       hour_one= VALUES(hour_one),
+       hour_two = VALUES(hour_two),
+       hour_three = VALUES(hour_three),
+       hour_four = VALUES(hour_four),
+       hour_five = VALUES(hour_five),
+       hour_six = VALUES(hour_six),
+       hour_seven = VALUES(hour_seven),
+       hour_eight = VALUES(hour_eight),
+       hour_nine = VALUES(hour_nine),
+       hour_ten = VALUES(hour_ten),
+       hour_eleven = VALUES(hour_eleven),
+       hour_twelve = VALUES(hour_twelve),
+       hour_thirteen = VALUES(hour_thirteen),
+       hour_fourteen = VALUES(hour_fourteen),
+       hour_fifteen = VALUES(hour_fifteen),
+       hour_sixteen = VALUES(hour_sixteen),
+       hour_seventeen = VALUES(hour_seventeen),
+       hour_eighteen = VALUES(hour_eighteen),
+       hour_nineteen = VALUES(hour_nineteen),
+       hour_twenty = VALUES(hour_twenty),
+       hour_twentyone = VALUES(hour_twentyone),
+       hour_twentytwo = VALUES(hour_twentytwo),
+       hour_twentythree = VALUES(hour_twentythree),
+       created_date = VALUES(created_date)`;
         db.query(sql, [readingsFiltered], (err, result) => {
             if (err) {
                 throw err;
@@ -291,6 +317,6 @@ async function filterEsoHourReadings(allHourReadingsESO) {
         }
     }
     return readingsFiltered;
-} 
- 
+}
+
 module.exports = router;

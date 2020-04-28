@@ -69,13 +69,40 @@ router.get('/api/getProfile-HourValue/:identCode/:date/', (req, res) => {
 
 router.post('/api/saveProfileReadings', async (req, res) => {
     let profileReadingsFiltered = await filterProfileHourReadings(req.body);
-    let sql = 'INSERT INTO profile_coef (profile_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, created_date) VALUES ?';
+    let sql = `INSERT INTO profile_coef (profile_id, date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, created_date) VALUES ?
+    ON DUPLICATE KEY UPDATE
+    hour_zero = VALUES(hour_zero),
+       hour_one= VALUES(hour_one),
+       hour_two = VALUES(hour_two),
+       hour_three = VALUES(hour_three),
+       hour_four = VALUES(hour_four),
+       hour_five = VALUES(hour_five),
+       hour_six = VALUES(hour_six),
+       hour_seven = VALUES(hour_seven),
+       hour_eight = VALUES(hour_eight),
+       hour_nine = VALUES(hour_nine),
+       hour_ten = VALUES(hour_ten),
+       hour_eleven = VALUES(hour_eleven),
+       hour_twelve = VALUES(hour_twelve),
+       hour_thirteen = VALUES(hour_thirteen),
+       hour_fourteen = VALUES(hour_fourteen),
+       hour_fifteen = VALUES(hour_fifteen),
+       hour_sixteen = VALUES(hour_sixteen),
+       hour_seventeen = VALUES(hour_seventeen),
+       hour_eighteen = VALUES(hour_eighteen),
+       hour_nineteen = VALUES(hour_nineteen),
+       hour_twenty = VALUES(hour_twenty),
+       hour_twentyone = VALUES(hour_twentyone),
+       hour_twentytwo = VALUES(hour_twentytwo),
+       hour_twentythree = VALUES(hour_twentythree),
+       created_date = VALUES(created_date)`;
     db.query(sql, [profileReadingsFiltered], (err, result) => {
         if (err) {
-            throw err;
+            return res.send(`Вече има профил с това име / Данните вече съществуват`);
+        } else {
+            console.log('Данните за профили са вкарани в базата');
+            return res.send("Данните за профили са вкарани в базата");
         }
-        console.log('Данните за профили са вкарани в базата');
-        return res.send("Данните за профили са вкарани в базата");
     });
 });
 
