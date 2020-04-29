@@ -59,7 +59,6 @@ $(document).ready(function () {
 });
 
 function processFile(e) {
-
     notification('Loading..', 'loading');
     e.stopPropagation();
     e.preventDefault();
@@ -87,13 +86,33 @@ function processFile(e) {
             let currHourObj = {};
 
             if (profile.getCompany() === companies.CEZ) {
-                let i = 1;
                 for (let x = 1; x < arr[0].length; x += 1) {
                     let currDate = new Date(`${arr[0][x]} ${arr[2][x]}`);
                     for (let val = 0; val < 24; val += 1) {
+                        let undefinedHour = undefined;
+                        try {
+                            var currHourValue = (arr[2][x].split(' ')[0].split(':')[0]) - 1 === -1 ? 23 : (arr[2][x].split(' ')[0].split(':')[0]) - 1;
+                        } catch (e) {
+                            currHourValue = -1
+                        }
+
+                        try {
+                            var nextHourValue = (arr[2][x + 1].split(' ')[0].split(':')[0]) - 1 === -1 ? 23 : (arr[2][x + 1].split(' ')[0].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[3][x]) + Number(arr[3][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+                        console.log(currHourValue, nextHourValue);
                         currHourObj = {
                             currHour: val,
-                            currValue: arr[3][x]
+                            currValue: undefinedHour || arr[3][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -109,56 +128,36 @@ function processFile(e) {
                 }
 
                 saveProfileReadingsToDB(allProfileCoefs);
-                /*    while (true) {
-                    if (arr[0][i] != '' && arr[0][i] != undefined && arr[2][i] != '' && arr[2][i] != undefined) {
-                        let currDate = new Date(`${arr[0][i]} ${arr[2][i]}`);
-                        let nextDate = new Date(`${arr[0][i + 1]} ${arr[2][i+1]}`);
-                        let currHourHelper = `${arr[2][i].split(":")[0]}`;
-                        currHourHelper -= 1;
-                        if (currHourHelper == -1) {
-                            currHourHelper = 23;
-                        }
-                        let currDateHelper = `${arr[0][i]}`;
-                        while (currDate.getDate() == nextDate.getDate()) {
-                            currDate = new Date(`${arr[0][i]} ${arr[2][i]}`);
-                            nextDate = new Date(`${arr[0][i + 1]} ${arr[2][i+1]}`)
-                            currHourObj = {
-                                currHour: currDate.getHours(),
-                                currValue: Number(arr[3][i].replace(/["']/g, ""))
-                            }
-                            currHourValues.push(currHourObj);
-                            i += 1;
-                        }
-
-                        let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                        if (currHourValues.length == 0) {
-                            currHourObj = {
-                                currHour: currDate.getHours(),
-                                currValue: Number(arr[3][i].replace(/["']/g, ""))
-                            }
-                            currHourValues.push(currHourObj);
-                            currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-                            allProfileCoefs.push(currProfileCoef);
-                            break;
-                        }
-                        currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-                        allProfileCoefs.push(currProfileCoef);
-                        currProfileCoef = [];
-                        currHourObj = {};
-                        currHourValues = [];
-                    }
-                }
-*/
-                //   saveProfileReadingsToDB(allProfileCoefs);
             } else if (profile.getCompany() === companies.ENERGO_PRO || profile.getCompany() === companies.EVN) {
 
                 for (let x = 1; x < arr[0].length; x += 1) {
                     let currDateHelper = `${arr[0][x]}`;
                     let currDate = new Date(currDateHelper.split(" ")[0]);
                     for (let val = 0; val < 24; val += 1) {
+                        let undefinedHour = undefined;
+                        try {
+                            var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            currHourValue = -1
+                        }
+
+                        try {
+                            var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+                        console.log(currHourValue, nextHourValue);
                         currHourObj = {
                             currHour: val,
-                            currValue: arr[1][x]
+                            currValue: undefinedHour || arr[1][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -174,44 +173,6 @@ function processFile(e) {
                     }
                 }
                 saveProfileReadingsToDB(allProfileCoefs);
-                //     let i = 1;
-                /*     while (true) {
-                         if (arr[0][i] != '' && arr[0][i] != undefined && arr[1][i] != '' && arr[1][i] != undefined) {
-                             let currDate = new Date(arr[0][i]);
-                             let nextDate = new Date(arr[0][i + 1]);
-                             while (currDate.getDate() == nextDate.getDate()) {
-                                 currDate = new Date(arr[0][i]);
-                                 nextDate = new Date(arr[0][i + 1])
-                                 currHourObj = {
-                                     currHour: currDate.getHours(),
-                                     currValue: Number(arr[1][i].replace(/["']/g, ""))
-                                 }
-                                 currHourValues.push(currHourObj);
-                                 i += 1;
-                             }
-
-                             let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                             if (currHourValues.length == 0) {
-                                 currHourObj = {
-                                     currHour: currDate.getHours(),
-                                     currValue: Number(arr[1][i].replace(/["']/g, ""))
-                                 }
-                                 currHourValues.push(currHourObj);
-                                 currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-                                 allProfileCoefs.push(currProfileCoef);
-                                 break;
-                             }
-                             currProfileCoef.push(profileID, formattedDate, currHourValues, new Date());
-
-                             allProfileCoefs.push(currProfileCoef);
-
-                             currProfileCoef = [];
-                             currHourObj = {};
-                             currHourValues = [];
-                         }
-                     }
-                     saveProfileReadingsToDB(allProfileCoefs);
-                     */
             }
         }
         reader.readAsArrayBuffer(f);

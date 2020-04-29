@@ -124,7 +124,7 @@ const ESO_TABLE_COLUMNS = [{
     {
         data: "type",
         render: function (data, type, row) {
-            const energyType = row['type'] == 1 ? 'Потребена' : 'Произведена';
+            const energyType = row['type'] == 1 ? 'Потребена' : row['type'] == 2 ? 'Произведена' : 'Липсва';
             return '<td>' + energyType + '</td>';
         }
     },

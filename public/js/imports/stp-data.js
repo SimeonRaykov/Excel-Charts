@@ -166,6 +166,7 @@ function validateSTPInput() {
 }
 
 function processHourReadingFile(e) {
+
     $('.clients-no-profile').remove();
     e.stopPropagation();
     e.preventDefault();
@@ -221,9 +222,32 @@ function processHourReadingFile(e) {
                         let currDateHelper = `${arr[0][y]}`;
                         let currDate = new Date(currDateHelper.split(" ")[0]);
                         for (let val = 0; val < 24; val += 1) {
+                            let undefinedHour = undefined;
+
+                            try {
+                                var currHourValue = (arr[0][y].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][y].split(' ')[1].split(':')[0]) - 1;
+                            } catch (e) {
+                                currHourValue = -1
+                            }
+
+                            try {
+                                var nextHourValue = (arr[0][y + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][y + 1].split(' ')[1].split(':')[0]) - 1;
+                            } catch (e) {
+                                nextHourValue = -1
+                            }
+
+
+                            if (currHourValue === nextHourValue) {
+                                undefinedHour = Number(arr[i][y]) + Number(arr[i][y + 1]);
+                                y += 1;
+                            } else if (currHourValue != val) {
+                                undefinedHour = -1;
+                                y -= 1;
+                            }
+
                             currHourObj = {
                                 currHour: val,
-                                currValue: arr[i][y]
+                                currValue: undefinedHour || arr[i][y]
                             }
                             currHourValues.push(currHourObj);
                             y += 1;

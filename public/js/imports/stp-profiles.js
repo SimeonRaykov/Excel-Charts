@@ -112,13 +112,52 @@ function processFile(e) {
             let currHourObj = {};
 
             if (profile.getCompany() === companies.CEZ) {
-                let i = 1;
                 for (let x = 1; x < arr[0].length; x += 1) {
                     let currDate = new Date(`${arr[0][x]} ${arr[2][x]}`);
                     for (let val = 0; val < 24; val += 1) {
+
+                        let undefinedHour = undefined;
+                        try {
+                            const timeRangeCurrentHour = arr[2][x].split(' ')[1];
+                            if (timeRangeCurrentHour === 'PM' && Number(arr[2][x].split(' ')[0].split(':')[0]) !== 12) {
+                                var currHourValue = Number(arr[2][x].split(' ')[0].split(':')[0]) - 1 === -1 ? 23 : Number(arr[2][x].split(' ')[0].split(':')[0]) - 1 + 12;
+                            } else if (timeRangeCurrentHour === 'PM' && Number(arr[2][x].split(' ')[0].split(':')[0]) === 12) {
+                                var currHourValue = Number(arr[2][x].split(' ')[0].split(':')[0]) - 1;
+                            } else if (timeRangeCurrentHour === 'AM' && Number(arr[2][x].split(' ')[0].split(':')[0]) === 12) {
+                                var currHourValue = 23;
+                            } else {
+                                var currHourValue = Number(arr[2][x].split(' ')[0].split(':')[0]) === 12 ? Number(arr[2][x].split(' ')[0].split(':')[0]) - 12 : Number(arr[2][x].split(' ')[0].split(':')[0]) - 1;
+                            }
+                        } catch (e) {
+                            currHourValue = -1
+                        }
+
+                        try {
+                            const timeRangeNextHour = arr[2][x + 1].split(' ')[1];
+                            if (timeRangeNextHour === 'PM' && Number(arr[2][x + 1].split(' ')[0].split(':')[0]) !== 12) {
+                                var nextHourValue = Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 1 === -1 ? 23 : Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 1 + 12;
+                            } else if (timeRangeNextHour === 'PM' && Number(arr[2][x + 1].split(' ')[0].split(':')[0]) === 12) {
+                                var nextHourValue = Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 1;
+                            } else if (timeRangeNextHour === 'AM' && Number(arr[2][x + 1].split(' ')[0].split(':')[0]) === 12) {
+                                var nextHourValue = 23;
+                            } else {
+                                var nextHourValue = Number(arr[2][x + 1].split(' ')[0].split(':')[0]) === 12 ? Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 12 : Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 1;
+                            }
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[3][x]) + Number(arr[3][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+
                         currHourObj = {
                             currHour: val,
-                            currValue: arr[3][x]
+                            currValue: undefinedHour || arr[3][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -181,9 +220,30 @@ function processFile(e) {
                     let currDateHelper = `${arr[0][x]}`;
                     let currDate = new Date(currDateHelper.split(" ")[0]);
                     for (let val = 0; val < 24; val += 1) {
+                        let undefinedHour = undefined;
+                        try {
+                            var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            currHourValue = -1
+                        }
+
+                        try {
+                            var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+
                         currHourObj = {
                             currHour: val,
-                            currValue: arr[1][x]
+                            currValue: undefinedHour || arr[1][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -285,8 +345,7 @@ function createProfile() {
             name: profile.getName(),
             type: profile.getType()
         }),
-        success: function data() {
-        },
+        success: function data() {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
@@ -335,7 +394,11 @@ function saveProfileReadingsToDB(readings) {
             notification('Данните се обработват', 'success');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText, 'success');
+            if (jqXhr.responseText === 'Вече има профил с това име / Данните вече съществуват') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
         }
     });
 };

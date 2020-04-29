@@ -648,8 +648,7 @@ function saveReadingsToDB(readings) {
         dataType: 'json',
         async: false,
         data: JSON.stringify(readings),
-        success: function (data) {
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             notification(jqXhr.responseText, 'success');
         }
@@ -667,7 +666,11 @@ function saveSTPHourReadingsToDB(readings) {
             console.log('Readings saved');
         },
         error: function (jqXhr, textStatus, errorThrown) {
-            notification(jqXhr.responseText, 'success');
+            if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
         }
     });
     notification('Данните се обработват', 'loading');

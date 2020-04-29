@@ -125,7 +125,7 @@ function processFile(e) {
                 saveClientsToDB(allClients);
                 cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
                 changeClientIdForHourReadings(allSTPHourReadings, cl);
-                notification('loading', 'loading');
+                notification('Зареждане', 'loading');
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.ENERGO_PRO) {
                 for (let i = 0; i < workbook.SheetNames.length; i += 1) {
@@ -170,7 +170,7 @@ function processFile(e) {
                 saveClientsToDB(allClients);
                 cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
                 changeClientIdForHourReadings(allSTPHourReadings, cl);
-                notification('loading', 'loading');
+                notification('Зареждане', 'loading');
                 saveSTPHourReadingsToDB(allSTPHourReadings);
             } else if (company.getCompany() === companies.EVN) {
 
@@ -231,7 +231,7 @@ function convertClientIDToString(clientID) {
 }
 
 function saveClientsToDB(clients) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -250,7 +250,7 @@ function saveClientsToDB(clients) {
 };
 
 function getClientsFromDB(clients) {
-    notification('Loading..', 'loading');
+    notification('Зареждане', 'loading');
     let retVal;
     $.ajax({
         url: '/api/getClients',

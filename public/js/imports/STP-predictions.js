@@ -59,7 +59,7 @@ $(document).ready(function () {
 async function processFile(e) {
     e.stopPropagation();
     e.preventDefault();
-    await notification('Loading..', 'loading');
+    await notification('Зареждане', 'loading');
     var files = e.dataTransfer.files,
         f = files[0];
     var reader = new FileReader();
@@ -99,7 +99,7 @@ async function processFile(e) {
                     client = [];
                 }
             }
-            notification('Loading..', 'loading');
+            notification('Зареждане', 'loading');
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
@@ -120,7 +120,7 @@ async function processFile(e) {
                     }
                 }
             }
-            notification('Loading..', 'loading');
+            notification('Зареждане', 'loading');
             saveSTPpredictionsToDB(allSTPpredictions);
             return;
         };

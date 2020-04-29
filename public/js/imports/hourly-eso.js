@@ -53,13 +53,26 @@ function processEsoHourReadings(e) {
                     let currDate = new Date(`${secondDateHelper[2]}.${secondDateHelper[1]}.${secondDateHelper[0]}`);
                     for (let val = 0; val < 24; val += 1) {
                         let undefinedHour = undefined;
-                        const currHourValue = (parseInt(arr[0][x].split(' ')[1].split(':')[0])) - 1;
-                        if (currHourValue != val) {
-                            if (!(val === 23 && currHourValue === -1)) {
-                                undefinedHour = -1;
-                                x -= 1;
-                            }
+                        try {
+                            var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            currHourValue = -1
                         }
+
+                        try {
+                            var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            x -= 1;
+                        }
+
                         usedHourObj = {
                             currHour: val,
                             currValue: undefinedHour || arr[1][x] || -1

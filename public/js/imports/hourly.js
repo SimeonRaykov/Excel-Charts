@@ -176,8 +176,16 @@ function processHourReadingCEZ(e) {
                         } catch (e) {
                             currHourValue = -1
                         }
+                        try {
+                            var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
 
-                        if (currHourValue != val) {
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[i][x]) + Number(arr[i][x + 1]);
+                            x += 1;
+                        } else if (currHourValue != val) {
                             undefinedHour = -1;
                             x -= 1;
                         }
@@ -287,7 +295,16 @@ function processHourReadingEVN_EnergoPRO(e) {
                                 currHourValue = -1
                             }
 
-                            if (currHourValue != val) {
+                            try {
+                                var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
+                            } catch (e) {
+                                nextHourValue = -1
+                            }
+
+                            if (currHourValue === nextHourValue) {
+                                undefinedHour = Number(arr[i][x]) + Number(arr[i][x + 1]);
+                                x += 1;
+                            } else if (currHourValue != val) {
                                 undefinedHour = -1;
                                 x -= 1;
                             }
@@ -590,8 +607,7 @@ function saveClientsToDB(clients) {
         dataType: 'json',
         async: false,
         data: JSON.stringify(clients),
-        success: function data() {
-        },
+        success: function data() {},
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(jqXhr.responseText)
         }
@@ -626,8 +642,7 @@ function saveGraphHourReadingsToDB(readings) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(readings),
-        success: function (data) {
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
                 notification(jqXhr.responseText, 'error');
