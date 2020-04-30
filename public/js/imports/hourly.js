@@ -417,6 +417,7 @@ function processGraphFile(e) {
                 }
             }
             saveClientsToDB(clientsAll);
+            let val = 0;
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
                 const clientName = arr[i][0];
@@ -427,17 +428,37 @@ function processGraphFile(e) {
                 } else {
                     for (let y = 2; y < arr[i].length; y += 1) {
                         let currHourHelper = arr[0][y].split(":");
-                        let currHour = currHourHelper[0] - 1;
-                        if (currHour == -1) {
-                            currHour = 23;
+                        let currHourValue = currHourHelper[0] - 1;
+                        if (currHourValue == -1) {
+                            currHourValue = 23;
+                        }
+
+                        let undefinedHour = undefined;
+
+                        try {
+                            var nextHourValue = Number(arr[0][y + 1].split(':')[0].split(':')[0]) - 1 === -1 ? 23 : Number(arr[0][y + 1].split(':')[0].split(':')[0]) - 1;
+                        } catch (e) {
+                            nextHourValue = -1
+                        }
+
+                        if (currHourValue === nextHourValue) {
+                            undefinedHour = Number(arr[i][y]) + Number(arr[i][y + 1]);
+                            y += 1;
+                        } else if (currHourValue != val) {
+                            undefinedHour = -1;
+                            y -= 1;
                         }
 
                         let currValue = arr[i][y];
                         let currHourObj = {
-                            currHour,
-                            currValue
+                            currHour: currHourValue,
+                            currValue: undefinedHour || currValue
                         }
                         currHourValues.push(currHourObj);
+                        val += 1;
+                        if (val > 23) {
+                            val = 0;
+                        }
                     }
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientIDFromDB(ident_code);
