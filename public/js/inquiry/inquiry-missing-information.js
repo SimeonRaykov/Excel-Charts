@@ -51,8 +51,6 @@ const FULL_TABLE_COLUMNS = [{
             switch (readingType) {
                 case readingTypes.HOUR_READING:
                     return `<td><a href=/users/clients/hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
-                case readingTypes.HOUR_READING_ESO:
-                    return `<td><a href=/users/eso-hour-readings/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
                 case readingTypes.STP_HOUR_READING:
                     return `<td><a href=/users/clients/stp-hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
             }
@@ -103,13 +101,10 @@ const ESO_TABLE_COLUMNS = [{
             const fullDate = new Date(date);
             const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
             const readingType = missingInfoType.getReadingType();
+            const id = row['id'] === '-' ? 'Липсва' : row['id'];
             switch (readingType) {
-                case readingTypes.HOUR_READING:
-                    return `<td><a href=/users/clients/hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
                 case readingTypes.HOUR_READING_ESO:
-                    return `<td><a href=/users/eso-hour-readings/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
-                case readingTypes.STP_HOUR_READING:
-                    return `<td><a href=/users/clients/stp-hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
+                    return `<td><a href=/users/eso-hour-readings/daily/s?id=${id}&date=${fixedDate}>${id}</td>`
             }
         }
     }, {

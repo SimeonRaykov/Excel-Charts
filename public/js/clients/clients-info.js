@@ -883,7 +883,7 @@ function processDataGraphPredictions(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value * amount}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${client.getMeteringType() == 2?(value * amount).toFixed(3):value * amount}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: colors.blue

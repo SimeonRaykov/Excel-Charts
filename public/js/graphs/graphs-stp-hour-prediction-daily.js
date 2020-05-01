@@ -152,7 +152,6 @@ const colors = {
 }
 
 function processCalendarData(data) {
-    console.log(data);
     const identCode = data[0]['ident_code'];
     writeClientHeading(identCode);
     writeHourReadingsDailyHeading(new Date(data[0]['date']));
@@ -176,7 +175,7 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: 1,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value * amount}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(value * amount).toFixed(3)}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: colors.blue
@@ -213,7 +212,7 @@ function writeHourReadingsDailyHeading(data) {
 }
 
 function writeClientHeading(data) {
-    $('#client-heading').text(`Клиент: ${аьшь}`);
+    $('#client-heading').text(`Клиент: ${data}`);
 }
 
 function findGetParameter(name, url) {
