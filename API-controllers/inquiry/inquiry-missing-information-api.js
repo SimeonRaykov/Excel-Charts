@@ -5,7 +5,7 @@ const {
     dbSync
 } = require('../../db.js');
 
-router.post('/api/filter/inquiry-missing-information/hour-readings', (req, res) => {
+router.post('/api/filter/inquiry-missing-information/stp-hour-readings', async (req, res) => {
     let {
         search,
         start,
@@ -19,163 +19,47 @@ router.post('/api/filter/inquiry-missing-information/hour-readings', (req, res) 
     } = req.body;
 
     const columnNum = order[0].column;
-    const columnType = getColumnsTypeHourReading(columnNum)
+    const columnType = getColumnsTypeFullTable(columnNum)
     const orderType = order[0].dir;
-
-    const clientsTable = `clients`;
-    const table = `hour_readings`;
-    let sql = `SELECT ${table}.id, ${clientsTable}.ident_code, ${clientsTable}.client_name, ${clientsTable}.id as cId, ${clientsTable}.erp_type, ${table}.date
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(${table}.id) as countTotal
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countFilteredSql = `SELECT COUNT(${table}.id) as countFiltered
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-
-    if (fromDate != -1 && toDate != -1) {
-        sql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-    } else if (fromDate != -1 && toDate == -1) {
-        sql += ` AND ${table}.date>='${fromDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' `;
-    } else if (toDate != -1 && fromDate == -1) {
-        sql += ` AND ${table}.date<='${toDate}' `;
-        countFilteredSql += ` AND ${table}.date<='${toDate}' `;
-    }
-    if (name != -1) {
-        sql += ` AND ${clientsTable}.client_name = '${name}' `
-        countFilteredSql += ` AND ${clientsTable}.client_name = '${name}' `;
-    }
-    if (ident_code != -1) {
-        sql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-        countFilteredSql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-    }
-    if (erp && erp.length !== 3 && erp.length != 0) {
-        if (erp.length == 1) {
-            sql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-            countFilteredSql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-        } else if (erp.length == 2) {
-            sql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            sql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-            countFilteredSql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            countFilteredSql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-        }
-    } else if (erp == undefined) {
-        return res.send(JSON.stringify([]));
-    }
-
-    sql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`
-    countFilteredSql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`;
-
-    if (search.value) {
-        sql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-        countFilteredSql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-    }
-
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
-
-    db.query(countSQL, (err, countTotal) => {
-        if (err) {
-            throw err;
-        }
-        db.query(sql, (err, result) => {
-            if (err) {
-                throw err;
-            }
-            const recordsTotal = countTotal[0].countTotal;
-            const recordsFiltered = countTotal[1] ? countTotal[1].countTotal : countTotal[0].countTotal
-            let arr = {
-                recordsTotal,
-                recordsFiltered,
-                data: result
-            }
-            return res.send(JSON.stringify(arr));
-        })
-    });
-});
-router.post('/api/filter/inquiry-missing-information/stp-hour-readings', (req, res) => {
-    let {
-        search,
-        start,
-        length,
-        fromDate,
-        toDate,
-        name,
-        ident_code,
-        erp,
-        order
-    } = req.body;
-
-    const columnNum = order[0].column;
-    const columnType = getColumnsTypeSTPHourReading(columnNum)
-    const orderType = order[0].dir;
-
+    const {
+        id,
+        client_name,
+        erp_type
+    } = await searchClientByIdentCode(ident_code);
     const clientsTable = `clients`;
     const table = `stp_hour_readings`;
-    let sql = `SELECT ${table}.id, ${clientsTable}.ident_code, ${clientsTable}.client_name, ${clientsTable}.id as cId, ${clientsTable}.erp_type, ${table}.date
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(${table}.id) as countTotal
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countFilteredSql = `SELECT COUNT(${table}.id) as countFiltered
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-
-    if (fromDate != -1 && toDate != -1) {
-        sql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-    } else if (fromDate != -1 && toDate == -1) {
-        sql += ` AND ${table}.date>='${fromDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' `;
-    } else if (toDate != -1 && fromDate == -1) {
-        sql += ` AND ${table}.date<='${toDate}' `;
-        countFilteredSql += ` AND ${table}.date<='${toDate}' `;
-    }
-    if (name != -1) {
-        sql += ` AND ${clientsTable}.client_name = '${name}' `
-        countFilteredSql += ` AND ${clientsTable}.client_name = '${name}' `;
-    }
-    if (ident_code != -1) {
-        sql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-        countFilteredSql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-    }
-    if (erp && erp.length !== 3 && erp.length != 0) {
-        if (erp.length == 1) {
-            sql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-            countFilteredSql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-        } else if (erp.length == 2) {
-            sql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            sql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-            countFilteredSql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            countFilteredSql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-        }
-    } else if (erp == undefined) {
-        return res.send(JSON.stringify([]));
-    }
-
-    sql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`
-    countFilteredSql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`;
-
+    let countSQL = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT COUNT(d.date) count
+FROM all_dates d
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
+    let sql = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(t.id, 'Липсва') AS id, COALESCE(c.ident_code,'${ident_code}') AS ident_code, COALESCE(c.client_name,'${client_name}') AS client_name, COALESCE(c.id,'${id}') AS cId, COALESCE(c.erp_type, '${erp_type}') AS erp_type
+FROM all_dates d 
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
     if (search.value) {
-        sql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-        countFilteredSql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
+        sql += `  AND (d.date LIKE '%${search.value}%' )`;
+        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
     }
-
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
-
+    sql += ` ORDER BY ${columnType} ${orderType}
+LIMIT ${start},${length}`;
     db.query(countSQL, (err, countTotal) => {
         if (err) {
             throw err;
@@ -184,8 +68,9 @@ router.post('/api/filter/inquiry-missing-information/stp-hour-readings', (req, r
             if (err) {
                 throw err;
             }
-            const recordsTotal = countTotal[0].countTotal;
-            const recordsFiltered = countTotal[1] ? countTotal[1].countTotal : countTotal[0].countTotal
+            const count = countTotal[0].count;
+            const recordsFiltered = count,
+                recordsTotal = count;
             let arr = {
                 recordsTotal,
                 recordsFiltered,
@@ -195,6 +80,163 @@ router.post('/api/filter/inquiry-missing-information/stp-hour-readings', (req, r
         })
     });
 });
+
+router.post('/api/filter/inquiry-missing-information/graphs', async (req, res) => {
+    let {
+        search,
+        start,
+        length,
+        fromDate,
+        toDate,
+        name,
+        ident_code,
+        erp,
+        order
+    } = req.body;
+
+    const columnNum = order[0].column;
+    const columnType = getColumnsTypeFullTable(columnNum)
+    const orderType = order[0].dir;
+    const {
+        id,
+        client_name,
+        erp_type
+    } = await searchClientByIdentCode(ident_code);
+    const clientsTable = `clients`;
+    const table = `hour_prediction`;
+    let countSQL = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT COUNT(d.date) count
+FROM all_dates d
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
+    let sql = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(t.id, 'Липсва') AS id, COALESCE(c.ident_code,'${ident_code}') AS ident_code, COALESCE(c.client_name,'${client_name}') AS client_name, COALESCE(c.id,'${id}') AS cId, COALESCE(c.erp_type, '${erp_type}') AS erp_type
+FROM all_dates d 
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
+    if (search.value) {
+        sql += `  AND (d.date LIKE '%${search.value}%' )`;
+        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
+    }
+    sql += ` ORDER BY ${columnType} ${orderType}
+LIMIT ${start},${length}`;
+    db.query(countSQL, (err, countTotal) => {
+        if (err) {
+            throw err;
+        }
+        db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
+            const count = countTotal[0].count;
+            const recordsFiltered = count,
+                recordsTotal = count;
+            let arr = {
+                recordsTotal,
+                recordsFiltered,
+                data: result
+            }
+            return res.send(JSON.stringify(arr));
+        })
+    });
+});
+router.post('/api/filter/inquiry-missing-information/stp-graphs', async (req, res) => {
+    let {
+        search,
+        start,
+        length,
+        fromDate,
+        toDate,
+        name,
+        ident_code,
+        erp,
+        order
+    } = req.body;
+
+    const columnNum = order[0].column;
+    const columnType = getColumnsTypeFullTable(columnNum)
+    const orderType = order[0].dir;
+    const {
+        id,
+        client_name,
+        erp_type
+    } = await searchClientByIdentCode(ident_code);
+
+    const clientsTable = `clients`;
+    const hoursTable = `profile_coef`;
+    const table = `prediction`;
+    let countSQL = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL
+        SELECT date + interval 1 month FROM all_dates WHERE date + interval 1 month <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(p.id, 'Липсва') AS id, COALESCE(c.ident_code,'${ident_code}') AS ident_code, COALESCE(c.client_name,'${client_name}') AS client_name, COALESCE(c.id,'${id}') AS cId, COALESCE(c.erp_type, '${erp_type}') AS erp_type
+FROM all_dates d
+LEFT JOIN ${table} p on p.date = d.date AND p.client_id = '${id}'
+LEFT JOIN ${hoursTable} t on t.date = d.date 
+LEFT JOIN ${clientsTable} c ON c.id = p.client_id
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR p.id IS NULL`
+    let sql = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL
+        SELECT date + interval 1 month FROM all_dates WHERE date + interval 1 month <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(p.id, 'Липсва') AS id, COALESCE(c.ident_code,'${ident_code}') AS ident_code, COALESCE(c.client_name,'${client_name}') AS client_name, COALESCE(c.id,'${id}') AS cId, COALESCE(c.erp_type, '${erp_type}') AS erp_type
+FROM all_dates d
+LEFT JOIN ${table} p on p.date = d.date AND p.client_id = '${id}'
+LEFT JOIN ${hoursTable} t on t.date = d.date 
+LEFT JOIN clients c ON c.id = p.client_id
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR p.id IS NULL`
+    if (search.value) {
+        sql += `  AND (d.date LIKE '%${search.value}%' )`;
+        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
+    }
+    sql += ` ORDER BY ${columnType} ${orderType}
+LIMIT ${start},${length}`;
+
+    db.query(countSQL, (err, countTotal) => {
+        if (err) {
+            throw err;
+        }
+        db.query(sql, (err, result) => {
+            if (err) {
+                throw err;
+            }
+            const count = countTotal.length;
+            const recordsFiltered = count,
+                recordsTotal = count;
+            let arr = {
+                recordsTotal,
+                recordsFiltered,
+                data: result
+            }
+            return res.send(JSON.stringify(arr));
+        })
+    });
+});
+
 router.post('/api/filter/inquiry-missing-information/eso', (req, res) => {
     let {
         search,
@@ -210,36 +252,36 @@ router.post('/api/filter/inquiry-missing-information/eso', (req, res) => {
     const orderType = order[0].dir;
 
     const table = `hour_readings_eso`;
-    let sql = `SELECT ${table}.id, ${table}.date, ${table}.type FROM ${table} 
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(${table}.id) as countTotal
-    FROM ${table}
-    WHERE 1 = 1 `;
-    let countFilteredSql = `SELECT COUNT(${table}.id) as countFiltered
-    FROM ${table}
-    WHERE 1 = 1 `;
-
-    if (fromDate != -1 && toDate != -1) {
-        sql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-    } else if (fromDate != -1 && toDate == -1) {
-        sql += ` AND ${table}.date>='${table}' `;
-        countFilteredSql += ` AND ${table}.date>='${table}' `;
-    } else if (toDate != -1 && fromDate == -1) {
-        sql += ` AND ${table}.date<='${table}' `;
-        countFilteredSql += ` AND ${table}.date<='${table}' `;
-    }
-
-    sql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`
-    countFilteredSql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`;
-
+    let sql = ` WITH recursive all_dates(date) AS (
+	SELECT '${fromDate}' date
+        UNION ALL 
+	SELECT date + interval 1 day FROM all_dates where date + interval 1 day <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(id, '-') AS id, COALESCE(t.type, '-') AS type
+FROM all_dates d
+LEFT JOIN ${table} t on t.date = d.date
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR id IS NULL`
+    let countSQL = ` WITH recursive all_dates(date) AS (
+	SELECT '${fromDate}' date
+        UNION ALL 
+	SELECT date + interval 1 day FROM all_dates where date + interval 1 day <= '${toDate}'
+)
+SELECT COUNT(d.date) count
+FROM all_dates d
+LEFT JOIN  hour_readings_eso t on t.date = d.date
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR id IS NULL`
     if (search.value) {
-        sql += `  AND (${table}.date = '%${search.value}%' ) `;
-        countFilteredSql += `  AND (${table}.date = '%${search.value}%'  ) `;
+        sql += `  AND (d.date LIKE '%${search.value}%' )`;
+        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
     }
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
+    sql += ` ORDER BY ${columnType} ${orderType}
+LIMIT ${start},${length}`;
 
     db.query(countSQL, (err, countTotal) => {
         if (err) {
@@ -249,8 +291,9 @@ router.post('/api/filter/inquiry-missing-information/eso', (req, res) => {
             if (err) {
                 throw err;
             }
-            const recordsTotal = countTotal[0].countTotal;
-            const recordsFiltered = countTotal[1] ? countTotal[1].countTotal : countTotal[0].countTotal
+            const count = countTotal[0].count;
+            const recordsFiltered = count,
+                recordsTotal = count;
             let arr = {
                 recordsTotal,
                 recordsFiltered,
@@ -261,7 +304,8 @@ router.post('/api/filter/inquiry-missing-information/eso', (req, res) => {
         })
     });
 });
-router.post('/api/filter/inquiry-missing-information/graphs', (req, res) => {
+
+router.post('/api/filter/inquiry-missing-information/hour-readings', async (req, res) => {
     let {
         search,
         start,
@@ -275,68 +319,47 @@ router.post('/api/filter/inquiry-missing-information/graphs', (req, res) => {
     } = req.body;
 
     const columnNum = order[0].column;
-    const columnType = getColumnsTypeGraphs(columnNum)
+    const columnType = getColumnsTypeFullTable(columnNum)
     const orderType = order[0].dir;
-
+    const {
+        id,
+        client_name,
+        erp_type
+    } = await searchClientByIdentCode(ident_code);
     const clientsTable = `clients`;
-    const table = `hour_prediction`;
-    let sql = `SELECT ${table}.id, ${clientsTable}.ident_code, ${clientsTable}.client_name, ${clientsTable}.id as cId, ${clientsTable}.erp_type, ${table}.date
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(${table}.id) as countTotal
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-    let countFilteredSql = `SELECT COUNT(${table}.id) as countFiltered
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    WHERE 1=1 `;
-
-    if (fromDate != -1 && toDate != -1) {
-        sql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-    } else if (fromDate != -1 && toDate == -1) {
-        sql += ` AND ${table}.date>='${fromDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' `;
-    } else if (toDate != -1 && fromDate == -1) {
-        sql += ` AND ${table}.date<='${toDate}' `;
-        countFilteredSql += ` AND ${table}.date<='${toDate}' `;
-    }
-    if (name != -1) {
-        sql += ` AND ${clientsTable}.client_name = '${name}' `
-        countFilteredSql += ` AND ${clientsTable}.client_name = '${name}' `;
-    }
-    if (ident_code != -1) {
-        sql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-        countFilteredSql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-    }
-    if (erp && erp.length !== 3 && erp.length != 0) {
-        if (erp.length == 1) {
-            sql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-            countFilteredSql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-        } else if (erp.length == 2) {
-            sql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            sql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-            countFilteredSql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            countFilteredSql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-        }
-    } else if (erp == undefined) {
-        return res.send(JSON.stringify([]));
-    }
-
-    sql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`
-    countFilteredSql += ` AND (${table}.hour_zero = -1 OR ${table}.hour_one = -1 OR ${table}.hour_two = -1 OR ${table}.hour_three = -1 OR ${table}.hour_four = -1 OR ${table}.hour_five = -1 OR ${table}.hour_six = -1 OR ${table}.hour_seven = -1 OR ${table}.hour_eight = -1 OR ${table}.hour_nine = -1 OR ${table}.hour_ten = -1 OR ${table}.hour_eleven = -1 OR ${table}.hour_twelve = -1 OR ${table}.hour_thirteen = -1 OR ${table}.hour_fourteen = -1 OR ${table}.hour_fifteen = -1 OR ${table}.hour_sixteen = -1 OR ${table}.hour_seventeen = -1 OR ${table}.hour_eighteen = -1 OR ${table}.hour_nineteen = -1 OR ${table}.hour_twenty = -1 OR ${table}.hour_twentyone = -1 OR ${table}.hour_twentytwo = -1 OR ${table}.hour_twentythree = -1 )`;
-
+    const table = `hour_readings`;
+    let countSQL = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT COUNT(d.date) count
+FROM all_dates d
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
+    let sql = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL 
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)
+SELECT DISTINCT d.date date, COALESCE(t.id, 'Липсва') AS id, COALESCE(c.ident_code,'${ident_code}') AS ident_code, COALESCE(c.client_name,'${client_name}') AS client_name, COALESCE(c.id,'${id}') AS cId, COALESCE(c.erp_type, '${erp_type}') AS erp_type
+FROM all_dates d 
+LEFT JOIN ${table} t on t.date = d.date AND t.client_id = '${id}'
+LEFT JOIN ${clientsTable} c ON c.id = t.client_id 
+WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
+OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`
     if (search.value) {
-        sql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-        countFilteredSql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
+        sql += `  AND (d.date LIKE '%${search.value}%' )`;
+        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
     }
-
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
-
+    sql += ` ORDER BY ${columnType} ${orderType}
+LIMIT ${start},${length}`;
     db.query(countSQL, (err, countTotal) => {
         if (err) {
             throw err;
@@ -345,225 +368,69 @@ router.post('/api/filter/inquiry-missing-information/graphs', (req, res) => {
             if (err) {
                 throw err;
             }
-            const recordsTotal = countTotal[0].countTotal;
-            const recordsFiltered = countTotal[1] ? countTotal[1].countTotal : countTotal[0].countTotal
+            const count = countTotal[0].count;
+            const recordsFiltered = count,
+                recordsTotal = count;
             let arr = {
                 recordsTotal,
                 recordsFiltered,
                 data: result
             }
-            return res.send(JSON.stringify(arr));
-        })
-    });
-});
-router.post('/api/filter/inquiry-missing-information/stp-graphs', (req, res) => {
-    let {
-        search,
-        start,
-        length,
-        fromDate,
-        toDate,
-        name,
-        ident_code,
-        erp,
-        order
-    } = req.body;
 
-    const columnNum = order[0].column;
-    const columnType = getColumnsTypeSTPGraphs(columnNum)
-    const orderType = order[0].dir;
-
-    const clientsTable = `clients`;
-    const table = `prediction`;
-    const hoursTable = `profile_coef`;
-
-    let sql = `SELECT ${table}.id, ${clientsTable}.ident_code, ${clientsTable}.client_name, ${clientsTable}.id as cId, ${clientsTable}.erp_type, ${table}.date
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id  
-    INNER JOIN ${hoursTable} on ${hoursTable}.date = ${table}.date
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(${table}.id) as countTotal
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id 
-    INNER JOIN ${hoursTable} on ${hoursTable}.date = ${table}.date 
-    WHERE 1=1 `;
-    let countFilteredSql = `SELECT COUNT(${table}.id) as countFiltered
-    FROM ${clientsTable}
-    INNER JOIN ${table} on ${clientsTable}.id = ${table}.client_id 
-    INNER JOIN ${hoursTable} on ${hoursTable}.date = ${table}.date 
-    WHERE 1=1 `;
-
-    if (fromDate != -1 && toDate != -1) {
-        sql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' AND ${table}.date<= '${toDate}' `;
-    } else if (fromDate != -1 && toDate == -1) {
-        sql += ` AND ${table}.date>='${fromDate}' `;
-        countFilteredSql += ` AND ${table}.date>='${fromDate}' `;
-    } else if (toDate != -1 && fromDate == -1) {
-        sql += ` AND ${table}.date<='${toDate}' `;
-        countFilteredSql += ` AND ${table}.date<='${toDate}' `;
-    }
-    if (name != -1) {
-        sql += ` AND ${clientsTable}.client_name = '${name}' `
-        countFilteredSql += ` AND ${clientsTable}.client_name = '${name}' `;
-    }
-    if (ident_code != -1) {
-        sql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-        countFilteredSql += ` AND ${clientsTable}.ident_code = '${ident_code}'`;
-    }
-    if (erp && erp.length !== 3 && erp.length != 0) {
-        if (erp.length == 1) {
-            sql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-            countFilteredSql += ` AND ${clientsTable}.erp_type = '${erp}'`;
-        } else if (erp.length == 2) {
-            sql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            sql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-            countFilteredSql += ` AND ( ${clientsTable}.erp_type = '${erp[0]}'`;
-            countFilteredSql += ` OR ${clientsTable}.erp_type = '${erp[1]}' )`;
-        }
-    } else if (erp == undefined) {
-        return res.send(JSON.stringify([]));
-    }
-
-    sql += ` AND (${hoursTable}.hour_zero = -1 OR ${hoursTable}.hour_one = -1 OR ${hoursTable}.hour_two = -1 OR ${hoursTable}.hour_three = -1 OR ${hoursTable}.hour_four = -1 OR ${hoursTable}.hour_five = -1 OR ${hoursTable}.hour_six = -1 OR ${hoursTable}.hour_seven = -1 OR ${hoursTable}.hour_eight = -1 OR ${hoursTable}.hour_nine = -1 OR ${hoursTable}.hour_ten = -1 OR ${hoursTable}.hour_eleven = -1 OR ${hoursTable}.hour_twelve = -1 OR ${hoursTable}.hour_thirteen = -1 OR ${hoursTable}.hour_fourteen = -1 OR ${hoursTable}.hour_fifteen = -1 OR ${hoursTable}.hour_sixteen = -1 OR ${hoursTable}.hour_seventeen = -1 OR ${hoursTable}.hour_eighteen = -1 OR ${hoursTable}.hour_nineteen = -1 OR ${hoursTable}.hour_twenty = -1 OR ${hoursTable}.hour_twentyone = -1 OR ${hoursTable}.hour_twentytwo = -1 OR ${hoursTable}.hour_twentythree = -1 )`
-    countFilteredSql += ` AND (${hoursTable}.hour_zero = -1 OR ${hoursTable}.hour_one = -1 OR ${hoursTable}.hour_two = -1 OR ${hoursTable}.hour_three = -1 OR ${hoursTable}.hour_four = -1 OR ${hoursTable}.hour_five = -1 OR ${hoursTable}.hour_six = -1 OR ${hoursTable}.hour_seven = -1 OR ${hoursTable}.hour_eight = -1 OR ${hoursTable}.hour_nine = -1 OR ${hoursTable}.hour_ten = -1 OR ${hoursTable}.hour_eleven = -1 OR ${hoursTable}.hour_twelve = -1 OR ${hoursTable}.hour_thirteen = -1 OR ${hoursTable}.hour_fourteen = -1 OR ${hoursTable}.hour_fifteen = -1 OR ${hoursTable}.hour_sixteen = -1 OR ${hoursTable}.hour_seventeen = -1 OR ${hoursTable}.hour_eighteen = -1 OR ${hoursTable}.hour_nineteen = -1 OR ${hoursTable}.hour_twenty = -1 OR ${hoursTable}.hour_twentyone = -1 OR ${hoursTable}.hour_twentytwo = -1 OR ${hoursTable}.hour_twentythree = -1 )`;
-
-    if (search.value) {
-        sql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-        countFilteredSql += `  AND (${table}.date = '%${search.value}%' OR ${clientsTable}.client_name LIKE '%${search.value}%' OR ${clientsTable}.ident_code LIKE '%${search.value}%' ) `;
-    }
-
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
-
-    db.query(countSQL, (err, countTotal) => {
-        if (err) {
-            throw err;
-        }
-        db.query(sql, (err, result) => {
-            if (err) {
-                throw err;
-            }
-            const recordsTotal = countTotal[0].countTotal;
-            const recordsFiltered = countTotal[1] ? countTotal[1].countTotal : countTotal[0].countTotal
-            let arr = {
-                recordsTotal,
-                recordsFiltered,
-                data: result
-            }
             return res.send(JSON.stringify(arr));
         })
     });
 });
 
-function getColumnsTypeHourReading(columnNum) {
-    let result = 'hour_readings.id';
-
+function getColumnsTypeFullTable(columnNum) {
+    let result = 't.id';
     switch (columnNum) {
         case '0':
-            result = 'hour_readings.id'
+            result = 't.id'
             break;
         case '1':
-            result = 'clients.client_name'
+            result = 'c.client_name'
             break;
         case '2':
-            result = 'clients.ident_code'
+            result = 'c.ident_code'
             break;
         case '3':
-            result = 'hour_readings.date'
+            result = 'd.date'
             break;
         case '4':
-            result = 'clients.erp_type'
-            break;
-    }
-    return result
-}
-
-function getColumnsTypeSTPHourReading(columnNum) {
-    let result = 'stp_hour_readings.id';
-
-    switch (columnNum) {
-        case '0':
-            result = 'stp_hour_readings.id'
-            break;
-        case '1':
-            result = 'clients.client_name'
-            break;
-        case '2':
-            result = 'clients.ident_code'
-            break;
-        case '3':
-            result = 'stp_hour_readings.date'
-            break;
-        case '4':
-            result = 'clients.erp_type'
-            break;
-    }
-    return result
-}
-
-function getColumnsTypeGraphs(columnNum) {
-    let result = 'hour_prediction.id';
-
-    switch (columnNum) {
-        case '0':
-            result = 'hour_prediction.id'
-            break;
-        case '1':
-            result = 'clients.client_name'
-            break;
-        case '2':
-            result = 'clients.ident_code'
-            break;
-        case '3':
-            result = 'hour_prediction.date'
-            break;
-        case '4':
-            result = 'clients.erp_type'
-            break;
-    }
-    return result
-}
-
-function getColumnsTypeSTPGraphs(columnNum) {
-    let result = 'prediction.id';
-
-    switch (columnNum) {
-        case '0':
-            result = 'prediction.id'
-            break;
-        case '1':
-            result = 'clients.client_name'
-            break;
-        case '2':
-            result = 'clients.ident_code'
-            break;
-        case '3':
-            result = 'prediction.date'
-            break;
-        case '4':
-            result = 'clients.erp_type'
+            result = 'c.erp_type'
             break;
     }
     return result
 }
 
 function getColumnsTypeESO(columnNum) {
-    let result = 'hour_readings_eso.id';
+    let result = 't.id';
 
     switch (columnNum) {
         case '0':
-            result = 'hour_readings_eso.id'
+            result = 't.id'
             break;
         case '1':
-            result = 'hour_readings_eso.date'
+            result = 'd.date'
             break;
         case '2':
-            result = 'hour_readings_eso.type'
+            result = 't.type'
             break;
     }
     return result
+}
+
+function searchClientByIdentCode(identCode) {
+    const sql = `SELECT id, client_name, erp_type
+FROM clients
+WHERE ident_code = '${identCode}'`
+    const result = dbSync.query(sql);
+    if (result.length) {
+        return result[0];
+    } else {
+        throw 'search client by ident code failed';
+    }
 }
 
 module.exports = router;
