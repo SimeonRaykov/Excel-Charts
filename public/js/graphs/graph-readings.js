@@ -37,7 +37,6 @@ function visualizeDataListings(arr) {
     for (let name of clientNames) {
         $('#stp-hour-readings-clients').append(`<option value="${name}"></option>`);
     }
-
     for (let ID of clientIds) {
         $('#idList').append(`<option value="${ID}"></option>`);
     }
@@ -221,6 +220,7 @@ function visualizeClientIdentCodes(data) {
     identCodesDataListing.append('</datalist>');
     $('#clientID').append(identCodesDataListing);
 }
+
 function getInitialDataListings() {
     const clientNameVal = $('#nameOfClient').val();
     if (clientNameVal) {

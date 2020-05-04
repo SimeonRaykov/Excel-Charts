@@ -44,15 +44,20 @@ missingInfoType = new MissingInfoType();
 const FULL_TABLE_COLUMNS = [{
         data: "id",
         render: function (data, type, row) {
+            const classType = row['id'] === 'Липсва' ? 'missing-info' : 'full';
             const date = row['date'];
             const fullDate = new Date(date);
             const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
             const readingType = missingInfoType.getReadingType();
             switch (readingType) {
                 case readingTypes.HOUR_READING:
-                    return `<td><a href=/users/clients/hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
+                    return `<td><a class="${classType}" href=/users/clients/hour-reading/daily/s?id=${row['id']}&date=${fixedDate}&ident_code=${row['ident_code']}>${row['id']}</td>`;
                 case readingTypes.STP_HOUR_READING:
-                    return `<td><a href=/users/clients/stp-hour-reading/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
+                    return `<td><a class="${classType}" href=/users/clients/stp-hour-reading/daily/s?id=${row['id']}&date=${fixedDate}&ident_code=${row['ident_code']}>${row['id']}</td>`;
+                case readingTypes.GRAPH_READING:
+                    return `<td><a class="${classType}" href=/users/clients/graphs-hour-prediction/daily/s?id=${row['id']}&date=${fixedDate}&ident_code=${row['ident_code']}>${row['id']}</td>`
+                case readingTypes.STP_GRAPH_READING:
+                    return `<td><a class="${classType}" href=/users/clients/graphs-stp-hour-prediction/monthly/s?id=${row['id']}&date=${fixedDate}&ident_code=${row['ident_code']}>${row['id']}</td>`;
             }
         }
     }, {
@@ -68,6 +73,12 @@ const FULL_TABLE_COLUMNS = [{
                     return `<td><a href=/users/clients/info/${row['cId']}?date=${formattedDate}&type=${readingType}>${row['ident_code']}</a></td>`;
                 case readingTypes.STP_HOUR_READING:
                     readingType = 'stp-hour-reading';
+                    return `<td><a href=/users/clients/info/${row['cId']}?date=${formattedDate}&type=${readingType}>${row['ident_code']}</a></td>`;
+                case readingTypes.GRAPH_READING:
+                    readingType = 'graph-hour-prediction';
+                    return `<td><a href=/users/clients/info/${row['cId']}?date=${formattedDate}&type=${readingType}>${row['ident_code']}</a></td>`;
+                case readingTypes.STP_GRAPH_READING:
+                    readingType = 'stp-graph-hour-prediction';
                     return `<td><a href=/users/clients/info/${row['cId']}?date=${formattedDate}&type=${readingType}>${row['ident_code']}</a></td>`;
             }
         },
@@ -100,14 +111,12 @@ const ESO_TABLE_COLUMNS = [{
             const date = row['date'];
             const fullDate = new Date(date);
             const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-            const readingType = missingInfoType.getReadingType();
             const id = row['id'] === '-' ? 'Липсва' : row['id'];
-            switch (readingType) {
-                case readingTypes.HOUR_READING_ESO:
-                    return `<td><a href=/users/eso-hour-readings/daily/s?id=${id}&date=${fixedDate}>${id}</td>`
-            }
+            const classType = id === 'Липсва' ? 'missing-info' : 'full';
+            return `<td><a class="${classType}" href=/users/eso-hour-readings/daily/s?id=${id}&date=${fixedDate}>${id}</td>`
         }
-    }, {
+    },
+    {
         data: "date",
         render: function (data, type, row) {
             const date = row['date'];
@@ -115,8 +124,7 @@ const ESO_TABLE_COLUMNS = [{
             const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
             return '<td>' + formattedDate + '</td>'
         },
-    },
-    {
+    }, {
         data: "type",
         render: function (data, type, row) {
             const energyType = row['type'] == 1 ? 'Потребена' : row['type'] == 2 ? 'Произведена' : 'Липсва';
@@ -248,7 +256,6 @@ function getReadings(arr) {
         profile_name == '';
     }
     const url = getURLForAPI();
-
     dataTable = $('#inquiry-missing-information-table').DataTable({
         destroy: false,
         "paging": true,
@@ -299,7 +306,7 @@ function getURLForAPI() {
                     case readingTypes.GRAPH_READING:
                         return `/api/filter/inquiry-missing-information/graphs`;
                     case readingTypes.STP_GRAPH_READING:
-                        return `/api/filter/inquiry-missing-information/stp-graphs`;;
+                        return `/api/filter/inquiry-missing-information/stp-graphs`;
                 }
     }
 }
@@ -390,12 +397,14 @@ function configurateInputsForESO() {
     removeProfileNameInput();
     removeClientsIdentCodeInput();
     removeERPCheckboxes();
+    makeClientIDNotRequired();
 }
 
 function configurateInputsForSTPHourReadings() {
     showClientNameInput();
     showClientsIdentCodeInput();
     showERPCheckboxes();
+    makeClientIDRequired();
 }
 
 function configurateInptusForSTPGraphs() {
@@ -403,6 +412,7 @@ function configurateInptusForSTPGraphs() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
+    makeClientIDRequired();
 }
 
 function configurateInputsForGraphReadings() {
@@ -410,6 +420,7 @@ function configurateInputsForGraphReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
+    makeClientIDRequired();
 }
 
 function configurateInputsForHourReadings() {
@@ -417,6 +428,15 @@ function configurateInputsForHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
+    makeClientIDRequired();
+}
+
+function makeClientIDRequired() {
+    $('#clientID').prop('required', true);
+}
+
+function makeClientIDNotRequired() {
+    $('#clientID').prop('required', false);
 }
 
 function configurateInputs() {

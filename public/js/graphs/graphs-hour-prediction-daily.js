@@ -53,14 +53,40 @@ function getHourReadingsDailyData() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            showChartDaily(data);
-            dataArr = [...processCalendarData(data)];
+            if (data.length) {
+                showChartDaily(data);
+                dataArr = [...processCalendarData(data)];
+            } else if (findGetParameter('id') === 'Липсва') {
+                dataArr = processCalendarDataForMissingDate();
+                writeDailyHeadings(findGetParameter('ident_code'), new Date(findGetParameter('date')));
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
 
     });
+    return dataArr;
+}
+
+function processCalendarDataForMissingDate() {
+    let dataArr = [];
+    let currHourReading = [];
+    let currReadingDate = new Date(findGetParameter('date'));
+    for (let i = 0; i < 24; i += 1) {
+        currHourReading = [];
+        currHourReading = {
+            groupId: i,
+            id: i,
+            title: 'Няма стойност',
+            start: Number(currReadingDate),
+            end: Number(currReadingDate) + 3599999,
+            backgroundColor: colors.red,
+            textColor: 'white'
+        }
+        incrementHoursOne(currReadingDate);
+        dataArr.push(currHourReading);
+    }
     return dataArr;
 }
 
@@ -157,10 +183,14 @@ const colors = {
     red: '#ff4d4d'
 }
 
+function writeDailyHeadings(identCode, date) {
+    writeClientHeading(identCode);
+    writeHourReadingsDailyHeading(date);
+}
+
 function processCalendarData(data) {
     const identCode = data[0]['ident_code'];
-    writeClientHeading(identCode);
-    writeHourReadingsDailyHeading(new Date(data[0]['date']));
+    writeDailyHeadings(identCode, new Date(data[0]['date']))
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -184,7 +214,8 @@ function processCalendarData(data) {
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: colors.blue
+                    backgroundColor: value === -1 ? colors.red : colors.blue,
+                    textColor: value === -1 ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);

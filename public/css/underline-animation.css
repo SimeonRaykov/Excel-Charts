@@ -29,3 +29,14 @@ table a:not(.fc-more):not(.fc-end):hover:before {
     transform: scaleX(1);
 }
 
+.missing-info::before {
+    background-color: red;
+}
+
+.missing-info {
+    color: red;
+}
+
+.missing-info:hover {
+    color: red;
+}

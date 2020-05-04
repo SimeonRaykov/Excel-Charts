@@ -52,9 +52,13 @@ function getESOHourReadingDailyData() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            processDateHeading(data[0]['date']);
-            showChartDaily(data);
-            dataArr = [...processCalendarData(data)];
+            processDateHeading(findGetParameter('date'));
+            if (data.length) {
+                showChartDaily(data);
+                dataArr = [...processCalendarData(data)];
+            } else if (findGetParameter('id') === 'Липсва') {
+                dataArr = processCalendarDataForMissingDate();
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -154,6 +158,27 @@ function showChartDaily(data) {
 const colors = {
     blue: '#aa62ea',
     red: '#ff4d4d'
+}
+
+function processCalendarDataForMissingDate() {
+    let dataArr = [];
+    let currHourReading = [];
+    let currReadingDate = new Date(findGetParameter('date'));
+    for (let i = 0; i < 24; i += 1) {
+        currHourReading = [];
+        currHourReading = {
+            groupId: i,
+            id: i,
+            title: 'Няма стойност',
+            start: Number(currReadingDate),
+            end: Number(currReadingDate) + 3599999,
+            backgroundColor: colors.red,
+            textColor: 'white'
+        }
+        incrementHoursOne(currReadingDate);
+        dataArr.push(currHourReading);
+    }
+    return dataArr;
 }
 
 function processCalendarData(data) {

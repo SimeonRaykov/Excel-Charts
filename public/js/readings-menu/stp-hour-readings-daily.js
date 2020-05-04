@@ -53,15 +53,41 @@ function getHourReadingsDailyData() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            console.log(data);
-            showChartDaily(data);
-            dataArr = [...processCalendarData(data)];
+            if (data.length) {
+                showChartDaily(data);
+                dataArr = [...processCalendarData(data)];
+            } else if (findGetParameter('id') === 'Липсва') {
+                dataArr = processCalendarDataForMissingDate();
+                const readingDate = new Date(findGetParameter('date'));
+                const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
+                writeDailyHeadings(findGetParameter('ident_code'), formattedDate);
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
-
     });
+    return dataArr;
+}
+
+function processCalendarDataForMissingDate() {
+    let dataArr = [];
+    let currHourReading = [];
+    let currReadingDate = new Date(findGetParameter('date'));
+    for (let i = 0; i < 24; i += 1) {
+        currHourReading = [];
+        currHourReading = {
+            groupId: i,
+            id: i,
+            title: 'Няма стойност',
+            start: Number(currReadingDate),
+            end: Number(currReadingDate) + 3599999,
+            backgroundColor: colors.red,
+            textColor: 'white'
+        }
+        incrementHoursOne(currReadingDate);
+        dataArr.push(currHourReading);
+    }
     return dataArr;
 }
 
@@ -158,10 +184,17 @@ const colors = {
     red: '#ff4d4d'
 }
 
+function writeDailyHeadings(identCode, date) {
+    writeClientNameHeading(identCode);
+    writeHourReadingsDailyHeading(date);
+}
+
+
 function processCalendarData(data) {
-    let date = new Date(data[0]['date'])
-    writeClientNameHeading(data[0]['ident_code']);
-    writeHourReadingsDailyHeading(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
+    let date = new Date(findGetParameter('date'));
+    const readingDate = new Date(data[0]['date']);
+    const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
+    writeDailyHeadings(data[0]['ident_code'], formattedDate);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
@@ -185,7 +218,9 @@ function processCalendarData(data) {
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: diff === 0 ? colors.blue : colors.red
+                   /*  backgroundColor: diff === 0 ? colors.blue : colors.red, */
+                    backgroundColor: value === -1 ? colors.red : colors.blue,
+                    textColor: value === -1 ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);

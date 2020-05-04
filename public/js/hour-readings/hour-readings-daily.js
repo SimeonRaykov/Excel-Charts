@@ -53,13 +53,41 @@ function getHourReadingsDailyData() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            showChartDaily(data);
-            dataArr = [...processCalendarData(data)];
+            if (data.length) {
+                showChartDaily(data);
+                dataArr = [...processCalendarData(data)];
+            } else if (findGetParameter('id') === 'Липсва') {
+                dataArr = processCalendarDataForMissingDate();
+                const readingDate = new Date(findGetParameter('date'));
+                const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
+                writeDailyHeadings(findGetParameter('ident_code'), formattedDate);
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
     });
+    return dataArr;
+}
+
+function processCalendarDataForMissingDate() {
+    let dataArr = [];
+    let currHourReading = [];
+    let currReadingDate = new Date(findGetParameter('date'));
+    for (let i = 0; i < 24; i += 1) {
+        currHourReading = [];
+        currHourReading = {
+            groupId: i,
+            id: i,
+            title: 'Няма стойност',
+            start: Number(currReadingDate),
+            end: Number(currReadingDate) + 3599999,
+            backgroundColor: colors.red,
+            textColor: 'white'
+        }
+        incrementHoursOne(currReadingDate);
+        dataArr.push(currHourReading);
+    }
     return dataArr;
 }
 
@@ -156,12 +184,16 @@ const colors = {
     red: '#ff4d4d'
 }
 
-function processCalendarData(data) {
-    let readingDate = new Date(data[0]['date']);
-    let formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1}-${readingDate.getDate()}`;
-    const identCode = data[0]['ident_code'];
+function writeDailyHeadings(identCode, date) {
     writeClientNameHeading(identCode);
-    writeHourReadingsDailyHeading(formattedDate);
+    writeHourReadingsDailyHeading(date);
+}
+
+function processCalendarData(data) {
+    const readingDate = new Date(data[0]['date']);
+    const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
+    const identCode = data[0]['ident_code'];
+    writeDailyHeadings(identCode, formattedDate);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {

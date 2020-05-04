@@ -427,12 +427,16 @@ function processGraphFile(e) {
                     continue;
                 } else {
                     for (let y = 2; y < arr[i].length; y += 1) {
-                        let currHourHelper = arr[0][y].split(":");
+                        try {
+                            var currHourHelper = arr[0][y].split(":");
+                        } catch (err) {
+                            break;
+                        }
+
                         let currHourValue = currHourHelper[0] - 1;
                         if (currHourValue == -1) {
                             currHourValue = 23;
                         }
-
                         let undefinedHour = undefined;
 
                         try {
