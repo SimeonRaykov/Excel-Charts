@@ -224,7 +224,9 @@ function processCalendarData(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    if (oldDate.getMonth() !== 9) {
                     timezoneOffset = true;
+                    }
                 }
             }
             dataArr.push(currHourReading);

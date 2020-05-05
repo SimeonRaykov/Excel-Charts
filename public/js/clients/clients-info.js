@@ -843,7 +843,9 @@ function processDataHourly(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    if (oldDate.getMonth() !== 9) {
                     timezoneOffset = true;
+                    }
                 }
             }
             dataArr.push(currHourReading);
@@ -895,7 +897,9 @@ function processDataGraphPredictions(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    if (oldDate.getMonth() !== 9) {
                     timezoneOffset = true;
+                    }
                 }
             }
             dataArr.push(currHourReading);
@@ -942,7 +946,9 @@ function processDataImbalances(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    if (oldDate.getMonth() !== 9) {
                     timezoneOffset = true;
+                    }
                 }
                 currHourReadingVal += 1;
                 currHourPredictionVal += 1;

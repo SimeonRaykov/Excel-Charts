@@ -289,6 +289,7 @@ function processHourReadingEVN_EnergoPRO(e) {
                         let currDate = new Date(`${splitHelper[1]}.${splitHelper[0]}.${splitHelper[2]}`);
                         for (let val = 0; val < 24; val += 1) {
                             let undefinedHour = undefined;
+                            let reactiveEnergyHour = undefined;
                             try {
                                 var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
                             } catch (e) {
@@ -302,10 +303,12 @@ function processHourReadingEVN_EnergoPRO(e) {
                             }
 
                             if (currHourValue === nextHourValue) {
-                                undefinedHour = Number(arr[i][x]) + Number(arr[i][x + 1]);
+                                undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
+                                reactiveEnergyHour = Number(arr[2][x] + Number(arr[2][x + 1]));
                                 x += 1;
                             } else if (currHourValue != val) {
                                 undefinedHour = -1;
+                                reactiveEnergyHour = -1;
                                 x -= 1;
                             }
 
@@ -315,7 +318,7 @@ function processHourReadingEVN_EnergoPRO(e) {
                             }
                             currReactiveEnergyObj = {
                                 currHour: val,
-                                currValue: undefinedHour ? -1 : arr[2][x] == '' || arr[2][x] == undefined ? 0 : arr[2][x]
+                                currValue: reactiveEnergyHour || arr[2][x] || 0
                             }
                             currActiveEnergyValues.push(currHourActiveEnergyObj);
                             currReactiveEnergyValues.push(currReactiveEnergyObj);

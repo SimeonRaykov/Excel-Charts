@@ -520,7 +520,9 @@ function getPredictionDataForCalendar(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
-                    timezoneOffset = true;
+                    if (oldDate.getMonth() !== 9) {
+                        timezoneOffset = true;
+                    }
                 }
             }
             iterator += 1;

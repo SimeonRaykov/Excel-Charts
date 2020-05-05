@@ -54,6 +54,7 @@ function getHourReadingsDailyData() {
         async: false,
         success: function (data) {
             if (data.length) {
+                console.log(data);
                 showChartDaily(data);
                 dataArr = [...processCalendarData(data)];
             } else if (findGetParameter('id') === 'Липсва') {
@@ -200,7 +201,7 @@ function processCalendarData(data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
-        let type = data[el].type;
+        let type = data[el].energy_type;
         let i = 0;
         const startIndex = 3;
         const endIndex = 26;
@@ -214,7 +215,7 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type==0?'Активна':'Реактивна'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: value === -1 ? colors.red : colors.blue,
@@ -227,7 +228,9 @@ function processCalendarData(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
-                    timezoneOffset = true;
+                    if (oldDate.getMonth() !== 9) {
+                        timezoneOffset = true;
+                    }
                 }
             }
             dataArr.push(currHourReading);

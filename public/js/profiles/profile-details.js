@@ -311,7 +311,9 @@ function getReadingsDataForCalendar(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
+                    if (oldDate.getMonth() !== 9) {
                     timezoneOffset = true;
+                    }
                 }
             }
             iterator += 1;

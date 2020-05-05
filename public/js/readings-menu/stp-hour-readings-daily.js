@@ -218,7 +218,7 @@ function processCalendarData(data) {
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===0?'Активна':'Реактивна'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                   /*  backgroundColor: diff === 0 ? colors.blue : colors.red, */
+                    /*  backgroundColor: diff === 0 ? colors.blue : colors.red, */
                     backgroundColor: value === -1 ? colors.red : colors.blue,
                     textColor: value === -1 ? 'white' : 'black'
                 }
@@ -229,7 +229,9 @@ function processCalendarData(data) {
                     moveRestOneHr = true;
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
-                    timezoneOffset = true;
+                    if (oldDate.getMonth() !== 9) {
+                        timezoneOffset = true;
+                    }
                 }
             }
             if (currHourReading != '') {
