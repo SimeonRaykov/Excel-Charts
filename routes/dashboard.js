@@ -52,22 +52,6 @@ router.get('/users/import/stp-hour-readings', (req, res) => res.render('./import
     name: user.getName()
 }));
 
-// STP Listing
-router.get('/users/list/readings', (req, res) => res.render('./STP listings/listReadings.ejs', {
-    name: user.getName()
-}));
-router.get('/users/clients/:id', (req, res) => res.render('./STP listings/clients.ejs', {
-    name: user.getName()
-}));
-router.get('/users/reading/:id', (req, res) => res.render('./STP listings/readingDetails.ejs', {
-    name: user.getName()
-}));
-
-// Hour-readings
-router.get('/users/list/hour-readings', (req, res) => res.render('./hour-readings/listHourReadingsTable.ejs', {
-    name: user.getName()
-}));
-
 // Profiles
 router.get('/users/profiles', (req, res) => res.render('./profiles/list-profiles-table.ejs', {
     name: user.getName()
@@ -80,11 +64,17 @@ router.get('/users/profiles/:id', (req, res) => res.render('./profiles/profile-d
 router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
     name: user.getName()
 }));
-router.get('/users/clients/info/:id', (req, res) => res.render('./clients/clients-info.ejs', { 
+router.get('/users/clients/info/:id', (req, res) => res.render('./clients/clients-info.ejs', {
     name: user.getName()
 }));
 
-// Readings menu 
+// Readings menu
+router.get('/users/list/readings', (req, res) => res.render('./readings-menu/listReadings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/list/hour-readings', (req, res) => res.render('./readings-menu/listHourReadingsTable.ejs', {
+    name: user.getName()
+}));
 router.get('/users/clients/stp-hour-reading/daily/s', (req, res) => res.render('./readings-menu/list-readings-stp.ejs', {
     name: user.getName()
 }));
@@ -98,7 +88,7 @@ router.get('/users/eso-hour-readings/daily/s', (req, res) => res.render('./readi
     name: user.getName()
 }));
 
-//  Graph menu
+//  Graphs menu
 router.get('/users/list/stp-graph-readings/', (req, res) => res.render('./graphs-menu/stp-graph-readings.ejs', {
     name: user.getName()
 }));
@@ -117,6 +107,12 @@ router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readin
     name: user.getName()
 }));
 router.get('/users/invoicing/preview', (req, res) => res.render('./invoicing/invoicing-preview-readings.ejs', {
+    name: user.getName()
+}));
+router.get('/users/clients/:id', (req, res) => res.render('./invoicing/clients.ejs', {
+    name: user.getName()
+}));
+router.get('/users/reading/:id', (req, res) => res.render('./invoicing/readingDetails.ejs', {
     name: user.getName()
 }));
 
