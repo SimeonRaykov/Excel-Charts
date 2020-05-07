@@ -69,27 +69,6 @@ function getHourReadingsDailyData() {
     return dataArr;
 }
 
-function processCalendarDataForMissingDate() {
-    let dataArr = [];
-    let currHourReading = [];
-    let currReadingDate = new Date(findGetParameter('date'));
-    for (let i = 0; i < 24; i += 1) {
-        currHourReading = [];
-        currHourReading = {
-            groupId: i,
-            id: i,
-            title: 'Няма стойност',
-            start: Number(currReadingDate),
-            end: Number(currReadingDate) + 3599999,
-            backgroundColor: colors.red,
-            textColor: 'white'
-        }
-        incrementHoursOne(currReadingDate);
-        dataArr.push(currHourReading);
-    }
-    return dataArr;
-}
-
 function showChartDaily(data) {
     let labels = [];
     let chartData = [];
@@ -252,16 +231,6 @@ function writeHourReadingsDailyHeading(data) {
 
 function writeClientHeading(data) {
     $('#client-heading').text(`Клиент: ${data}`);
-}
-
-function findGetParameter(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
 function fixDateForFullCallendar(date) {

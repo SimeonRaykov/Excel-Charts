@@ -396,8 +396,10 @@ function processGraphFile(e) {
             var workbook = XLSX.read(data, {
                 type: 'array'
             });
+
             let first_sheet_name = workbook.SheetNames[0];
-            //    console.log(getCols(workbook['Sheets'][`${first_sheet_name}`]));
+            var worksheet = workbook.Sheets[first_sheet_name];
+            let fifthCell = worksheet['A5'].v;
 
             let client = [];
             let clientsAll = [];
@@ -409,7 +411,7 @@ function processGraphFile(e) {
             let ERP = graphPrediction.getType();
             let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
 
-            validateDocumentForGraphFunc();
+            validateDocumentForGraphFunc(fifthCell);
             for (let i = 1; i < arr.length; i += 1) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
@@ -711,10 +713,20 @@ function validateDocumentForEVN_EnergoPROFunc(clientID, clientName, colSize) {
     }
 }
 
-function validateDocumentForGraphFunc() {
+function validateDocumentForGraphFunc(fifthCell) {
     if (graphPrediction.getCompany() == '') {
         notification('Избери компания', 'error');
         throw new Error('Избери компания');
+    }
+    let dateSplittedDot, dotDate;
+    try {
+        dateSplittedDot = fifthCell.split(' ')[0].split('.');
+        dotDate = new Date(`${dateSplittedDot[2]}-${dateSplittedDot[1]}-${dateSplittedDot[1]}`);
+    } catch (err) {};
+    if (dotDate != 'Invalid Date') {
+        const errMsg = `Избрана е опция за График, а е получено мерене!`;
+        notification(errMsg, 'error');
+        throw new Error(errMsg);
     }
 }
 

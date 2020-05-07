@@ -70,27 +70,6 @@ function getHourReadingsDailyData() {
     return dataArr;
 }
 
-function processCalendarDataForMissingDate() {
-    let dataArr = [];
-    let currHourReading = [];
-    let currReadingDate = new Date(findGetParameter('date'));
-    for (let i = 0; i < 24; i += 1) {
-        currHourReading = [];
-        currHourReading = {
-            groupId: i,
-            id: i,
-            title: 'Няма стойност',
-            start: Number(currReadingDate),
-            end: Number(currReadingDate) + 3599999,
-            backgroundColor: colors.red,
-            textColor: 'white'
-        }
-        incrementHoursOne(currReadingDate);
-        dataArr.push(currHourReading);
-    }
-    return dataArr;
-}
-
 function showChartDaily(data) {
     let labels = [];
     let chartData = [];
@@ -191,7 +170,6 @@ function writeDailyHeadings(identCode, date) {
 
 
 function processCalendarData(data) {
-    let date = new Date(findGetParameter('date'));
     const readingDate = new Date(data[0]['date']);
     const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
     writeDailyHeadings(data[0]['ident_code'], formattedDate);

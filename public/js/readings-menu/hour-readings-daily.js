@@ -25,45 +25,48 @@ document.addEventListener('DOMContentLoaded', function () {
     var calendar = new FullCalendar.Calendar(calendarEl, {
         eventLimit: true,
         eventLimit: 1,
-        eventLimitText: 'Има график',
+        eventLimitText: 'Има мерене',
         eventLimitClick: 'day',
         allDaySlot: false,
         eventOrder: 'groupId',
         defaultDate: fixedDate,
-        events: getSTPMonthlyPredictionData(),
-        plugins: ['timeGrid', 'dayGrid'],
-        defaultView: 'dayGridMonth',
+        events: getHourReadingsDailyData(),
+        plugins: ['timeGrid', ],
+        defaultView: 'timeGridDay',
         header: {
-            left: 'prev,next today',
+            left: '',
             center: 'title',
-            right: 'prev, dayGridMonth,timeGridDay, next',
+            right: '',
+
         }
     });
     calendar.render();
 });
 
-function getSTPMonthlyPredictionData() {
+function getHourReadingsDailyData() {
     let currDate = findGetParameter('date'),
-        currHourReadingId = findGetParameter('id');
+        currHourReadingId = findGetParameter('id');;
     let dataArr = [];
     $.ajax({
-        url: `/api/graphs/stp-hour-prediction/monthly/${currHourReadingId}/${currDate}`,
+        url: `/api/hour-readings/daily/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
         success: function (data) {
             if (data.length) {
+                console.log(data);
                 showChartDaily(data);
                 dataArr = [...processCalendarData(data)];
             } else if (findGetParameter('id') === 'Липсва') {
                 dataArr = processCalendarDataForMissingDate();
-                writeDailyHeadings(findGetParameter('ident_code'), new Date(findGetParameter('date')));
+                const readingDate = new Date(findGetParameter('date'));
+                const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
+                writeDailyHeadings(findGetParameter('ident_code'), formattedDate);
             }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
         }
-
     });
     return dataArr;
 }
@@ -87,7 +90,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr],
+                            y: Number(data[el][hr]),
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -107,7 +110,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: Number(data[el][hr])
                         }
                         chartData.push(hourObj);
                     }
@@ -118,13 +121,13 @@ function showChartDaily(data) {
             }
         }
     }
-    var ctx = document.getElementById('daily-hour-prediction-chart').getContext('2d');
+    var ctx = document.getElementById('daily-hour-readings-chart').getContext('2d');
     var config = {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                label: 'Почасов график',
+                label: 'Почасово мерене',
                 data: chartData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
@@ -132,6 +135,11 @@ function showChartDaily(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }
@@ -157,22 +165,25 @@ const colors = {
 }
 
 function writeDailyHeadings(identCode, date) {
-    writeClientHeading(identCode);
+    writeClientNameHeading(identCode);
     writeHourReadingsDailyHeading(date);
 }
 
 function processCalendarData(data) {
+    const readingDate = new Date(data[0]['date']);
+    const formattedDate = `${readingDate.getFullYear()}-${readingDate.getMonth()+1<10?`0${readingDate.getMonth()+1}`:readingDate.getMonth()+1}-${readingDate.getDate()<10?`0${readingDate.getDate()}`:readingDate.getDate()}`;
     const identCode = data[0]['ident_code'];
-    writeDailyHeadings(identCode, new Date(data[0]['date']))
+    writeDailyHeadings(identCode, formattedDate);
     let dataArr = [];
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
-        let amount = data[el].amount;
+        let diff = data[el].diff;
+        let type = data[el].energy_type;
         let i = 0;
-        const startIndex = 2;
-        const endIndex = 25;
+        const startIndex = 3;
+        const endIndex = 26;
         let timezoneOffset = false;
         let moveRestOneHr = false;
         for (let [key, value] of Object.entries(data[el])) {
@@ -181,9 +192,9 @@ function processCalendarData(data) {
             }
             if (i >= startIndex && i <= endIndex) {
                 currHourReading = {
-                    groupId: 1,
+                    groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(value * amount).toFixed(3)}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${Number(value)} ${type==0?'Активна':'Реактивна'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: value === -1 ? colors.red : colors.blue,
@@ -197,7 +208,7 @@ function processCalendarData(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }
@@ -218,11 +229,10 @@ function decrementHoursBy23(date) {
 }
 
 function writeHourReadingsDailyHeading(data) {
-    const currPredictionDate = `${data.getFullYear()}-${data.getMonth()+1<10?`0${data.getMonth()+1}`:data.getMonth()+1}`
-    $('#date-heading').text(`Почасов график за месец: ${currPredictionDate}`);
+    $('#date-heading').text(`Почасово мерене за дата: ${data}`);
 }
 
-function writeClientHeading(data) {
+function writeClientNameHeading(data) {
     $('#client-heading').text(`Клиент: ${data}`);
 }
 
