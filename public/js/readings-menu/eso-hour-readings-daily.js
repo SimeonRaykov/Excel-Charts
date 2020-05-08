@@ -86,7 +86,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr],
+                            y: (Number(data[el][hr])/1000).toFixed(7),
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -106,7 +106,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: (Number(data[el][hr])/1000).toFixed(7)
                         }
                         chartData.push(hourObj);
                     }
@@ -180,7 +180,7 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: key,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value} ${type===1?'Потребена':'Произведена'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${type===1?'Потребена':'Произведена'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: value === -1 ? colors.red : colors.blue,

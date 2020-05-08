@@ -257,7 +257,7 @@ function showHourReadingChart(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr],
+                            y: (Number(data[el][hr]) / 1000).toFixed(7),
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -276,7 +276,7 @@ function showHourReadingChart(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: (Number(data[el][hr]) / 1000).toFixed(7)
                         }
                         chartData.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -487,7 +487,7 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                        const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), (Number(valuesData[indexActualData]) / 1000).toFixed(7));
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
@@ -524,7 +524,7 @@ function showImbalanceChart(data) {
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
 
-                    const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), valuesData[indexActualData]);
+                    const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), (Number(valuesData[indexActualData]) / 1000).toFixed(7));
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
                         t,
@@ -831,7 +831,7 @@ function processDataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`, // ${type===0?'Активна':'Реактивна'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)}`, // ${type===0?'Активна':'Реактивна'}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red
@@ -844,7 +844,7 @@ function processDataHourly(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }
@@ -898,7 +898,7 @@ function processDataGraphPredictions(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }
@@ -930,7 +930,7 @@ function processDataImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
+                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
@@ -947,7 +947,7 @@ function processDataImbalances(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
                 currHourReadingVal += 1;

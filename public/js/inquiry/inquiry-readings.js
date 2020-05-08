@@ -447,6 +447,11 @@ function showReadingsChart(data) {
         tempActualArr = sumValuesForDifferentClients(tempActualArr);
     }
 
+    const megawattArr = tempActualArr.map(reading => ({
+        t: reading.t,
+        y: (Number(reading.y) / 1000).toFixed(7),
+    }));
+
     var ctx = document.getElementById('readings-chart').getContext('2d');
     var config = {
         type: 'line',
@@ -454,7 +459,7 @@ function showReadingsChart(data) {
             labels: labelsNoDuplicates,
             datasets: [{
                 label: 'Настоящи',
-                data: tempActualArr,
+                data: megawattArr,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
                 borderColor: "#ac3f21"
@@ -522,7 +527,7 @@ function getReadingsDataForCalendar(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }
@@ -561,9 +566,16 @@ function getReadingsDataForCalendar(data) {
         y = 1;
         sumOfAllArrs.push(currReading);
     }
-    return sumOfAllArrs;
+    
+    const megawattArr = sumOfAllArrs.map(reading => ({
+        id: reading.id,
+        title: (Number(reading.title) / 1000).toFixed(7),
+        start: reading.start,
+        end: reading.end,
+        backgroundColor: reading.backgroundColor
+    }));
+    return megawattArr;
 }
-
 var randomProperty = function (obj) {
     var keys = Object.keys(obj)
     return obj[keys[keys.length * Math.random() << 0]];

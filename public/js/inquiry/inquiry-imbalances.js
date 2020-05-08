@@ -382,7 +382,7 @@ function showImbalanceChart(data) {
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
-                            y: valuesData[indexActualData]
+                            y: (Number(valuesData[indexActualData])/1000).toFixed(7)
                         }
                         let predictionObj = {
                             t,
@@ -419,7 +419,7 @@ function showImbalanceChart(data) {
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
                         t,
-                        y: valuesData[indexActualData]
+                        y: (Number(valuesData[indexActualData]) / 1000).toFixed(7)
                     }
                     let predictionObj = {
                         t,
@@ -525,7 +525,7 @@ function calculateImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), objVals[currHourReadingVal]);
+                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), (Number(objVals[currHourReadingVal] / 1000).toFixed(7)));
                 currHourReading = {
                     id: data[el].ident_code,
                     title: currImbalance,
