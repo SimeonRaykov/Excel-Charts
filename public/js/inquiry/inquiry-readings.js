@@ -407,7 +407,7 @@ function showReadingsChart(data) {
 
                         let actualHourObj = {
                             t,
-                            y: valuesData[indexActualData]
+                            y: valuesData[indexActualData] == -1? 0: valuesData[indexActualData]
                         }
                         if (actualHourObj.y != undefined) {
                             tempActualArr.push(actualHourObj);
@@ -430,7 +430,7 @@ function showReadingsChart(data) {
                     if (index >= 2) {
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: data[el][hr] == -1 ? 0 : data[el][hr]
                         }
                         tempActualArr.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -513,7 +513,7 @@ function getReadingsDataForCalendar(data) {
             if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
                     id: data[el].ident_code,
-                    title: val,
+                    title: val === -1 ? 0 : val,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: color

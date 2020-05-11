@@ -487,15 +487,17 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), (Number(valuesData[indexActualData]) / 1000).toFixed(7));
+                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
+                        const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                        const currImbalance = calcImbalance(isManufacturer, (currPredictionValue * amount), currReadingValue);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
-                            y: valuesData[indexActualData]
+                            y: currReadingValue
                         }
                         let predictionObj = {
                             t,
-                            y: valuesData[indexPrediction]
+                            y: currPredictionValue
                         }
                         let imbalanceData = {
                             t,
@@ -523,16 +525,17 @@ function showImbalanceChart(data) {
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
-
-                    const currImbalance = calcImbalance(isManufacturer, (valuesData[indexPrediction] * amount), (Number(valuesData[indexActualData]) / 1000).toFixed(7));
+                    const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
+                    const currImbalance = calcImbalance(isManufacturer, (currPredictionValue * amount), currReadingValue);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
                         t,
-                        y: valuesData[indexActualData]
+                        y: currReadingValue
                     }
                     let predictionObj = {
                         t,
-                        y: valuesData[indexPrediction]
+                        y: currPredictionValue
                     }
                     let imbalanceData = {
                         t,
