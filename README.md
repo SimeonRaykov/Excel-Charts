@@ -32,9 +32,9 @@ The page will reload if you make edits.<br />
 ![Readings menu](./project-images/readings-menu.png)
 
 ### `ESO Readings menu`
-![ESO Hour readings calendar](./project-images/eso-hour-readings-calendar.png)
-![ESO Hour readings chart](./project-images/eso-hour-readings-chart-1.png)
-![ESO Hour readings chart 2](./project-images/eso-hour-readings-chart-2.png)
+![ESO Hour readings calendar](./project-images/eso-hour-reading-calendar.png)
+![ESO Hour readings chart](./project-images/eso-hour-reading-chart-1.png)
+![ESO Hour readings chart 2](./project-images/eso-hour-reading-chart-2.png)
 
 ### `Inquiry menu`
 ![Inquiry readings](./project-images/inquiry-readings-calendar.png)
