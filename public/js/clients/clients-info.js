@@ -817,7 +817,7 @@ function processDataHourly(data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
-        let type = data[el].type;
+        let energyType = data[el].energy_type;
         let i = 0;
         const startIndexHourReadings = 11;
         const endIndexHourReadings = 34;
@@ -831,7 +831,7 @@ function processDataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)}`, // ${type===0?'Активна':'Реактивна'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red

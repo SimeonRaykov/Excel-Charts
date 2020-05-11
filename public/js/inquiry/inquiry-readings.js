@@ -566,7 +566,7 @@ function getReadingsDataForCalendar(data) {
         y = 1;
         sumOfAllArrs.push(currReading);
     }
-    
+
     const megawattArr = sumOfAllArrs.map(reading => ({
         id: reading.id,
         title: (Number(reading.title) / 1000).toFixed(7),

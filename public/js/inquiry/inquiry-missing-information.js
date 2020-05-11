@@ -277,7 +277,8 @@ function getReadings(arr) {
                 toDate,
                 name,
                 ident_code: clientID,
-                erp
+                erp,
+                profile_name
             },
             type: 'POST',
         },
@@ -404,7 +405,7 @@ function configurateInputsForSTPHourReadings() {
     showClientNameInput();
     showClientsIdentCodeInput();
     showERPCheckboxes();
-    makeClientIDRequired();
+    showProfileNameInput();
 }
 
 function configurateInptusForSTPGraphs() {
@@ -412,7 +413,6 @@ function configurateInptusForSTPGraphs() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
-    makeClientIDRequired();
 }
 
 function configurateInputsForGraphReadings() {
@@ -420,7 +420,6 @@ function configurateInputsForGraphReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
-    makeClientIDRequired();
 }
 
 function configurateInputsForHourReadings() {
@@ -428,7 +427,6 @@ function configurateInputsForHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
-    makeClientIDRequired();
 }
 
 function makeClientIDRequired() {
