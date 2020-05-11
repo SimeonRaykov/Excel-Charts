@@ -62,7 +62,7 @@ router.post('/api/filter/list-readings-graph/', (req, res) => {
     }
     if (search.value) {
         sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
-           
+
         countFilteredSql += ` AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `;
     }
     sql += ` ORDER BY ${columnType} ${orderType}`;
