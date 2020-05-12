@@ -99,7 +99,7 @@ function getReadings(arr) {
         var toDate = findGetParameter('toDate');
         const fifthInclineIndex = nth_occurrence(window.location.href, "/", 5);
         var profileID = decodeURI(
-            window.location.href.substr(fifthInclineIndex + 1, 1)
+            window.location.href.substr(fifthInclineIndex + 1)
         );
     } else {
         var [
