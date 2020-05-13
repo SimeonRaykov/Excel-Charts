@@ -372,6 +372,7 @@ function writeDailyPeriodHeading(firstDate, secondDate) {
 }
 
 function showGraphsChart(data) {
+
     const maxDate = getMaxDate(data);
     const minDate = getMinDate(data);
     const equalDates = checkIfDatesAreEqual(maxDate, minDate);
@@ -406,7 +407,7 @@ function showGraphsChart(data) {
 
                         let actualHourObj = {
                             t,
-                            y: valuesData[indexActualData] == -1 ? 0 : valuesData[indexActualData]
+                            y: valuesData[indexActualData] == -1 ? 0 : client.getMeteringType() == 2 ? (valuesData[indexActualData]).toFixed(3) : valuesData[indexActualData]
                         }
                         if (actualHourObj.y != undefined) {
                             tempActualArr.push(actualHourObj);
@@ -429,7 +430,7 @@ function showGraphsChart(data) {
                     if (index >= 2) {
                         let hourObj = {
                             t,
-                            y: data[el][hr] == -1 ? 0 : data[el][hr]
+                            y: data[el][hr] == -1 ? 0 : client.getMeteringType() == 2 ? (data[el][hr]).toFixed(3) : data[el][hr]
                         }
                         tempActualArr.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -507,7 +508,7 @@ function getPredictionDataForCalendar(data) {
             if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
                     id: data[el].ident_code,
-                    title: val == -1 ? 0 : val,
+                    title: val == -1 ? 0 : client.getMeteringType() == 2 ? val.toFixed(3) : val,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: color
@@ -562,19 +563,6 @@ function getPredictionDataForCalendar(data) {
     }
     return sumOfAllArrs;
 }
-
-var randomProperty = function (obj) {
-    var keys = Object.keys(obj)
-    return obj[keys[keys.length * Math.random() << 0]];
-};
-
-/* (function addOnClickEventToExportTableBTN() {
-    $('#export-table-btn').on('click', () => {
-        const tableName = $('#table-input').val();
-        //   exportTableToExcel('export-predictions', tableName);
-        exportTableToExcel('handsontable-predictions', tableName);
-    })
-}()); */
 
 function getThisAndLastMonthDates() {
     let today = new Date();

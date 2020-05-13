@@ -218,7 +218,8 @@ function processFile(e) {
                         clientIds.push(value['4']);
                         clientsAll.push(client);
                     }
-                });
+                }); 
+                console.log(filteredClients);
                 let filteredClients = filterClients(clientsAll);
                 saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
@@ -282,7 +283,7 @@ function processFile(e) {
         if (company.getCompany() === companies.EVN) {
             col.forEach(function (value, i) {
                 let clientNumber;
-                let ident_code;
+                let ident_code; 
                 let client_name;
                 if (i !== 0 && i !== 1 && i !== 2) {
                     if (value['10'] != '' && value['10'] != null && value['10'] != undefined) {
@@ -305,9 +306,10 @@ function processFile(e) {
                         } else if (type === '"Разпределение"') {
                             type = 2;
                         }
-                        //EVN operator 1
+                        //EVN operator 1  
                         let operator = 1;
                         let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
+                        console.log(client)
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -324,6 +326,7 @@ function processFile(e) {
                     }
                 }
             });
+            console.log(clientsAll)
             saveClientsToDB(clientsAll);
             const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
             cl = getClientsFromDB(mappedClientsIDs);

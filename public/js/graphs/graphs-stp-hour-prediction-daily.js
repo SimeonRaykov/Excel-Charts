@@ -69,25 +69,27 @@ function getSTPMonthlyPredictionData() {
 }
 
 function showChartDaily(data) {
+
+    let _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
     let labels = [];
     let chartData = [];
     let index = 0;
-    const startingIndex = 3;
-    const endIndex = 26;
-    let dataIterator = 0;
     if (data != undefined) {
         if (data.length == 1) {
+            _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
+                let amount = data[el]['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
+
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
-                    if (index >= startingIndex) {
-                        if (index > endIndex) {
-                            break;
-                        }
+                    if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr],
+                            y: (data[el][hr] * amount).toFixed(3)
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -97,24 +99,28 @@ function showChartDaily(data) {
                 index = 0;
             }
         } else if (data.length != 1) {
+
+            _IS_MULTIPLE_DAYS_GRAPHS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
-                if (dataIterator == 0 || dataIterator == Math.ceil(data.length / 2) || dataIterator == data.length - 1) {
-                    labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`);
-                }
                 for (let hr in data[el]) {
-                    if (index >= 2) {
+                    let amount = data[el]['amount'];
+                    if (amount == null || amount == undefined) {
+                        amount = 1;
+                    }
+
+                    if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr]
+                            y: (data[el][hr] * amount).toFixed(3)
                         }
                         chartData.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
                     }
                     index += 1;
                 }
                 index = 0;
-                dataIterator += 1;
             }
         }
     }
@@ -124,7 +130,7 @@ function showChartDaily(data) {
         data: {
             labels,
             datasets: [{
-                label: 'Почасов график',
+                label: 'Прогноза',
                 data: chartData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
@@ -132,22 +138,39 @@ function showChartDaily(data) {
             }],
         },
         options: {
+            scales: {
+                xAxes: [{
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_GRAPHS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
+                }]
+            },
             maintainAspectRatio: false,
             responsive: false
         }
     }
-    var myChart = new Chart(ctx, config);
+    try {
+        GraphsChart.destroy();
+    } catch (e) {}
 
+    GraphsChart = new Chart(ctx, config);
     $('body > div.container.mt-3 > div.row.chart-daily > label > input').click((e) => {
-        myChart.destroy();
+
         var temp = jQuery.extend(true, {}, config);
-        if (myChart.config.type == 'line') {
+        if (GraphsChart.config.type == 'line') {
             temp.type = 'bar';
         } else {
             temp.type = 'line';
         }
-
-        myChart = new Chart(ctx, temp);
+        setTimeout(function () {
+            GraphsChart.destroy();
+            GraphsChart = new Chart(ctx, temp)
+        }, 0)
     })
 }
 
@@ -197,7 +220,7 @@ function processCalendarData(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }

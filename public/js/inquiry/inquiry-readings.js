@@ -576,10 +576,6 @@ function getReadingsDataForCalendar(data) {
     }));
     return megawattArr;
 }
-var randomProperty = function (obj) {
-    var keys = Object.keys(obj)
-    return obj[keys[keys.length * Math.random() << 0]];
-};
 
 function getThisAndLastMonthDates() {
     let today = new Date();

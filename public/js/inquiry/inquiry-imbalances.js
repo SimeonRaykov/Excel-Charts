@@ -369,7 +369,10 @@ function showImbalanceChart(data) {
         if (data.length == 1) {
             _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
             for (let el in data) {
-                const amount = data[el]['amount'] || 1;
+                let amount = data[el]['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
@@ -380,7 +383,7 @@ function showImbalanceChart(data) {
                         }
                         const currActualData = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
                         const currPredictionData = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
-                        const currImbalance = calcImbalance(isManufacturer, (currPredictionData * amount), currActualData);
+                        const currImbalance = calcImbalance(isManufacturer, ((currPredictionData * amount).toFixed(3)), currActualData);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
@@ -411,14 +414,17 @@ function showImbalanceChart(data) {
             for (let el of data) {
                 indexActualData = client.getMeteringType() == 2 ? 3 : 2;
                 indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
-                const amount = el['amount'] || 1;
+                let amount = el['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
                 let date = new Date(el['date']);
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
                     const currActualData = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
                     const currPredictionData = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
-                    const currImbalance = calcImbalance(isManufacturer, (currPredictionData * amount), currActualData);
+                    const currImbalance = calcImbalance(isManufacturer, ((currPredictionData * amount).toFixed(3)), currActualData);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
                         t,
@@ -452,7 +458,7 @@ function showImbalanceChart(data) {
         data: {
             labels: labelsNoDuplicates,
             datasets: [{
-                label: 'Настоящи',
+                label: 'Мерения',
                 data: actualHourData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
@@ -510,17 +516,20 @@ function showImbalanceChart(data) {
 }
 
 function calculateImbalances(data) {
-    const beginningIndexOfIterator = 2;
-    const endIndexOfIterator = 26;
+    const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
+    const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
     let dataArr = [];
     let currHourReading = [];
 
     for (let el in data) {
         currHourReading = [];
-        const amount = data[el]['amount'] || 1;
+        let amount = data[el]['amount'];
+        if (amount == null || amount == undefined) {
+            amount = 1;
+        }
         let currHourDate = new Date(data[el].date);
-        let currHourReadingVal = 2;
-        let currHourPredictionVal = 26;
+        let currHourReadingVal = client.getMeteringType() == 2 ? 3 : 2;
+        let currHourPredictionVal = client.getMeteringType() == 2 ? 27 : 26;
         let objVals = Object.values(data[el]);
         let iterator = 0;
         let isManufacturer = data[el]['is_manufacturer'];
@@ -530,7 +539,7 @@ function calculateImbalances(data) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
                 const currPredictionValue = objVals[currHourPredictionVal] == -1 ? 0 : objVals[currHourPredictionVal];
                 const currActualValue = objVals[currHourReadingVal] == -1 ? 0 : (Number(objVals[currHourReadingVal] / 1000).toFixed(7));
-                const currImbalance = calcImbalance(isManufacturer, (currPredictionValue * amount), currActualValue);
+                const currImbalance = calcImbalance(isManufacturer, ((currPredictionValue * amount).toFixed(3)), currActualValue);
                 currHourReading = {
                     id: data[el].ident_code,
                     title: currImbalance,

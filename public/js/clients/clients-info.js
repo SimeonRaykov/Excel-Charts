@@ -365,14 +365,18 @@ function showGraphPredictionChart(data) {
         if (data.length == 1) {
             _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
-                let amount = data[el]['amount'] || 1;
+                let amount = data[el]['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
+
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
                     if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr] * amount
+                            y: client.getMeteringType() == 2 ? (data[el][hr] * amount).toFixed(3) : data[el][hr] * amount
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -382,16 +386,21 @@ function showGraphPredictionChart(data) {
                 index = 0;
             }
         } else if (data.length != 1) {
+
             _IS_MULTIPLE_DAYS_GRAPHS_CHART = true;
             for (let el in data) {
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
-                    let amount = data[el]['amount'] || 1;
+                    let amount = data[el]['amount'];
+                    if (amount == null || amount == undefined) {
+                        amount = 1;
+                    }
+
                     if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: data[el][hr] * amount
+                            y: client.getMeteringType() == 2 ? (data[el][hr] * amount).toFixed(3) : (data[el][hr] * amount)
                         }
                         chartData.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -474,11 +483,15 @@ function showImbalanceChart(data) {
     let indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
     const endIndexPrediction = client.getMeteringType() == 2 ? 50 : 49;
     const finalIndex = client.getMeteringType() == 2 ? 26 : 25;
+
     if (data != undefined) {
         if (data.length == 1) {
             _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
             for (let el in data) {
-                const amount = data[el]['amount'] || 1;
+                let amount = data[el]['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
@@ -487,9 +500,9 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
+                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
                         const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
-                        const currImbalance = calcImbalance(isManufacturer, (currPredictionValue * amount), currReadingValue);
+                        const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
                             t,
@@ -520,14 +533,17 @@ function showImbalanceChart(data) {
             for (let el of data) {
                 indexActualData = client.getMeteringType() == 2 ? 3 : 2;
                 indexPrediction = client.getMeteringType() == 2 ? 27 : 26;
-                const amount = el['amount'] || 1;
+                let amount = el['amount'];
+                if (amount == null || amount == undefined) {
+                    amount = 1;
+                }
                 let date = new Date(el['date']);
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
                     const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
-                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : valuesData[indexPrediction];
-                    const currImbalance = calcImbalance(isManufacturer, (currPredictionValue * amount), currReadingValue);
+                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
+                    const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
                         t,
@@ -561,7 +577,7 @@ function showImbalanceChart(data) {
         data: {
             labels,
             datasets: [{
-                label: 'Настоящи',
+                label: 'Мерения',
                 data: actualHourData,
                 borderWidth: 2,
                 backgroundColor: "rgb(255,99,132)",
@@ -866,14 +882,16 @@ function processDataGraphPredictions(data) {
     //  Hour Predictions
     let startIndexGraphPrediction = 11;
     let endIndexGraphPrediction = 34;
-
     //  STP Predicitons
     if (client.getMeteringType() == 2) {
         startIndexGraphPrediction = 3;
         endIndexGraphPrediction = 26;
     }
     for (let el in data) {
-        let amount = data[el].amount || 1;
+        let amount = data[el].amount;
+        if (amount == null || amount == undefined) {
+            amount = 1;
+        }
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
@@ -914,7 +932,6 @@ function processDataGraphPredictions(data) {
 }
 
 function processDataImbalances(data) {
-
     writeImbalancesHeading(data[0]['ident_code']);
     const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
     const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
@@ -922,7 +939,10 @@ function processDataImbalances(data) {
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
-        const amount = data[el]['amount'] || 1;
+        let amount = data[el]['amount'];
+        if (amount == null || amount == undefined) {
+            amount = 1;
+        }
         let currHourDate = new Date(data[el].date);
         let currHourReadingVal = client.getMeteringType() == 2 ? 3 : 2;
         let currHourPredictionVal = client.getMeteringType() == 2 ? 27 : 26;
@@ -933,7 +953,7 @@ function processDataImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, (objVals[currHourPredictionVal] * amount), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
+                const currImbalance = calcImbalance(isManufacturer, ((objVals[currHourPredictionVal] * amount).toFixed(3)), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
