@@ -16,7 +16,7 @@ router.post('/addclients', (req, res) => {
         console.log('Клиентите са добавени');
         return res.send("Клиентите са добавени");
     });
-});
+}); 
 
 router.post('/api/getClients', (req, res) => {
     let sql = `SELECT * FROM clients WHERE ident_code IN (${req.body.join(', ')})`;

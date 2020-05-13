@@ -4,7 +4,7 @@ const {
     db,
     dbSync
 } = require('../../db.js');
- 
+
 router.post('/api/filter/inquiry-graphs/', (req, res) => {
     let {
         fromDate,
@@ -58,7 +58,7 @@ router.post('/api/filter/inquiry-graphs/', (req, res) => {
             sql += ` AND profile_id = ${profileID}`
         }
     } else if (metering_type === 'profile_coef') {
-        sql = `SELECT clients.ident_code,profile_coef.date, (profile_coef.hour_one * amount) AS 'hr0',(profile_coef.hour_two* amount) AS 'hr1',  (profile_coef.hour_three* amount) AS 'hr2', (profile_coef.hour_four* amount) AS 'hr3', (profile_coef.hour_five* amount) AS 'hr4', (profile_coef.hour_six* amount) AS 'hr5', (profile_coef.hour_seven* amount) AS 'hr6', (profile_coef.hour_eight* amount) AS 'hr7', (profile_coef.hour_nine* amount) AS 'hr8', (profile_coef.hour_ten* amount) AS 'hr9', (profile_coef.hour_eleven* amount) AS 'hr10', (profile_coef.hour_twelve* amount) AS 'hr11', (profile_coef.hour_thirteen* amount) AS 'hr12', (profile_coef.hour_fourteen* amount) AS 'hr13', (profile_coef.hour_fifteen* amount) AS 'hr14', (profile_coef.hour_sixteen* amount) AS 'hr15', (profile_coef.hour_seventeen* amount) AS 'hr16', (profile_coef.hour_eighteen* amount) AS 'hr17', (profile_coef.hour_nineteen* amount) AS 'hr18', (profile_coef.hour_twenty* amount) AS 'hr19', (profile_coef.hour_twentyone* amount) AS 'hr20', profile_coef.hour_twentytwo AS 'hr21', (profile_coef.hour_twentythree* amount) AS 'hr22', (profile_coef.hour_zero* amount) AS 'hr23' FROM clients
+        sql = `SELECT clients.ident_code,profile_coef.date, (profile_coef.hour_zero * amount) AS 'hr0',(profile_coef.hour_one* amount) AS 'hr1',  (profile_coef.hour_two* amount) AS 'hr2', (profile_coef.hour_three* amount) AS 'hr3', (profile_coef.hour_four* amount) AS 'hr4', (profile_coef.hour_five* amount) AS 'hr5', (profile_coef.hour_six* amount) AS 'hr6', (profile_coef.hour_seven* amount) AS 'hr7', (profile_coef.hour_eight* amount) AS 'hr8', (profile_coef.hour_nine* amount) AS 'hr9', (profile_coef.hour_ten* amount) AS 'hr10', (profile_coef.hour_eleven* amount) AS 'hr11', (profile_coef.hour_twelve* amount) AS 'hr12', (profile_coef.hour_thirteen* amount) AS 'hr13', (profile_coef.hour_fourteen* amount) AS 'hr14', (profile_coef.hour_fifteen* amount) AS 'hr15', (profile_coef.hour_sixteen* amount) AS 'hr16', (profile_coef.hour_seventeen* amount) AS 'hr17', (profile_coef.hour_eighteen* amount) AS 'hr18', (profile_coef.hour_nineteen* amount) AS 'hr19', (profile_coef.hour_twenty* amount) AS 'hr20', (profile_coef.hour_twentyone * amount) AS 'hr21', (profile_coef.hour_twentytwo* amount) AS 'hr22', (profile_coef.hour_twentythree* amount) AS 'hr23' FROM clients
         INNER JOIN prediction ON prediction.client_id = clients.id
         INNER JOIN stp_profiles ON stp_profiles.id = clients.profile_id
         INNER JOIN profile_coef ON profile_coef.profile_id = stp_profiles.id
