@@ -1,3 +1,10 @@
+;
+(function customizeSTPUploadBTN() {
+    $('.labelBtn').on('click', () => {
+        $('#upload-stp').click();
+    });
+})();
+
 const companies = {
     ENERGO_PRO: 'ENERGO_PRO',
     EVN: 'EVN',

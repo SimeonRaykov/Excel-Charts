@@ -1,3 +1,10 @@
+;
+(function customizeProfileUploadBTN() {
+    $('.labelBtnProfile').on('click', () => {
+        $('#upload-profiles').click();
+    });
+})();
+
 class Profile {
     constructor() {
         this.company = '';

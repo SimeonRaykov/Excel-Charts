@@ -1,3 +1,10 @@
+;
+(function customizeUploadBTN() {
+    $('.labelBtn').on('click', () => {
+        $('#upload-excel').click();
+    });
+})();
+
 const companies = {
     CEZ: 'CEZ',
     ENERGO_PRO: 'ENERGO_PRO',

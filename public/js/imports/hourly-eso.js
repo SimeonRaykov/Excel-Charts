@@ -1,11 +1,13 @@
-Array.prototype.insert = function (index, item) {
-    this.splice(index, 0, item);
-};
+;
+(function customizeUploadBTN() {
+    $('.labelBtn').on('click', () => {
+        $('#upload-excel').click();
+    });
+})();
 
 ($('body > div.container').click(() => {
     addFileUploadEventListeners();
 }));
-
 
 function processEsoHourReadings(e) {
     e.stopPropagation();
