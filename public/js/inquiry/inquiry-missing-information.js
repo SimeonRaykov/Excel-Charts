@@ -351,6 +351,14 @@ function visualizeCheckboxesFromHistoryLocation() {
     }
 }
 
+function showHorizontalLineESO() {
+    $('#hr-line-eso').css('display', 'block');
+}
+
+function hideHorizontalLineESO() {
+    $('#hr-line-eso').css('display', 'none');
+}
+
 function removeClientNameInput() {
     $('body > div.container.mt-3 > div.card.card-default > div.card-body > form > div.row.justify-content-around.my-3 > div:nth-child(1)').css('display', 'none');
 }
@@ -399,6 +407,7 @@ function configurateInputsForESO() {
     removeClientsIdentCodeInput();
     removeERPCheckboxes();
     makeClientIDNotRequired();
+    hideHorizontalLineESO();
 }
 
 function configurateInputsForSTPHourReadings() {
@@ -406,6 +415,7 @@ function configurateInputsForSTPHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
+    showHorizontalLineESO();
 }
 
 function configurateInptusForSTPGraphs() {
@@ -413,6 +423,7 @@ function configurateInptusForSTPGraphs() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
+    showHorizontalLineESO();
 }
 
 function configurateInputsForGraphReadings() {
@@ -420,6 +431,7 @@ function configurateInputsForGraphReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
+    showHorizontalLineESO();
 }
 
 function configurateInputsForHourReadings() {
@@ -427,6 +439,7 @@ function configurateInputsForHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
+    showHorizontalLineESO();
 }
 
 function makeClientIDRequired() {
