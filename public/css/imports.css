@@ -37,3 +37,12 @@
 .labelBtnProfile:hover {
     background-color: #482ff7;
 }
+
+textarea{
+    margin:auto;
+    width:90% !important;
+}
+
+.form-group{
+    margin-bottom:0;
+}

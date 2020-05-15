@@ -98,9 +98,16 @@ function getReadings(arr) {
         var fromDate = findGetParameter('fromDate');
         var toDate = findGetParameter('toDate');
         const fifthInclineIndex = nth_occurrence(window.location.href, "/", 5);
-        var profileID = decodeURI(
+        const stringID = decodeURI(
             window.location.href.substr(fifthInclineIndex + 1)
         );
+        var profileID = '';
+        for (let i = 0; i < stringID.length; i += 1) {
+            if (isNaN(stringID[i])) {
+                break;
+            }
+            profileID += `${stringID[i]}`;
+        }
     } else {
         var [
             fromDate,
@@ -312,7 +319,7 @@ function getReadingsDataForCalendar(data) {
                 }
                 if (oldDate.getTimezoneOffset() !== newDate.getTimezoneOffset()) {
                     if (oldDate.getMonth() !== 9) {
-                    timezoneOffset = true;
+                        timezoneOffset = true;
                     }
                 }
             }

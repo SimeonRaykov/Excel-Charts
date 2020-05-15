@@ -154,6 +154,7 @@ a.fc-more::after {
     visibility: visible;
     content: 'Има мерене';
     background-color: #2d6cdf;
+    color:white;
     white-space: nowrap;
     border-radius: 10px;
     position: relative !important;

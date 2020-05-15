@@ -7,7 +7,7 @@ $(document).ready(function () {
 
 function getDataListing() {
     $.ajax({
-        url: '/api/data-listings/STP-Hour-Readings',
+        url: '/api/data-listings/profiles',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -20,26 +20,17 @@ function getDataListing() {
 }
 
 function convertDataToSet(data) {
-    let clientNames = [];
-    let clientIDs = [];
+    let profileNames = [];
     for (let num in data) {
-        clientNames.push(data[num].client_name);
-        clientIDs.push(data[num].ident_code);
+        profileNames.push(data[num].profile_name);
     }
-    let uniqueClientNames = removeDuplicatesFromArr(clientNames);
-    visualizeDataListings([uniqueClientNames, clientIDs]);
+    let uniqueProfileNames = removeDuplicatesFromArr(profileNames);
+    visualizeDataListings(uniqueProfileNames);
 }
 
-function visualizeDataListings(arr) {
-    let clientNames = arr[0];
-    let clientIds = arr[1]
-
-    for (let name of clientNames) {
-        $('#stp-hour-readings-clients').append(`<option value="${name}"></option>`);
-    }
-
-    for (let ID of clientIds) {
-        $('#idList').append(`<option value="${ID}"></option>`);
+function visualizeDataListings(profileNames) {
+    for (let name of profileNames) {
+        $('#profilesList').append(`<option value="${name}"></option>`);
     }
 }
 
@@ -127,7 +118,7 @@ function visualizeAllInputFromGetParams() {
 }
 
 function visualizeInputFromGetParams() {
-    findGetParameter('name') === null ? '' : $('#nameOfClient').val(findGetParameter('name'));
+    findGetParameter('name') === null ? '' : $('#nameOfProfile').val(findGetParameter('name'));
     findGetParameter('clientID') === null ? '' : $('#clientID').val(findGetParameter('clientID'));
     findGetParameter('erp') === null ? '' : $('#erp').val(findGetParameter('erp'));
 }

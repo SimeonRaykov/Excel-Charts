@@ -52,3 +52,7 @@ table a:not(.fc-more):not(.fc-end):hover:before {
 .missing-info:hover {
     color: red;
 }
+
+a.fc-more::after{
+    color:white;
+}

@@ -119,12 +119,12 @@ $(document).ready(function () {
 
 (function showHideSTPHourReadingEVNEvent() {
     $('#hour-reading').on('click', function hideEVNRadioBTN() {
-        $('#data > div:nth-child(5) > label:nth-child(1)').hide();
+        $('#data > div > div.card-body > div:nth-child(7) > label:nth-child(1)').hide();
     });
     $('#prediction').on('click', function showEVNRadioBTN() {
-        $('#data > div:nth-child(5) > label:nth-child(1)').show();
+        $('#data > div > div.card-body > div:nth-child(7) > label:nth-child(1)').show();
     })
-}())
+}());
 
 ($('body > div.container').click(() => {
     if ($('#hour-reading').is(':checked')) {
@@ -151,7 +151,7 @@ $(document).ready(function () {
 
 function showUploadBlocksSTP() {
     $('#data-import').removeClass('invisible');
-    $('#data > div:nth-child(7)').removeClass('invisible');
+    $('#data > div > div.invisible').removeClass('invisible');
 }
 
 function validateSTPInput() {

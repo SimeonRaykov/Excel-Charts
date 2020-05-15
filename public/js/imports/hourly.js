@@ -71,7 +71,7 @@ Array.prototype.insert = function (index, item) {
 
 function showUploadBlocks() {
     $('#hourly-import').removeClass('invisible');
-    $('body > div.container.mt-3 > div > div:nth-child(7)').removeClass('invisible');
+    $('div.invisible').removeClass('invisible');
 }
 
 ($('body').click(() => {

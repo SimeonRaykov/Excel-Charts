@@ -45,7 +45,7 @@ $(document).ready(function () {
 
 function showUploadBlocks() {
     $('#input-excel').removeClass('invisible');
-    $('body > div.container.mt-3 > div > div:nth-child(5)').removeClass('invisible');
+    $('div.invisible').removeClass('invisible');
 }
 
 function processFile(e) {

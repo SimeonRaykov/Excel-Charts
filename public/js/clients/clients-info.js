@@ -853,7 +853,7 @@ function processDataHourly(data) {
                     title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: diff === 0 ? colors.blue : colors.red
+                    backgroundColor: diff === 0 ? colors.blue : colors.red,
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);
@@ -932,6 +932,7 @@ function processDataGraphPredictions(data) {
 }
 
 function processDataImbalances(data) {
+    console.log(data);
     writeImbalancesHeading(data[0]['ident_code']);
     const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
     const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
