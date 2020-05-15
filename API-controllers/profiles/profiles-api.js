@@ -4,6 +4,17 @@ const {
     db
 } = require('../../db.js');
 
+router.get('/api/data-listings/profiles', (req, res) => {
+    let sql = `SELECT profile_name
+ FROM stp_profiles`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        return res.send(JSON.stringify(result));
+    })
+});
+
 router.post('/api/filter/profiles', (req, res) => {
     let {
         search,

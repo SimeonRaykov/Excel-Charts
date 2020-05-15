@@ -18,48 +18,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="../../../css/imports-stp.css">
+    <link rel="stylesheet" href="../../../css/imports.css">
     <title>Импорт - СТП</title>
 </head>
 
 <body>
-    <div class="text-center">
-        <h2 class="mb-3">Импортиране на данни - Почасови</h2>
-        <h2>Избери тип:</h2>
-        <div class="row justify-content-center">
-            <label class="radio mr-5">Мерене
-                <input type="radio" id="hour-reading" name="importDataType">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio mr-5" data-toggle="tooltip" data-placement="right" container="body"
-            title data-original-title="Името на файла трябва да е във формат - дд-мм-гггг.">График
-                <input type="radio" id="graph" name="importDataType">
-                <span class="checkmark"></span>
-            </label>
+    <div class="text-center container">
+        <div class="card-default card">
+            <div class="card-header">
+                <h2 class="mb-3">Импортиране на данни - Почасови</h2>
+            </div>
+            <div class="card-body">
+                <h3>Избери тип:</h3>
+                <hr>
+                <div class="row justify-content-center">
+                    <label class="radio mr-5">Мерене
+                        <input type="radio" id="hour-reading" name="importDataType">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio mr-5" data-toggle="tooltip" data-placement="right" container="body" title
+                        data-original-title="Името на файла трябва да е във формат - дд-мм-гггг.">График
+                        <input type="radio" id="graph" name="importDataType">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <hr>
+                <h2>Избери ЕРП:</h2>
+                <hr>
+                <div class="row justify-content-center">
+                    <label class="radio mr-5">EVN
+                        <input type="radio" id="evn" name="data-erp">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio mr-5">ЧЕЗ
+                        <input type="radio" id="cez" name="data-erp">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio">ЕнергоПРО
+                        <input type="radio" id="energo-pro" name="data-erp">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <hr>
+                <div class="form-group invisible" id="hourly-import">
+                    <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
+                    <i class="fas fa-arrow-down"></i>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="invisible">
+                    <label class="labelBtn" for="file">Избери файл</label>
+                    <input class="inputfile" type="file" id="upload-excel" name="filename">
+                </div>
+            </div>
         </div>
-        <h2>Избери ЕРП:</h2>
-        <div class="row justify-content-center">
-            <label class="radio mr-5">EVN
-                <input type="radio" id="evn" name="data-erp">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio mr-5">ЧЕЗ
-                <input type="radio" id="cez" name="data-erp">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio">ЕнергоПРО
-                <input type="radio" id="energo-pro" name="data-erp">
-                <span class="checkmark"></span>
-            </label>
-        </div>
-        <div class="form-group invisible" id="hourly-import">
-            <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
-            <i class="fas fa-arrow-down"></i>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            <i class="fas fa-upload"></i>
-        </div>
-        <div class="invisible">
-            <input type="file" id="upload-excel" name="filename">
-        </div> 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
     <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>

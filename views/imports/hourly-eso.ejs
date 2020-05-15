@@ -18,24 +18,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="../../../css/imports-stp.css">
+    <link rel="stylesheet" href="../../../css/imports.css">
     <title>Document</title>
 </head>
 
 <body>
     <div class="container text-center">
-        <h2 class="mb-3">ЕСО - Почасови</h2>
-
-        <body>
-            <div class="form-group" id="input-excel">
-                <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
-                <i class="fas fa-arrow-down"></i>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                <i class="fas fa-upload"></i>
+        <div class="card card-default">
+            <div class="card-header">
+                <h2 class="mb-3">Импортиране на данни: ЕСО - Почасови</h2>
             </div>
-            <div>
-                <input type="file" id="upload-excel" name="filename">
+            <div class="card-body">
+                <div class="form-group" id="input-excel">
+                    <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
+                    <i class="fas fa-arrow-down"></i>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div>
+                    <label class="labelBtn mb-4" for="file">Избери файл</label>
+                    <input class="inputfile" type="file" id="upload-excel" name="filename">
+                </div>
             </div>
-            <div class="clients-no-profile"></div>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
     <script src="../../../../js/helper-functions/toastr-notifications.js"></script>

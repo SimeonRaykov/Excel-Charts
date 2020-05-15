@@ -48,9 +48,6 @@ router.get('/users/import/eso', (req, res) => res.render('./imports/hourly-eso.e
 router.get('/users/import/invoicing', (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));
-router.get('/users/import/stp-hour-readings', (req, res) => res.render('./imports/stp_hour_readings.ejs', {
-    name: user.getName()
-}));
 
 // Profiles
 router.get('/users/profiles', (req, res) => res.render('./profiles/list-profiles-table.ejs', {

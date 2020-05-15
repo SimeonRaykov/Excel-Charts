@@ -18,41 +18,49 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="../../../css/imports-stp.css">
+    <link rel="stylesheet" href="../../../css/imports.css">
     <title>Document</title>
 </head>
 
 <body>
     <div class="container text-center">
-        <h2 class="mb-3">Фактуриране</h2>
-        <h2>Избери ЕРП: </h2>
-        <div class="row justify-content-center">
-            <label class="radio mr-5" data-toggle="tooltip" data-placement="left" container="body"
-                data-original-title="При избиране на тази опция има възможност за импорт на мерения + стп почасови мерения, ако имат профил клиентите">EVN
-                <input type="radio" id="evn" name="radio">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio mr-5">CEZ
-                <input type="radio" id="cez" name="radio">
-                <span class="checkmark"></span>
-            </label>
-            <label class="radio">Energo-pro
-                <input type="radio" id="energo-pro" name="radio">
-                <span class="checkmark"></span>
-            </label>
+        <div class="card-default card">
+            <div class="card-header">
+                <h2 class="mb-3">Фактуриране</h2>
+            </div>
+            <div class="card-body">
+                <h3>Избери ЕРП: </h3>
+                <hr>
+                <div class="row justify-content-center">
+                    <label class="radio mr-5" data-toggle="tooltip" data-placement="left" container="body"
+                        data-original-title="При избиране на тази опция има възможност за импорт на мерения + стп почасови мерения, ако имат профил клиентите">EVN
+                        <input type="radio" id="evn" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio mr-5">CEZ
+                        <input type="radio" id="cez" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio">Energo-pro
+                        <input type="radio" id="energo-pro" name="radio">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <hr>
+                <div class="form-group invisible" id="input-excel">
+                    <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
+                    <i class="fas fa-arrow-down"></i>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="invisible">
+                    <label class="labelBtn" for="file">Избери файл</label>
+                    <input class="inputfile" type="file" id="upload-excel" name="filename">
+                </div>
+                <div class="clients-no-profile"></div>
+            </div>
         </div>
-
-        <body>
-            <div class="form-group invisible" id="input-excel">
-                <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
-                <i class="fas fa-arrow-down"></i>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                <i class="fas fa-upload"></i>
-            </div>
-            <div class="invisible">
-                <input type="file" id="upload-excel" name="filename">
-            </div>
-            <div class="clients-no-profile"></div>
-    </div> 
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
     <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
     <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>

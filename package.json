@@ -17,6 +17,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "browserify": "^16.5.0",
+    "certbot": "^5.0.3",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.4",
     "csvjson": "^5.1.0",

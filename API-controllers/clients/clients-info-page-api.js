@@ -364,7 +364,7 @@ router.get('/api/imbalances/getClient/:id', (req, res) => {
     INNER JOIN hour_readings on clients.id = hour_readings.client_id 
     INNER JOIN hour_prediction on hour_prediction.client_id = clients.id
     WHERE clients.id = ${req.params.id}
-    GROUP BY hour_prediction.date
+    AND hour_prediction.date = hour_readings.date
 `;
 
     db.query(sql, (err, result) => {
