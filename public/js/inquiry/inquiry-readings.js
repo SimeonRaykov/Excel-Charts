@@ -287,7 +287,7 @@ function getReadings(arr) {
                 window.location.href.includes('stp_hour_readings') ? client.setMeteringType(2) : client.setMeteringType(1)
                 showReadingsChart(data);
                 calendarData = getReadingsDataForCalendar(data);
-                addReadingsToTable(calendarData);
+                //    addReadingsToTable(calendarData);
             }
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -304,6 +304,7 @@ function addReadingsToTable(data) {
     let currentStartDate;
     let currentEndDate;
     let firstRow = [];
+    const multipleClients = $('#clientID').val() == '';
 
     function renderRowsTable() {
 
@@ -332,6 +333,9 @@ function addReadingsToTable(data) {
                 currentStartDate.getMonth() == firstDate.getMonth() &&
                 currentStartDate.getDate() == firstDate.getDate() &&
                 currentStartDate.getHours() == firstDate.getHours()) {
+                if (multipleClients) {
+                    break;
+                }
                 repeatCounter += 1;
                 if (repeatCounter > 1) {
                     break;
@@ -346,9 +350,14 @@ function addReadingsToTable(data) {
         let counter = 0;
         let currentID = data[0].id;
         let currentRow = [];
-        for (let obj of data) {
-            let newID = obj.id;
-            let currValue = obj.title;
+        for (let i = 0; i < data.length; i += 1) {
+            let newID = '';
+            try {
+                newID = data[i + 1].id;
+            } catch (err) {
+                newID = data[i].id;
+            }
+            let currValue = data[i].title;
             currentRow.push(currValue);
             counter += 1;
             if (counter % firstRowLength == 0 && counter != 0) {
@@ -358,6 +367,7 @@ function addReadingsToTable(data) {
                 currentID = newID;
             }
         }
+
     }
     renderColsTable();
     initializeHandsOnTable(allReadings);
@@ -407,7 +417,7 @@ function showReadingsChart(data) {
 
                         let actualHourObj = {
                             t,
-                            y: valuesData[indexActualData] == -1? 0: valuesData[indexActualData]
+                            y: valuesData[indexActualData] == -1 ? 0 : valuesData[indexActualData]
                         }
                         if (actualHourObj.y != undefined) {
                             tempActualArr.push(actualHourObj);
@@ -536,6 +546,21 @@ function getReadingsDataForCalendar(data) {
     }
     let sumOfAllArrs = [];
     let dataArrSorted = dataArr.sort((a, b) => (a.start > b.start) ? 1 : -1);
+    const clonedDataArr = [...dataArr];
+    let sortedClients = clonedDataArr.sort((a, b) => {
+        return sortClientsByIDThenByDate(a, b);
+    }).map((obj => {
+        return {
+            id: obj.id,
+            title: Number(obj.title) / 1000,
+            start: obj.start,
+            end: obj.end,
+            backgroundColor: obj.backGroundColor
+        }
+    }));
+
+    addReadingsToTable(sortedClients);
+
     let currReading;
     let currStart;
     let iterationsCount = 0;
@@ -575,24 +600,6 @@ function getReadingsDataForCalendar(data) {
         backgroundColor: reading.backgroundColor
     }));
     return megawattArr;
-}
-
-function getThisAndLastMonthDates() {
-    let today = new Date();
-    let thisMonthDate = `${today.getFullYear()}-${Number(today.getMonth())+1}-${today.getDay()}`;
-    let lastMonthDate = `${today.getFullYear()}-${Number(today.getMonth())}-${today.getDay()}`;
-    if (Number(today.getMonth()) - 1 === -1) {
-        lastMonthDate = `${Number(today.getFullYear())-1}-${Number(today.getMonth())+12}-${today.getDay()}`;
-    }
-    return [thisMonthDate, lastMonthDate];
-}
-
-function removeDuplicatesFromArr(arr) {
-    let uniqueNames = [];
-    $.each(arr, function (i, el) {
-        if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
-    });
-    return uniqueNames;
 }
 
 function visualizeAllInputFromGetParams() {

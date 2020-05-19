@@ -258,7 +258,7 @@ function getImbalances(arr) {
                 window.location.href.includes('stp_imbalances') ? client.setMeteringType(2) : client.setMeteringType(1)
                 showImbalanceChart(data);
                 calendarData = calculateImbalances(data);
-                addImbalancesToTable(calendarData);
+                //    addImbalancesToTable(calendarData);
             }
         },
         error: function (jqXhr, textStatus, errorThrown) {
@@ -275,6 +275,7 @@ function addImbalancesToTable(data) {
     let currentStartDate;
     let currentEndDate;
     let firstRow = [];
+    const multipleClients = $('#clientID').val() == '';
 
     function renderRowsTable() {
 
@@ -303,6 +304,9 @@ function addImbalancesToTable(data) {
                 currentStartDate.getMonth() == firstDate.getMonth() &&
                 currentStartDate.getDate() == firstDate.getDate() &&
                 currentStartDate.getHours() == firstDate.getHours()) {
+                    if(multipleClients){
+                        break;
+                    }
                 repeatCounter += 1;
                 if (repeatCounter > 1) {
                     break;
@@ -316,9 +320,14 @@ function addImbalancesToTable(data) {
         let currentRow = [];
         let firstRowLength = firstRow.length - 1;
         let counter = 0;
-        for (let obj of data) {
-            let newID = obj.id;
-            let currValue = obj.title;
+        for (let i = 0; i < data.length; i += 1) {
+            let newID = '';
+            try {
+                newID = data[i + 1].id;
+            } catch (err) {
+                newID = data[i].id;
+            }
+            let currValue = data[i].title;
             currentRow.push(currValue);
             counter += 1;
             if (counter % firstRowLength == 0 && counter != 0) {
@@ -567,6 +576,12 @@ function calculateImbalances(data) {
     }
     let sumOfAllArrs = [];
     let dataArrSorted = dataArr.sort((a, b) => (a.start > b.start) ? 1 : -1);
+    const clonedDataArr = [...dataArr];
+    let sortedClients = clonedDataArr.sort((a, b) => {
+        return sortClientsByIDThenByDate(a, b);
+    });
+    addImbalancesToTable(sortedClients);
+
     let currReading;
     let currStart;
     let iterationsCount = 0;
