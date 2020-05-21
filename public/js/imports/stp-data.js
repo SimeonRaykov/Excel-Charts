@@ -421,6 +421,8 @@ function processPredictionFile(e) {
                 clientsNoProfile.text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили, за да се изчислят графиците!');
                 clientsNoProfile.appendTo($('#data'));
                 console.log('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
+                notification('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.','error');
+                throw new Error('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');  
             }
             saveSTPpredictionsToDB(allSTPpredictions);
             return;

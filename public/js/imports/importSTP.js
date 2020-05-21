@@ -225,8 +225,7 @@ function processFile(e) {
                         clientIds.push(value['4']);
                         clientsAll.push(client);
                     }
-                }); 
-                console.log(filteredClients);
+                });
                 let filteredClients = filterClients(clientsAll);
                 saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
@@ -290,7 +289,7 @@ function processFile(e) {
         if (company.getCompany() === companies.EVN) {
             col.forEach(function (value, i) {
                 let clientNumber;
-                let ident_code; 
+                let ident_code;
                 let client_name;
                 if (i !== 0 && i !== 1 && i !== 2) {
                     if (value['10'] != '' && value['10'] != null && value['10'] != undefined) {
@@ -316,7 +315,6 @@ function processFile(e) {
                         //EVN operator 1  
                         let operator = 1;
                         let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
-                        console.log(client)
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -333,7 +331,6 @@ function processFile(e) {
                     }
                 }
             });
-            console.log(clientsAll)
             saveClientsToDB(clientsAll);
             const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
             cl = getClientsFromDB(mappedClientsIDs);
@@ -358,8 +355,9 @@ function processFile(e) {
                     while (currHourReadingClient == col[i + 1][10]) {
 
                         let currDiff = col[i][21].replace(/"/g, '');
+                        let currScaleType = col[i][17].replace(/"/g, '');
                         currDiff = currDiff.replace(/,/g, '\.');
-                        if (currDiff != '' && currDiff != undefined && currDiff != null && currDiff != ' ') {
+                        if (currDiff != '' && currDiff != undefined && currDiff != null && currDiff != ' ' && currScaleType != 'M') {
                             currValues += currDiff / 1000;
                             currHourReadingClient = col[i][10];
                         }
@@ -372,35 +370,36 @@ function processFile(e) {
                     break;
                 }
             }
-
+            let currHourReading = [];
+            let currHourValues = [];
+            const typeEnergy = 0; // ACTIVE ENERGY
+            const erpType = 1; //  EVN
             if (clientsWithoutProfile.length === 0) {
                 let finalSTPHourReadings = [];
                 for (let x = 0; x < allSTPHourReadings.length; x += 1) {
                     let startDate = allSTPHourReadings[x][1];
-                    let endDate = allSTPHourReadings[x][2];
+                    let endDate = new Date(allSTPHourReadings[x][2]);
                     let currDate = startDate;
-
-                    while (currDate.getDate() != endDate.getDate() ||
-                        currDate.getMonth() != endDate.getMonth() ||
-                        currDate.getFullYear() != endDate.getFullYear()) {
-                        const formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                        const currClientName = allSTPHourReadings[x][4];
-                        const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');;
-                        let currHourValues = [];
-                        const currAmount = getProfileAmount(currClientID, formattedDate);
+                    const currClientName = allSTPHourReadings[x][4];
+                    const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');
+                    const formattedDate = `${endDate.getFullYear()}-${endDate.getMonth()+1}-${endDate.getDate()}`;
+                    const monthlyAmount = getProfileAmount(currClientID, formattedDate);
+                    for (let i = 0; i < monthlyAmount.length; i += 1) {
+                        const currDateVals = Object.values(monthlyAmount[i]);
+                        const currDate = new Date(monthlyAmount[i].date);
+                        const formattedCurrDate = `${currDate.getFullYear()}-${currDate.getMonth()+2<10?`0${currDate.getMonth()+2}`:currDate.getMonth()+2}-${currDate.getDate()<10?`0${currDate.getDate()}`:currDate.getDate()}`;
                         for (let val = 0; val < 24; val += 1) {
                             currHourObj = {
                                 currHour: val,
-                                currValue: allSTPHourReadings[x][3] * currAmount[val]
+                                currValue: Number(allSTPHourReadings[x][3]) * Number(currDateVals[val + 1])
                             }
                             currHourValues.push(currHourObj);
                         }
-                        const typeEnergy = 0; // ACTIVE ENERGY
-                        const erpType = 1; //  EVN
-                        let currHourReading = [];
-                        currHourReading.push(currClientName, currClientID, typeEnergy, formattedDate, currHourValues, erpType, new Date());
+
+                        currHourReading.push(currClientName, currClientID, typeEnergy, formattedCurrDate, currHourValues, erpType, new Date());
                         finalSTPHourReadings.push(currHourReading);
-                        currDate.setDate(currDate.getDate() + 1);
+                        currHourReading = [];
+                        currHourValues = [];
                     }
                 }
                 changeClientIdForHourReadings(finalSTPHourReadings, cl);

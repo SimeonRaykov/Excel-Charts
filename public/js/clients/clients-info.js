@@ -781,6 +781,7 @@ function getGraphPredictions() {
             console.log(errorThrown);
         }
     });
+    console.log(dataArr)
     return dataArr;
 }
 
@@ -922,8 +923,8 @@ function processDataGraphPredictions(data) {
                         timezoneOffset = true;
                     }
                 }
+                dataArr.push(currHourReading);
             }
-            dataArr.push(currHourReading);
             i += 1;
         }
         i = 0;
@@ -932,7 +933,6 @@ function processDataGraphPredictions(data) {
 }
 
 function processDataImbalances(data) {
-    console.log(data);
     writeImbalancesHeading(data[0]['ident_code']);
     const beginningIndexOfIterator = client.getMeteringType() == 2 ? 3 : 2;
     const endIndexOfIterator = client.getMeteringType() == 2 ? 27 : 26;
