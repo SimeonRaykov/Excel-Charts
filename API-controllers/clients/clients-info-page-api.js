@@ -124,9 +124,12 @@ router.get('/api/graph-predictions/:fromDate/:toDate/:clientID', (req, res) => {
     });
 });
 router.get('/api/stp-graph-predictions/:fromDate/:toDate/:clientID', (req, res) => {
-    const fromDate = req.params.fromDate;
-    const toDate = req.params.toDate;
-    const clientID = req.params.clientID;
+    const {
+        fromDate,
+        toDate,
+        clientID
+    } = req.params;
+
     let sql = `SELECT clients.ident_code, profile_coef.date, profile_coef.hour_zero AS 'phr1',  profile_coef.hour_one AS 'phr2', profile_coef.hour_two AS 'phr3', profile_coef.hour_three AS 'phr4', profile_coef.hour_four AS 'phr5', profile_coef.hour_five AS 'phr6', profile_coef.hour_six AS 'phr7', profile_coef.hour_seven AS 'phr8', profile_coef.hour_eight AS 'phr9', profile_coef.hour_nine AS 'phr10', profile_coef.hour_ten AS 'phr11', profile_coef.hour_eleven AS 'phr12', profile_coef.hour_twelve AS 'phr13', profile_coef.hour_thirteen AS 'phr14', profile_coef.hour_fourteen AS 'phr15', profile_coef.hour_fifteen AS 'phr16', profile_coef.hour_sixteen AS 'phr17', profile_coef.hour_seventeen AS 'phr18', profile_coef.hour_eighteen AS 'phr19', profile_coef.hour_nineteen AS 'phr20', profile_coef.hour_twenty AS 'phr21', profile_coef.hour_twentyone AS 'phr22', profile_coef.hour_twentytwo AS 'phr23', profile_coef.hour_twentythree AS 'phr0', amount FROM clients
     INNER JOIN profile_coef ON profile_coef.profile_id = clients.profile_id 
     INNER JOIN prediction ON prediction.client_id = clients.id
@@ -140,6 +143,7 @@ router.get('/api/stp-graph-predictions/:fromDate/:toDate/:clientID', (req, res) 
     } else if (toDate != -1 && fromDate == -1) {
         sql += `AND profile_coef.date<='${toDate}' `;
     }
+
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
@@ -345,13 +349,12 @@ router.get('/api/graph-predictions/getClient/:id', (req, res) => {
     });
 });
 router.get('/api/stp-graph-predictions/getClient/:id', (req, res) => {
-    let sql = `SELECT clients.client_name, profile_coef.date, amount, profile_coef.hour_zero AS 'phr0',profile_coef.hour_one AS 'phr1',  profile_coef.hour_two AS 'phr2', profile_coef.hour_three AS 'phr3', profile_coef.hour_four AS 'phr4', profile_coef.hour_five AS 'phr5', profile_coef.hour_six AS 'phr6', profile_coef.hour_seven AS 'phr7', profile_coef.hour_eight AS 'phr8', profile_coef.hour_nine AS 'phr9', profile_coef.hour_ten AS 'phr10', profile_coef.hour_eleven AS 'phr11', profile_coef.hour_twelve AS 'phr12', profile_coef.hour_thirteen AS 'phr13', profile_coef.hour_fourteen AS 'phr14', profile_coef.hour_fifteen AS 'phr15', profile_coef.hour_sixteen AS 'phr16', profile_coef.hour_seventeen AS 'phr17', profile_coef.hour_eighteen AS 'phr18', profile_coef.hour_nineteen AS 'phr19', profile_coef.hour_twenty AS 'phr20', profile_coef.hour_twentyone AS 'phr21', profile_coef.hour_twentytwo AS 'phr22', profile_coef.hour_twentythree AS 'phr23' FROM clients
+    let sql = `SELECT clients.client_name, clients.ident_code, profile_coef.date, amount, profile_coef.hour_zero AS 'phr0',profile_coef.hour_one AS 'phr1',  profile_coef.hour_two AS 'phr2', profile_coef.hour_three AS 'phr3', profile_coef.hour_four AS 'phr4', profile_coef.hour_five AS 'phr5', profile_coef.hour_six AS 'phr6', profile_coef.hour_seven AS 'phr7', profile_coef.hour_eight AS 'phr8', profile_coef.hour_nine AS 'phr9', profile_coef.hour_ten AS 'phr10', profile_coef.hour_eleven AS 'phr11', profile_coef.hour_twelve AS 'phr12', profile_coef.hour_thirteen AS 'phr13', profile_coef.hour_fourteen AS 'phr14', profile_coef.hour_fifteen AS 'phr15', profile_coef.hour_sixteen AS 'phr16', profile_coef.hour_seventeen AS 'phr17', profile_coef.hour_eighteen AS 'phr18', profile_coef.hour_nineteen AS 'phr19', profile_coef.hour_twenty AS 'phr20', profile_coef.hour_twentyone AS 'phr21', profile_coef.hour_twentytwo AS 'phr22', profile_coef.hour_twentythree AS 'phr23' FROM clients
     INNER JOIN profile_coef ON profile_coef.profile_id = clients.profile_id 
     INNER JOIN prediction ON prediction.client_id = clients.id
-    WHERE clients.id = '${req.params.id}'
+    WHERE clients.id = '${req.params.id}' 
     AND MONTH(prediction.date) = MONTH(profile_coef.date) 
     AND YEAR(prediction.date) = YEAR(profile_coef.date)`;
-
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
