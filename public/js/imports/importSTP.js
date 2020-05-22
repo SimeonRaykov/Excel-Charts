@@ -349,7 +349,8 @@ function processFile(e) {
                     let currValues = 0;
                     let currSTPHourReading = [];
                     let currClientName = col[i][8].replace(/"/g, '');
-                    if (getProfile(currHourReadingClient) === 0) {
+                    const hasProfile = getProfile(currHourReadingClient);
+                    if (hasProfile == 0 || hasProfile == [] || hasProfile == '') {
                         clientsWithoutProfile.push(currHourReadingClient);
                     }
                     while (currHourReadingClient == col[i + 1][10]) {
@@ -388,6 +389,7 @@ function processFile(e) {
                         const currDateVals = Object.values(monthlyAmount[i]);
                         const currDate = new Date(monthlyAmount[i].date);
                         const formattedCurrDate = `${currDate.getFullYear()}-${currDate.getMonth()+2<10?`0${currDate.getMonth()+2}`:currDate.getMonth()+2}-${currDate.getDate()<10?`0${currDate.getDate()}`:currDate.getDate()}`;
+                        console.log(currDateVals)
                         for (let val = 0; val < 24; val += 1) {
                             currHourObj = {
                                 currHour: val,
@@ -395,13 +397,14 @@ function processFile(e) {
                             }
                             currHourValues.push(currHourObj);
                         }
-
+                        console.log(currHourReading);
                         currHourReading.push(currClientName, currClientID, typeEnergy, formattedCurrDate, currHourValues, erpType, new Date());
                         finalSTPHourReadings.push(currHourReading);
                         currHourReading = [];
                         currHourValues = [];
                     }
                 }
+                console.log(finalSTPHourReadings);
                 changeClientIdForHourReadings(finalSTPHourReadings, cl);
                 saveSTPHourReadingsToDB(finalSTPHourReadings);
             } else {
@@ -602,7 +605,7 @@ function getProfile(identCode) {
         method: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        async: false,
+        async: true,
         success: function (data) {
             profile = data;
         },

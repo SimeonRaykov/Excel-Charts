@@ -402,7 +402,7 @@ function processPredictionFile(e) {
                 let ident_code = arr[i][clientIdentCodeIndex];
                 if (getProfile(ident_code) === 0) {
                     clientsWithoutProfile.push(ident_code);
-                }
+                }  
                 for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientsFromDB(ident_code);
@@ -421,8 +421,8 @@ function processPredictionFile(e) {
                 clientsNoProfile.text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили, за да се изчислят графиците!');
                 clientsNoProfile.appendTo($('#data'));
                 console.log('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
-                notification('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.','error');
-                throw new Error('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');  
+                notification('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.', 'error');
+                throw new Error('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
             }
             saveSTPpredictionsToDB(allSTPpredictions);
             return;
@@ -521,7 +521,6 @@ function filterClients(clientsAll) {
 }
 
 function saveClientsToDB(clients) {
-    console.log(clients)
     $.ajax({
         url: '/addclients',
         method: 'POST',
@@ -577,7 +576,6 @@ function getClientsHourlyFromDB(clients) {
 };
 
 function saveGraphHourReadingsToDB(readings) {
-    console.log(readings);
     $.ajax({
         url: '/api/saveGraphHourReadings',
         method: 'POST',
@@ -688,7 +686,7 @@ function getProfile(identCode) {
         method: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        async: false,
+        async: true,
         success: function (data) {
             profile = data;
         },

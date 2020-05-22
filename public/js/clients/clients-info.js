@@ -781,7 +781,6 @@ function getGraphPredictions() {
             console.log(errorThrown);
         }
     });
-    console.log(dataArr)
     return dataArr;
 }
 
@@ -877,6 +876,7 @@ function processDataHourly(data) {
 }
 
 function processDataGraphPredictions(data) {
+console.log(data);
     writeGraphHeading(data[0]['ident_code']);
     let dataArr = [];
     let currHourReading = [];
@@ -885,8 +885,8 @@ function processDataGraphPredictions(data) {
     let endIndexGraphPrediction = 34;
     //  STP Predicitons
     if (client.getMeteringType() == 2) {
-        startIndexGraphPrediction = 3;
-        endIndexGraphPrediction = 26;
+        startIndexGraphPrediction = 4;
+        endIndexGraphPrediction = 27;
     }
     for (let el in data) {
         let amount = data[el].amount;
@@ -904,6 +904,7 @@ function processDataGraphPredictions(data) {
                 break;
             }
             if (i >= startIndexGraphPrediction && i <= endIndexGraphPrediction) {
+           //     console.log(value*amount);
                 currHourReading = {
                     groupId: diff,
                     id: key,
