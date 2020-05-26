@@ -54,7 +54,7 @@ function setDefaultDateForLinks() {
     $('#invoicing-readings-href').attr('href', `/users/invoicing?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
 
     //  Imbalances inquiry href   
-    $('#inquiry-readings-href').attr('href', `/users/inquiry/readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&readings=hour_readings&clientID=`);
+    $('#inquiry-readings-href').attr('href', `/users/inquiry/readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&metering_type=stp&metering_type=hourly&clientID=`);
     $('#inquiry-graphs-href').attr('href', `/users/inquiry/graphs?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&predictions=hour_prediction&clientID=`);
     $('#inquiry-imbalances-href').attr('href', `/users/inquiry/imbalances?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&imbalances=hourly_imbalances`)
     $('#inquiry-missing-information-href').attr('href', `/users/inquiry/missing-information?data_type=data_readings&readings=hour_readings_eso&name=&clientID=&profile_name=&fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO`)

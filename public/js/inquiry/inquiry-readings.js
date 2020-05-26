@@ -190,7 +190,6 @@ let initialCalendarDate = new Date();
 
 (function () {
     const today = new Date();
-    const formattedToday = `${today.getFullYear()}-${today.getMonth()+1<10?`0${today.getMonth()+1}`:today.getMonth()+1}-${today.getDate()<10?`0${today.getDate()}`:today.getDate()}`;
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar-readings');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -219,14 +218,15 @@ let initialCalendarDate = new Date();
 
 function getReadings(arr) {
     let calendarData = [];
+
     if (!arr) {
         var name = findGetParameter('name');
         var fromDate = findGetParameter('fromDate');
         var toDate = findGetParameter('toDate');
         var clientID = findGetParameter('clientID');
         var profile_name = findGetParameter('profile_name');
-        var erp = []
-        var metering_type = findGetParameter('readings');
+        var erp = [];
+        var metering_type = [];
         if (window.location.href.includes('energoPRO')) {
             erp.push(3);
         }
@@ -236,8 +236,11 @@ function getReadings(arr) {
         if (window.location.href.includes('evn')) {
             erp.push(1);
         }
-        if (window.location.href.includes('stp_hour_reading')) {
-            metering_type = 'stp_hour_readings';
+        if (window.location.href.includes('stp')) {
+            metering_type.push(2);
+        }
+        if (window.location.href.includes('hourly')) {
+            metering_type.push(1);
         }
 
     } else {
@@ -627,10 +630,10 @@ function visualizeCheckboxesFromHistoryLocation() {
     if (!location.includes('evn')) {
         $('#evn').prop('checked', false);
     }
-    if (location.includes('stp_hour_readings')) {
-        $('#stp_hour_readings').prop('checked', true);
-    } else {
-        $('#hour_readings').prop('checked', true);
+    if (!location.includes('stp')) {
+        $('#stp').prop('checked', false);
+    } else if (!location.includes('hourly')) {
+        $('#hourly').prop('checked', false);
     }
 }
 

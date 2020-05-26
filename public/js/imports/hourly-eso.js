@@ -1,4 +1,21 @@
 ;
+$(document).ready(function () {
+    getDataListings();
+});
+
+function showUploadBlocks() {
+    $('#form-group').removeClass('invisible');
+    $('div.invisible').removeClass('invisible');
+}
+
+(function validateInputClientIdentCode() {
+    $('#ident_code').on('change', () => {
+        if ($('#ident_code').val() != null) {
+            showUploadBlocks();
+        }
+    });
+}());
+
 (function customizeUploadBTN() {
     $('.labelBtn').on('click', () => {
         $('#upload-excel').click();
@@ -46,6 +63,9 @@ function processEsoHourReadings(e) {
                 let currUsedEnergyHourValues = [];
                 let currProducedEnergyHourValues = [];
 
+                const identCode = $('#ident_code').val();
+                const clID = getClientIDByIdentCode(identCode);
+
                 const usedEnergyValue = 1;
                 const producedEnergyValue = 2;
 
@@ -88,8 +108,8 @@ function processEsoHourReadings(e) {
                         x += 1;
                     }
                     let formattedDate = `${currDate.getFullYear()}-${currDate.getMonth()+1}-${currDate.getDate()}`;
-                    usedEnergyReadingESO.push(formattedDate, currUsedEnergyHourValues, usedEnergyValue, new Date());
-                    producedEnergyReadingESO.push(formattedDate, currProducedEnergyHourValues, producedEnergyValue, new Date());
+                    usedEnergyReadingESO.push(formattedDate, currUsedEnergyHourValues, usedEnergyValue, new Date(), clID);
+                    producedEnergyReadingESO.push(formattedDate, currProducedEnergyHourValues, producedEnergyValue, new Date(), clID);
                     allReadingsESO.push(usedEnergyReadingESO);
                     allReadingsESO.push(producedEnergyReadingESO);
 
@@ -109,6 +129,26 @@ function processEsoHourReadings(e) {
         }
     }
 }
+
+function getClientIDByIdentCode(identCode) {
+    let result;
+    $.ajax({
+        url: `/api/client/${identCode}`,
+        method: 'GET',
+        contentType: 'application/json',
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            result = data;
+        },
+        error: function (jqXhr) {
+            notification(jqXhr.responseText, 'success');
+        }
+    });
+    notification('Данните се обработват', 'loading');
+    return result;
+}
+
 
 function getRows(sheet) {
     var result = [];
@@ -180,6 +220,88 @@ function saveEsoHourReadingsToDB(readings) {
     });
     notification('Данните се обработват', 'loading');
 };
+
+function getDataListings() {
+    $.ajax({
+        url: '/api/data-listings/all-clients',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeDataListings(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeDataListings(data) {
+    $('#client_names').remove();
+    $('#ident_codes').remove();
+    let namesDataListing = $('<datalist id="client_names" >');
+    let identCodesDataListing = $('<datalist id="ident_codes" >');
+    let clNames = [];
+    let identCodes = [];
+    for (let obj of data) {
+        clNames.push(obj.client_name);
+        identCodes.push(obj.ident_code);
+    }
+    const filteredNames = clNames.filter((v, i, a) => a.indexOf(v) === i);
+    const filteredIdentCodes = identCodes.filter((v, i, a) => a.indexOf(v) === i);
+
+    for (let name of filteredNames) {
+        let currName = $(`<option>${name}</option>`);
+        currName.appendTo(namesDataListing);
+    }
+
+    for (let identCode of filteredIdentCodes) {
+        let currIdentCode = $(`<option>${identCode}</option>`);
+        currIdentCode.appendTo(identCodesDataListing);
+    }
+    namesDataListing.append('</datalist>');
+    identCodesDataListing.append('</datalist>');
+    $('#client_name').append(namesDataListing);
+    $('#ident_code').append(identCodesDataListing);
+}
+
+(function filterClientIdentCodesOnInputChange() {
+    $('#client_name').on('change', () => {
+        const clientName = $('#client_name').val();
+        getClientIdentCodeListings(clientName);
+    });
+}());
+
+function getClientIdentCodeListings(clientName) {
+    $.ajax({
+        url: `/api/data-listings/ident-codes/${clientName}`,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            visualizeClientIdentCodes(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            getDataListings();
+            console.log(errorThrown);
+        }
+    });
+}
+
+function visualizeClientIdentCodes(data) {
+    $('#ident_codes').remove();
+    let identCodesDataListing = $('<datalist id="ident_codes" >');
+    let identCodes = [];
+    for (let obj of data) {
+        identCodes.push(obj.ident_code);
+    }
+    const filteredIdentCodes = identCodes.filter((v, i, a) => a.indexOf(v) === i);
+
+    for (let identCode of filteredIdentCodes) {
+        let currIdentCode = $(`<option>${identCode}</option>`);
+        currIdentCode.appendTo(identCodesDataListing);
+    }
+    identCodesDataListing.append('</datalist>');
+    $('#ident_code').append(identCodesDataListing);
+}
 
 function addFileUploadEventListeners() {
     document.getElementById('input-excel').addEventListener('drop', processEsoHourReadings, false);
