@@ -6,10 +6,28 @@ const {
     dbSync
 } = require('../../db.js');
 
+router.get('/api/client/:identCode', async (req, res) => {
+    let {
+        identCode
+    } = req.params;
+    console.log(identCode)
+    let sql = `SELECT id
+     FROM clients
+    WHERE ident_code = '${identCode}'
+    LIMIT 1`;
+    try {
+        const result = dbSync.query(sql);
+        return res.send(JSON.stringify(result[0].id));
+    } catch (err) {
+        return res.send(0);
+    }
+
+});
+
 router.post('/api/addEsoHourReadings', async (req, res) => {
     let readingsFiltered = await filterEsoHourReadings(req.body);
     if (readingsFiltered != [] && readingsFiltered != undefined && readingsFiltered.length && readingsFiltered != null) {
-        let sql = `INSERT INTO hour_readings_eso (date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date) VALUES ?
+        let sql = `INSERT INTO hour_readings_eso (date, hour_one, hour_two, hour_three, hour_four, hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven, hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen, hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone, hour_twentytwo, hour_twentythree, hour_zero, type, created_date, client_id) VALUES ?
         ON DUPLICATE KEY UPDATE
         hour_zero = VALUES(hour_zero),
        hour_one= VALUES(hour_one),
@@ -70,6 +88,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
             hour_twentytwo, hour_twentythree, hour_zero;
         hour_one = hour_two = hour_three = hour_four = hour_five = hour_six = hour_seven = hour_eight = hour_nine = hour_ten = hour_eleven = hour_twelve = hour_thirteen = hour_fourteen = hour_fifteen = hour_sixteen = hour_seventeen = hour_eighteen = hour_nineteen = hour_twenty = hour_twentyone = hour_twentytwo = hour_twentythree = hour_zero = -1;
         let filteredHourReading = [];
+        const clID = currHourReading[4];
         const typeEnergy = currHourReading[2];
         let date = new Date(currHourReading[0]);
         let currDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
@@ -131,6 +150,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
         let selectReading = `SELECT * FROM hour_readings_eso 
         WHERE date = '${currDate}'
         AND type = '${typeEnergy}'
+        AND client_id = '${clID}'
         LIMIT 1`;
         let result = dbSync.query(selectReading);
         if (result.length != 0 && result[0] != undefined && result[0].length != 0) {
@@ -296,7 +316,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                     updateQuery += `hour_zero = '${hour_zero}' `;
                     isChanged = true;
                 }
-                updateQuery += `WHERE date = '${currDate}' AND type = ${typeEnergy};`;
+                updateQuery += `WHERE date = '${currDate}' AND type = '${typeEnergy}' AND client_id = '${clID}' ;`;
                 if (isChanged) {
                     dbSync.query(updateQuery);
                     addToFinalReadings = false;
@@ -311,7 +331,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
                 hour_twelve, hour_thirteen, hour_fourteen, hour_fifteen, hour_sixteen,
                 hour_seventeen, hour_eighteen, hour_nineteen, hour_twenty, hour_twentyone,
-                hour_twentytwo, hour_twentythree, hour_zero, typeEnergy, createdDate
+                hour_twentytwo, hour_twentythree, hour_zero, typeEnergy, createdDate, clID
             ];
             readingsFiltered.push(filteredHourReading);
         }

@@ -32,14 +32,10 @@ router.post('/api/getProfileID', (req, res) => {
 
 router.get('/api/getProfile/:ident_code', (req, res) => {
     let identCode = req.params.ident_code;
-    let sql = `SELECT profile_id FROM clients WHERE ident_code = ${identCode}`;
-    db.query(sql, (err, result) => {
-        if (result && result[0].profile_id) {
-            return res.send(JSON.stringify(result[0].profile_id));
-        } else {
-            return res.send(JSON.stringify(0));
-        }
-    });
+    let sql = `SELECT profile_id FROM clients WHERE ident_code = '${identCode}'`;
+    let result = dbSync.query(sql);
+    console.log(result)
+    return result;
 });
 
 router.get('/api/getProfile-HourValue/:identCode/:date', (req, res) => {
@@ -84,10 +80,12 @@ router.get('/api/getProfile-HourValue/:identCode/:date', (req, res) => {
     INNER JOIN clients ON clients.profile_id = profile_coef.profile_id
     WHERE date between '${formattedFromDate}' AND '${formattedToDate}' 
     AND clients.ident_code = '${identCode}'`;
+    console.log(sql);
+    throw err;
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
-        }
+        } 
         return res.send(JSON.stringify(result));
     });
 });

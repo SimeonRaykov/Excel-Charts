@@ -29,13 +29,24 @@
                 <h2 class="mb-3">Импортиране на данни: ЕСО - Почасови</h2>
             </div>
             <div class="card-body">
-                <div class="form-group" id="input-excel">
+                <div class="row justify-content-around my-3">
+                    <div>
+                       <span class="mr-3"> Име на Клиент</span> <input list="client_names" autocomplete="off" aria-controls="clients"
+                            type="search" id="client_name" name="client_name">
+                    </div>
+                    <div>
+                        <span class="mr-3">Идентификационен код</span>  <input type="text" autocomplete="off" aria-controls="clients" type="search"
+                            list="ident_codes" id="ident_code" name="ident_code">
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group invisible" id="input-excel">
                     <label for="exampleFormControlTextarea1">Плъзни документа тук</label>
                     <i class="fas fa-arrow-down"></i>
                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                     <i class="fas fa-upload"></i>
                 </div>
-                <div>
+                <div class="invisible">
                     <label class="labelBtn mb-4" for="file">Избери файл</label>
                     <input class="inputfile" type="file" id="upload-excel" name="filename">
                 </div>

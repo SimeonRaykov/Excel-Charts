@@ -89,13 +89,13 @@
                         <hr>
                         <div class="row justify-content-around">
                             <span class="mt-3 text-heading">Вид Мерене:</span>
-                            <label class="radio mr-5">СТП
-                                <input type="radio" id="stp_hour_readings" value="stp_hour_readings" name="readings">
-                                <span class="checkmark"></span>
+                            <label class="checkbox">
+                                <input type="checkbox" name="metering_type" value="stp" id="stp" checked>
+                                <span>СТП</span>
                             </label>
-                            <label class="radio">Почасови
-                                <input type="radio" id="hour_readings" value="hour_readings" name="readings">
-                                <span class="checkmark"></span>
+                            <label class="checkbox">
+                                <input type="checkbox" name="metering_type" value="hourly" id="hourly" checked>
+                                <span>Почасови</span>
                             </label>
                             <div class="mt-3 text-heading" aria-haspopup="true" aria-expanded="true"
                                 data-toggle="tooltip" data-placement="bottom" container="body"
@@ -150,7 +150,7 @@
                     <button id="export-table-btn" class="btn btn-success btn-lg">Свали екселска таблица</button>
                 </div>
             </div>
-<hr>
+            <hr>
             <div class="container mt-5">
                 <div class="row justify-content-around">
                     <button class="btn btn-lg ml-5" id="hide_dataTable">
