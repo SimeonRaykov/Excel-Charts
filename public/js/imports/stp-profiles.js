@@ -1,4 +1,7 @@
 ;
+$(document).ready(function () {
+    getDataListing();
+});
 (function customizeProfileUploadBTN() {
     $('.labelBtnProfile').on('click', () => {
         $('#upload-profiles').click();
@@ -409,6 +412,40 @@ function saveProfileReadingsToDB(readings) {
         }
     });
 };
+
+
+
+function getDataListing() {
+    $.ajax({
+        url: '/api/data-listings/profiles',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            convertDataToSet(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function convertDataToSet(data) {
+    let profileNames = [];
+    for (let num in data) {
+        profileNames.push(data[num].profile_name);
+    }
+    let uniqueProfileNames = removeDuplicatesFromArr(profileNames);
+    visualizeDataListings(uniqueProfileNames);
+}
+
+function visualizeDataListings(profileNames) {
+    for (let name of profileNames) {
+        if (name != undefined) {
+            $('#profilesList').append(`<option value="${name}"></option>`);
+        }
+
+    }
+}
 
 function getCols(sheet) {
     var result = [];
