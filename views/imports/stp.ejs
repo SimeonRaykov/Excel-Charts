@@ -89,9 +89,12 @@
                     <h3 class="text-center mb-3">Напиши име на профил:</h3>
                     <hr>
                     <div class="row justify-content-center">
-                        <input class="text-center" id="profile-name" type="text">
+                        <input class="text-center mr-3" list="profilesList" id="profile-name" data-toggle="tooltip" data-placement="top" container="body" title
+                        data-original-title="При избиране на профил от дропдаун менюто импортираните данни се презаписват/качват към този профил"
+                            placeholder="Име на профил" type="text">
+                        <datalist id="profilesList"></datalist>
                     </div>
-                    <h3 class="text-center">Избери ЕРП:</h3>
+                    <h3 class="text-center my-3">Избери ЕРП:</h3>
                     <hr>
                     <div class="row justify-content-center">
                         <label class="radio mr-5">EVN
@@ -126,6 +129,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"></script>
     <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
     <script src="../../../../js/helper-functions/bootstrap-tooltips.js"></script>
+    <script src="../../../../js/helper-functions/remove-duplicates-from-array.js"></script>
     <script src="../../../../js/imports/stp-data.js"></script>
     <script src="../../../../js/imports/stp-profiles.js"></script>
 </body>
