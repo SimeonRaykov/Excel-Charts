@@ -74,7 +74,21 @@ function showUploadBlocks() {
     $('div.invisible').removeClass('invisible');
 }
 
+function hideUploadBlocks() {
+    $('#hourly-import').addClass('invisible');
+    $('body > div.container.mt-3 > div > div > div.card-body > div:nth-child(7)').addClass('invisible');
+}
+
+function configurateBlocksForHourReadings() {
+    $('.configurate-options').css('display', 'block');
+}
+
+function configBlocksForGraphPrediction() {
+    $('.configurate-options').css('display', 'none');
+}
+
 ($('body').click(() => {
+
     if ($('#energo-pro').is(':checked')) {
         if ($('#hour-reading').is(':checked')) {
             handleEventListeners(importTypes.hour_reading.EVN_EnergoPRO);
@@ -99,10 +113,22 @@ function showUploadBlocks() {
             graphPrediction.setCompany('CEZ').setType(2);
         }
         company.setCompany('CEZ').setErpType(2);
+    } else if ($('#graph').prop('checked')) {
+        handleEventListeners(importTypes.graph);
     }
     const radioChecker = validateRadioBTNs();
-    radioChecker ? showUploadBlocks() : '';
+    radioChecker ? showUploadBlocks() : hideUploadBlocks();
+    configurateOptions();
 }));
+
+function configurateOptions() {
+    if ($('#graph').prop('checked')) {
+        configBlocksForGraphPrediction();
+    }
+    if ($('#hour-reading').prop('checked')) {
+        configurateBlocksForHourReadings();
+    }
+}
 
 function validateRadioBTNs() {
     let importDataType = false;
@@ -115,7 +141,7 @@ function validateRadioBTNs() {
         const checked = $(this).prop('checked');
         checked ? importDataERP = true : '';
     });
-    if (importDataERP && importDataType) {
+    if ((importDataERP && importDataType) || $('#graph').prop('checked')) {
         return true;
     }
     return false;
@@ -370,7 +396,6 @@ function processHourReadingEVN_EnergoPRO(e) {
 function processGraphFile(e) {
     e.stopPropagation();
     e.preventDefault();
-
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
@@ -411,14 +436,15 @@ function processGraphFile(e) {
             let client = [];
             let clientsAll = [];
             let clientID;
-            let allGraphHourReadings = [];
-            let graph_hour_reading = [];
+            let allGraphPredictions = [];
+            let allESOGraphPredictions = [];
+            let graphHourPrediction = [];
+            let esoGraphPrediction = [];
             let currHourValues = [];
             let type = 1;
-            let ERP = graphPrediction.getType();
             let arr = getCols(workbook['Sheets'][`${first_sheet_name}`]);
 
-            validateDocumentForGraphFunc(fifthCell);
+            //  validateDocumentForGraphFunc(fifthCell);
             for (let i = 1; i < arr.length; i += 1) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
@@ -433,12 +459,14 @@ function processGraphFile(e) {
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
                 const clientName = arr[i][0];
-                let ident_code = arr[i][1];
+                const ident_code = arr[i][1];
+                const currentErp = convertERPTypeForGraphPrediction(arr[i][2]);
+
                 if (clientName == '' || clientName == undefined || clientName == null ||
                     ident_code == '' || ident_code == undefined || ident_code == null) {
                     continue;
                 } else {
-                    for (let y = 2; y < arr[i].length; y += 1) {
+                    for (let y = 3; y < arr[i].length; y += 1) {
                         try {
                             var currHourHelper = arr[0][y].split(":");
                         } catch (err) {
@@ -479,14 +507,25 @@ function processGraphFile(e) {
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientIDFromDB(ident_code);
                         let createdDate = new Date();
-                        graph_hour_reading.push(clientID, date, currHourValues, type, ERP, createdDate);
-                        allGraphHourReadings.push(graph_hour_reading);
-                        graph_hour_reading = [];
+                        if (currentErp != 4) {
+                            graphHourPrediction.push(clientID, date, currHourValues, type, currentErp, createdDate);
+                            allGraphPredictions.push(graphHourPrediction);
+                            graphHourPrediction = [];
+                        } else if (currentErp == 4) {
+                            esoGraphPrediction.push(clientID, date, currHourValues, currentErp, createdDate);
+                            allESOGraphPredictions.push(esoGraphPrediction);
+                            esoGraphPrediction = [];
+                        }
                         currHourValues = [];
                     }
                 }
             }
-            saveGraphHourReadingsToDB(allGraphHourReadings);
+            if (allGraphPredictions.length > 0) {
+                saveGraphPredictionsToDB(allGraphPredictions);
+            }
+            if (allESOGraphPredictions.length > 0) {
+                saveESOGraphPredictions(allESOGraphPredictions);
+            }
             return;
         };
         reader.readAsArrayBuffer(f);
@@ -539,6 +578,39 @@ function getCols(sheet) {
             } else row.push(nextCell.w);
         }
         result.push(row);
+    }
+    return result;
+}
+
+function convertERPTypeForGraphPrediction(erp) {
+    if (erp && erp != null && erp != undefined && erp != '') {
+        erp = erp.replace(/ /g, '');
+    } else {
+        return null
+    }
+
+    let result;
+    switch (erp) {
+        case 'EVN':
+        case 'ИВН':
+        case 'IVN':
+            result = 1;
+            break;
+        case 'CEZ':
+        case 'ЧЕЗ':
+        case 'ЧЕЗ ':
+            result = 2;
+            break;
+        case 'ЕНЕРГО-ПРО':
+        case 'ЕНЕРГОПРО':
+        case 'ENERGOPRO':
+        case 'ENERGO-PRO':
+            result = 3;
+            break;
+        case 'ESO':
+        case 'ЕСО':
+            result = 4;
+            break;
     }
     return result;
 }
@@ -659,7 +731,6 @@ function saveHourReadingsToDB(readings) {
         dataType: 'json',
         data: JSON.stringify(readings),
         success: function (data) {
-            console.log(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
@@ -672,9 +743,28 @@ function saveHourReadingsToDB(readings) {
     notification('Данните се обработват', 'loading');
 };
 
-function saveGraphHourReadingsToDB(readings) {
+function saveGraphPredictionsToDB(readings) {
     $.ajax({
         url: '/api/saveGraphHourReadings',
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(readings),
+        success: function (data) {},
+        error: function (jqXhr, textStatus, errorThrown) {
+            if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
+                notification(jqXhr.responseText, 'error');
+            } else {
+                notification(jqXhr.responseText, 'success');
+            }
+        }
+    });
+    notification('Данните се обработват', 'loading');
+};
+
+function saveESOGraphPredictions(readings) {
+    $.ajax({
+        url: '/api/saveESOGraphPredictions',
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
