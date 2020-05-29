@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    getESOHourReadingDailyData();
     hideGraph();
 });
 
@@ -47,14 +48,15 @@ function getESOHourReadingDailyData() {
         currHourReadingId = findGetParameter('id');;
     let dataArr = [];
     $.ajax({
-        url: `/api/eso-hour-readings/daily/${currHourReadingId}/${currDate}`,
+        url: `/api/eso-graph-predictions/daily/${currHourReadingId}/${currDate}`,
         method: 'GET',
         dataType: 'json',
         async: false,
         success: function (data) {
+            console.log(data)
             processDateHeading(findGetParameter('date'));
             if (data.length) {
-                writeESOHourReadingClientHeading(data[0].ident_code)
+                writeESOGraphPredictionClientHeading(data[0].ident_code);
                 showChartDaily(data);
                 dataArr = [...processCalendarData(data)];
             } else if (findGetParameter('id') === 'Липсва') {
@@ -67,8 +69,6 @@ function getESOHourReadingDailyData() {
     });
     return dataArr;
 }
-
-
 
 function showChartDaily(data) {
     let labels = [];
@@ -183,7 +183,7 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: key,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${type===1?'Потребена':'Произведена'}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: value === -1 ? colors.red : colors.blue,
@@ -224,10 +224,10 @@ function processDateHeading(date) {
 }
 
 function writeESOHourReadingDateHeading(date) {
-    $('#date-heading').text(`EСО - почасово мерене за дата: ${date}`);
+    $('#date-heading').text(`EСО - почасов график за дата: ${date}`);
 }
 
-function writeESOHourReadingClientHeading(data) {
+function writeESOGraphPredictionClientHeading(data) {
     $('#client-heading').text(`Клиент: ${data}`);
 }
 

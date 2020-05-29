@@ -129,7 +129,7 @@ function getDataListings() {
     });
 
     $.ajax({
-        url: '/api/data-listings/profile-name',
+        url: '/api/data-listings/profiles',
         method: 'GET',
         dataType: 'json',
         success: function (data) {

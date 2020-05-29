@@ -18,6 +18,7 @@ const readingTypes = {
     HOUR_READING: 'hour_reading',
     GRAPH_READING: 'graph_reading',
     HOUR_READING_ESO: 'hour_reading_eso',
+    GRAPH_READING_ESO: 'graph_reading_eso'
 }
 
 class MissingInfoType {
@@ -117,6 +118,18 @@ const ESO_TABLE_COLUMNS = [{
         }
     },
     {
+        data: "ident_code",
+        render: function (data, type, row) {
+            return `<td>${row['ident_code']}</td>`;
+        }
+    },
+    {
+        data: "client_name",
+        render: function (data, type, row) {
+            return '<td>' + row['client_name'] + '</td>';
+        },
+    },
+    {
         data: "date",
         render: function (data, type, row) {
             const date = row['date'];
@@ -124,7 +137,8 @@ const ESO_TABLE_COLUMNS = [{
             const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
             return '<td>' + formattedDate + '</td>'
         },
-    }, {
+    },
+    {
         data: "type",
         render: function (data, type, row) {
             const energyType = row['type'] == 1 ? 'Потребена' : row['type'] == 2 ? 'Произведена' : 'Липсва';
@@ -138,7 +152,8 @@ function renderTableHeadings() {
     let tHeadSettings = '';
 
     if (type === readingTypes.HOUR_READING_ESO) {
-        tHeadSettings = $(`<th>ID на мерене</th><th> Дата на мерене </th> <th> Енергия </th>`);
+        tHeadSettings = $(`<th>ID на мерене</th> <th>Идентификационен код на клиент</th>
+        <th>Име на клиент</th><th> Дата на мерене </th>`);
     } else {
         tHeadSettings = $(`<th>ID на мерене</th>
       <th>Идентификационен код на клиент</th>
@@ -163,7 +178,7 @@ function getDataListings() {
     });
 
     $.ajax({
-        url: '/api/data-listings/profile-name',
+        url: '/api/data-listings/profiles',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -300,7 +315,7 @@ function getURLForAPI() {
                 case readingTypes.STP_HOUR_READING:
                     return `/api/filter/inquiry-missing-information/stp-hour-readings`;
                 case readingTypes.HOUR_READING_ESO:
-                    return `/api/filter/inquiry-missing-information/eso`;
+                    return `/api/filter/inquiry-missing-information/eso-readings`;
             }
             case dataTypes.GRAPH:
                 switch (readingType) {
@@ -401,13 +416,12 @@ function showClientsIdentCodeInput() {
     $('body > div.container.mt-3 > div.card.card-default > div.card-body > form > div.row.justify-content-around.my-3 > div:nth-child(2)').css('display', 'block');
 }
 
-function configurateInputsForESO() {
-    removeClientNameInput();
+function configurateInputsForESOReadings() {
+    showClientNameInput();
     removeProfileNameInput();
-    removeClientsIdentCodeInput();
-    removeERPCheckboxes();
-    makeClientIDNotRequired();
-    hideHorizontalLineESO();
+    showClientsIdentCodeInput();
+    showHorizontalLineESO();
+    showERPCheckboxes();
 }
 
 function configurateInputsForSTPHourReadings() {
@@ -467,7 +481,7 @@ function configurateInputs() {
                     missingInfoType.setReadingType(readingTypes.STP_HOUR_READING);
                     break;
                 case 'hour_readings_eso':
-                    configurateInputsForESO();
+                    configurateInputsForESOReadings();
                     missingInfoType.setReadingType(readingTypes.HOUR_READING_ESO);
                     break;
             }

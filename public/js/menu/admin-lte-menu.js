@@ -42,7 +42,8 @@ function setDefaultDateForLinks() {
     //  Change readings href
     $('#readings-stp-href').attr('href', `/users/list/readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO`);
     $('#readings-href').attr('href', `/users/list/hour-readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO`);
-    $('#readings-eso').attr('href', `/users/list/eso-hour-readings?fromDate=&toDate=&energy_type=used-energy`);
+    $('#readings-eso').attr('href', `/users/list/eso-hour-readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&energy_type=used-energy`);
+    $('#graphs-eso').attr('href', `/users/list/eso-graph-readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}`);
 
     //  Change graphs href
     $('#stp-graph-readings-href').attr('href', `/users/list/stp-graph-readings/?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO`);

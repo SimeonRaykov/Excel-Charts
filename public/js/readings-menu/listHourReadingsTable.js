@@ -228,7 +228,6 @@ function visualizeClientIdentCodes(data) {
 function getInitialDataListings() {
     const clientNameVal = $('#nameOfClient').val();
     if (clientNameVal) {
-        console.log(clientNameVal);
         getDataListings();
         getClientIdentCodeListings(clientNameVal);
     } else {

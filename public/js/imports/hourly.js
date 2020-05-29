@@ -730,8 +730,7 @@ function saveHourReadingsToDB(readings) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(readings),
-        success: function (data) {
-        },
+        success: function (data) {},
         error: function (jqXhr, textStatus, errorThrown) {
             if (jqXhr.responseText === 'Данните вече съществуват / Грешка') {
                 notification(jqXhr.responseText, 'error');

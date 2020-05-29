@@ -129,23 +129,14 @@ function listESOHourReadings(arr) {
         var toDate = findGetParameter('toDate');
         var client_name = findGetParameter('client_name');
         var ident_code = findGetParameter('ident_code');
-        var type = []
-        if (window.location.href.includes('used-energy')) {
-            type.push(1);
-        }
-        if (window.location.href.includes('produced-energy')) {
-            type.push(2);
-        }
-
     } else {
         var [
             fromDate,
             toDate,
-            type
         ] = arr;
     }
     notification('Loading...', 'loading');
-    dataTable = $('#eso-hour-readings-table').DataTable({
+    dataTable = $('#eso-graph-readings-table').DataTable({
         destroy: false,
         "paging": true,
         stateSave: true,
@@ -160,11 +151,10 @@ function listESOHourReadings(arr) {
             "targets": "_all"
         }],
         ajax: {
-            url: "/api/filter/eso-hour-readings",
+            url: "/api/filter/eso-graph-readings",
             data: {
                 fromDate,
                 toDate,
-                type,
                 client_name,
                 ident_code
             },
@@ -176,7 +166,7 @@ function listESOHourReadings(arr) {
                     const date = row['date'];
                     const fullDate = new Date(date);
                     const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-                    return `<td><a href=/users/eso-hour-readings/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
+                    return `<td><a href=/users/eso-graph-predictions/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`
                 }
             },
             {
@@ -200,13 +190,6 @@ function listESOHourReadings(arr) {
                     const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
                     return '<td>' + fixedDate + '</td>'
                 },
-            },
-            {
-                data: "type",
-                render: function (data, type, row) {
-                    const energyType = row['type'] == 1 ? 'Потребена' : 'Произведена';
-                    return '<td>' + energyType + '</td>';
-                }
             },
         ],
         retrieve: true
