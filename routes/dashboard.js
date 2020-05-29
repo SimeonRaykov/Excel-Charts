@@ -64,6 +64,9 @@ router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
 router.get('/users/clients/info/:id', (req, res) => res.render('./clients/clients-info.ejs', {
     name: user.getName()
 }));
+router.get('/users/clients-eso/info/:id', (req, res) => res.render('./clients/clients-eso-info.ejs', {
+    name: user.getName()
+}));
 
 // Readings menu
 router.get('/users/list/readings', (req, res) => res.render('./readings-menu/listReadings.ejs', {
@@ -84,6 +87,9 @@ router.get('/users/list/eso-hour-readings', (req, res) => res.render('./readings
 router.get('/users/eso-hour-readings/daily/s', (req, res) => res.render('./readings-menu/eso-hour-readings-daily.ejs', {
     name: user.getName()
 }));
+router.get('/users/eso-graph-predictions/daily/s', (req, res) => res.render('./graphs-menu/eso-graph-predictions-daily.ejs', {
+    name: user.getName()
+}));
 
 //  Graphs menu
 router.get('/users/list/stp-graph-readings/', (req, res) => res.render('./graphs-menu/stp-graph-readings.ejs', {
@@ -96,6 +102,9 @@ router.get('/users/clients/graphs-stp-hour-prediction/monthly/s', (req, res) => 
     name: user.getName()
 }));
 router.get('/users/clients/graphs-hour-prediction/daily/s', (req, res) => res.render('./graphs-menu/graphs-hour-prediction-daily.ejs', {
+    name: user.getName()
+}));
+router.get('/users/list/eso-graph-readings/', (req, res) => res.render('./graphs-menu/list-eso-graphs.ejs', {
     name: user.getName()
 }));
 

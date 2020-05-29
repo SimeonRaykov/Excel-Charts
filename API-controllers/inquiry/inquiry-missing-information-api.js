@@ -82,6 +82,7 @@ router.post('/api/filter/inquiry-missing-information/stp-hour-readings', async (
         })
     });
 });
+
 router.post('/api/filter/inquiry-missing-information/graphs', async (req, res) => {
     let {
         search,
@@ -153,6 +154,7 @@ router.post('/api/filter/inquiry-missing-information/graphs', async (req, res) =
         })
     });
 });
+
 router.post('/api/filter/inquiry-missing-information/stp-graphs', async (req, res) => {
     let {
         search,
@@ -230,53 +232,57 @@ router.post('/api/filter/inquiry-missing-information/stp-graphs', async (req, re
     });
 });
 
-router.post('/api/filter/inquiry-missing-information/eso', (req, res) => {
+router.post('/api/filter/inquiry-missing-information/eso-readings', async (req, res) => {
     let {
         search,
         start,
         length,
         fromDate,
         toDate,
-        order,
+        name,
+        ident_code,
+        erp,
+        order
     } = req.body;
-
+    console.log(1);
     const columnNum = order[0].column;
     const columnType = getColumnsTypeESO(columnNum)
     const orderType = order[0].dir;
+    let clientsInfo, sql, countSql;
 
-    const table = `hour_readings_eso`;
-    let sql = ` WITH recursive all_dates(date) AS (
-	SELECT '${fromDate}' date
-        UNION ALL 
-	SELECT date + interval 1 day FROM all_dates where date + interval 1 day <= '${toDate}'
-)
-SELECT DISTINCT d.date date, COALESCE(id, '-') AS id, COALESCE(t.type, '-') AS type
-FROM all_dates d
-LEFT JOIN ${table} t on t.date = d.date
-WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
-OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR id IS NULL`
-    let countSQL = ` WITH recursive all_dates(date) AS (
-	SELECT '${fromDate}' date
-        UNION ALL 
-	SELECT date + interval 1 day FROM all_dates where date + interval 1 day <= '${toDate}'
-)
-SELECT COUNT(d.date) count
-FROM all_dates d
-LEFT JOIN  hour_readings_eso t on t.date = d.date
-WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1 
-OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR id IS NULL`
-    if (search.value) {
-        sql += `  AND (d.date LIKE '%${search.value}%' )`;
-        countSQL += `  AND (d.date LIKE '%${search.value}%'  ) `;
+    sql = `WITH recursive all_dates(date) AS (
+        SELECT '${fromDate}' date
+        UNION ALL
+        SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= '${toDate}'
+)`;
+    if (ident_code != -1 || name != -1 || erp.length != 3) {
+        clientsInfo = await filterClients('', ident_code, name, erp);
+    } else {
+        clientsInfo = await getClientsESO('readings');
     }
+    if (!clientsInfo) {
+        return res.send(JSON.stringify([]));
+    }
+    for (let i = 0; i < clientsInfo.length; i += 1) {
+        sql += `SELECT DISTINCT d.date date, COALESCE(t.id, 'Липсва') AS id, COALESCE(c.ident_code,'${clientsInfo[i].ident_code}') AS ident_code, COALESCE(c.client_name,'${clientsInfo[i].client_name}') AS client_name, COALESCE(c.id,'-') AS cId, COALESCE(c.erp_type, '${clientsInfo[i].erp_type}') AS erp_type
+        FROM all_dates d
+        LEFT JOIN hour_readings_eso t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
+        LEFT JOIN clients c ON c.id = t.client_id
+        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
+        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
+        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
+        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        if (search.value) {
+            sql += `  AND (d.date LIKE '%${search.value}%')`;
+        }
+        if (i != clientsInfo.length - 1) {
+            sql += ` UNION `;
+        }
+    }
+    countSql = sql;
     sql += ` ORDER BY ${columnType} ${orderType}
-LIMIT ${start},${length}`;
-
-    db.query(countSQL, (err, countTotal) => {
+    LIMIT ${start},${length}`;
+    db.query(countSql, (err, countRes) => {
         if (err) {
             throw err;
         }
@@ -284,7 +290,7 @@ LIMIT ${start},${length}`;
             if (err) {
                 throw err;
             }
-            const count = countTotal[0].count;
+            const count = countRes.length;
             const recordsFiltered = count,
                 recordsTotal = count;
             let arr = {
@@ -292,7 +298,7 @@ LIMIT ${start},${length}`;
                 recordsFiltered,
                 data: result
             }
-
+            console.log(result)
             return res.send(JSON.stringify(arr));
         })
     });
@@ -393,16 +399,22 @@ function getColumnsTypeFullTable(columnNum) {
 }
 
 function getColumnsTypeESO(columnNum) {
-    let result = 't.id';
+    let result = 'id';
 
     switch (columnNum) {
         case '0':
-            result = 't.id'
+            result = 'id'
             break;
         case '1':
-            result = 'd.date'
+            result = 'client_name'
             break;
         case '2':
+            result = 'ident_code'
+            break;
+        case '3':
+            result = 'd.date'
+            break;
+        case '4':
             result = 't.type'
             break;
     }
@@ -449,16 +461,36 @@ function findProfileByName(profileName) {
 }
 
 function getAllClients(type) {
-    const sql = `
-    SELECT id, client_name, erp_type, ident_code
-    FROM clients
-    WHERE clients.metering_type = '${type}'
-    `;
+    let sql = `SELECT id, client_name, erp_type, ident_code
+    FROM clients `;
+    if (type) {
+        sql += ` WHERE clients.metering_type = '${type}'`;
+    }
+
     const result = dbSync.query(sql);
     if (result.length) {
         return result;
     } else {
         throw 'search client by ident code failed';
+    }
+}
+
+function getClientsESO(esoType) {
+    let esoTable;
+    if (esoType == 'graphs') {
+        esoTable = 'hour_prediction_eso';
+    } else if (esoType == 'readings') {
+        esoTable = 'hour_readings_eso';
+    }
+    const sql = `SELECT clients.id, client_name, erp_type, ident_code
+    FROM clients
+    INNER JOIN ${esoTable} ON ${esoTable}.client_id = clients.id`;
+
+    const result = dbSync.query(sql);
+    if (result.length) {
+        return result;
+    } else {
+        throw 'search client eso failed';
     }
 }
 

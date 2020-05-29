@@ -101,6 +101,7 @@ app.use(require('./API-controllers/imports/import-hour-readings-eso-api'));
 //  Clients - Menu
 app.use(require('./API-controllers/clients/clients-menu-table-api'));
 app.use(require('./API-controllers/clients/clients-info-page-api'));
+app.use(require('./API-controllers/clients/clients-eso-info-page-api'));
 
 //  Readings - Menu 
 app.use(require('./API-controllers/readings/list-readings-stp-api'));

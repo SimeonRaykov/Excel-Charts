@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.0/fullcalendar.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href='../../../AdminLTE-master/plugins/fullcalendar/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.css' rel='stylesheet' />
+    <script src='../../../AdminLTE-master/plugins/fullcalendar/main.js'></script>
+    <script src='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.js'></script>
+    <script src="../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
+    <link rel="stylesheet" href="../../../AdminLTE-master/css/custom-calendar.css">
+    <link rel="stylesheet" href="../../../../css/clients-info.css">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <link rel="stylesheet">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <ul class="nav nav-tabs row justify-content-between text-center">
+        <li><a class="nav-link" data-toggle="tab" href="#info">Информация</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#hour-readings">Мерения по часове</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#graph">График</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#imbalance">Небаланси</a></li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- Info -->
+        <div id="info" class="tab-pane fade">
+            <div class="card card-default mt-2">
+                <div class="card-header">
+                    <h2 class="text-center my-2">Детайли на клиент - ЕСО</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <label class="col-md-4">Име на клиент</label>
+                        <input type="text" class="col-md-7">
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4">Идентификационен код</label>
+                        <input type="text" class="col-md-7" disabled>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4">Име на профил</label>
+                        <select type="text" id="input-profile-name" class="col-md-7 mb-3 p-2">
+                        </select>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4">Тип мерене</label>
+                        <input name="metering_type" class="col-md-7" disabled />
+                    </div>
+                    <div class="row">
+                        <label class="col-md-4">ЕРП Тип</label>
+                        <input list="profilesID" name="erp_type" class="col-md-7" disabled />
+                    </div>
+                    
+                    <div class="row justify-content-center">
+                        <label class="col-md-4 ml-2">Производител</label>
+
+                        <div class="squaredThree">
+                            <input type="checkbox" value="None" id="squaredThree" name="check" />
+                            <label for="squaredThree"></label>
+                        </div>
+                    </div>
+                    
+                    <button onclick="goBack()" class="btn-lg btn-success pull-right ">Върни се</button>
+                    <button class="btn-lg btn-warning pull-right mr-5 mb-2">Запази</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hour-Readings -->
+        <div id="hour-readings" class="tab-pane fade">
+            <h2 id="hourReadingsHeading" class="text-center">Мерения по часове за клиент: </h2>
+            <hr>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="row calendar-hourly">
+                <div id="calendar-hourly">
+                </div>
+
+                <!--      <div id="legend" class="col-md-2">
+                    <h2 class="text-center mb-3"><i class="fas fa-tags"></i>Легенда</h2>
+                    <ul>
+                        <li class="text-primary mb-3">Синъо: Настоящи мерения</li>
+                        <li class="text-danger">Червено: Нови мерения</li>
+                    </ul>
+                </div> -->
+            </div>
+
+            <div class="hour-readings-graph-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDate" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDate" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnHourlyGraph" class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="hour-readings-chart" class="mb-5" width="1200" height="500"></canvas>
+            </div>
+        </div>
+
+        <!-- Graphs -->
+        <div id="graph" class="tab-pane fade">
+            <h2 id="graphHeading" class="text-center">График за клиент: </h2>
+            <hr>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="graphRow-calendar">
+                <div id="calendar-prediction">
+                </div>
+            </div>
+
+            <div class="graph-prediction-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateGraphPrediction" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateGraphPrediction" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphPrediction"
+                                class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="graph-prediction-chart" class="mb-5" width="1200" height="500"></canvas>
+            </div>
+        </div>
+
+        <!-- Imbalances -->
+        <div id="imbalance" class="tab-pane fade">
+            <h2 id="imbalancesHeading" class="text-center">Небаланси за клиент: </h2>
+            <hr>
+            <label class="switch red-border">
+                <input class="switch-input" type="checkbox" checked />
+                <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                <span class="switch-handle"></span>
+            </label>
+
+            <div class="row">
+                <div id="calendar-imbalance" class="col-md-12">
+                </div>
+            </div>
+            <div class="imbalance-graph-div">
+                <form action="submit">
+                    <div class="row my-5">
+                        <div class="offset-1 col-md-3">
+                            <input type="date" name="fromDateImbalanceGraph" />От дата
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="toDateImbalanceGraph" />До дата
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" id="searchBtnGraphImbalance" class="btn-lg btn-primary">Търси</button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="switch red-border">
+                                <input class="switch-input" type="checkbox" checked />
+                                <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <canvas id="imbalance-chart" class="mb-5" width="1200" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="../../../../js/helper-functions/find-get-parameter.js"></script>
+    <script src="../../../../js/helper-functions/date-manipulations.js"></script>
+    <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
+    <script src="../../../../js/clients/clients-eso-info.js"></script>
+</body>
+
+</html>
