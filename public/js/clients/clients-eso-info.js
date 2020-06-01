@@ -6,10 +6,8 @@ $(document).ready(function () {
 });
 
 const readingTypes = {
-    STP_HOUR_READING: 'stp-hour-reading',
     HOUR_READING: 'hour-reading',
-    STP_GRAPH_HOUR_READING: 'stp-graph-hour-prediction',
-    GRAPH_HOUR_READING: 'graph-hour-prediction'
+    GRAPH_HOUR_READING: 'graph'
 }
 
 let _IS_EXECUTED = false;
@@ -340,11 +338,6 @@ function showGraphPredictionChart(data) {
         if (data.length == 1) {
             _IS_MULTIPLE_DAYS_GRAPHS_CHART = false;
             for (let el in data) {
-                let amount = data[el]['amount'];
-                if (amount == null || amount == undefined) {
-                    amount = 1;
-                }
-
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
                     if (index >= 2 && index <= 25) {
@@ -366,11 +359,6 @@ function showGraphPredictionChart(data) {
             for (let el in data) {
                 let date = new Date(data[el]['date']);
                 for (let hr in data[el]) {
-                    let amount = data[el]['amount'];
-                    if (amount == null || amount == undefined) {
-                        amount = 1;
-                    }
-
                     if (index >= 2 && index <= 25) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
@@ -463,10 +451,6 @@ function showImbalanceChart(data) {
         if (data.length == 1) {
             _IS_MULTIPLE_DAYS_IMBALANCES_CHART = false;
             for (let el in data) {
-                let amount;
-                if (amount == null || amount == undefined) {
-                    amount = 1;
-                }
                 let date = new Date(data[el]['date']);
                 let isManufacturer = data[el]['is_manufacturer'];
                 let valuesData = Object.values(data[el]);
@@ -475,7 +459,7 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
+                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction]).toFixed(3);
                         const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
                         const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
@@ -508,16 +492,12 @@ function showImbalanceChart(data) {
             for (let el of data) {
                 indexActualData = 2;
                 indexPrediction = 26;
-                let amount;
-                if (amount == null || amount == undefined) {
-                    amount = 1;
-                }
                 let date = new Date(el['date']);
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
                     const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
-                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
+                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction]).toFixed(3);
                     const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
@@ -613,7 +593,7 @@ function showImbalanceChart(data) {
 function visualizeChartsAutomatically() {
     const readingType = findGetParameter('type');
     const readingDate = findGetParameter('date');
-    if ((readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) && readingDate != null) {
+    if ((readingType == readingTypes.HOUR_READING) && readingDate != null) {
         $('#hour-readings input[name=fromDate]').val(readingDate);
         $('#hour-readings input[name=toDate]').val(readingDate);
         $('#searchBtnHourlyGraph').click();
@@ -640,8 +620,8 @@ function visualizeChartsAutomatically() {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            defaultDate: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? readingDate : formattedToday,
-            defaultView: readingDate != null && (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) ? 'timeGridDay' : 'dayGridMonth',
+            defaultDate: readingDate != null && (readingType == readingTypes.HOUR_READING) ? readingDate : formattedToday,
+            defaultView: readingDate != null && (readingType == readingTypes.HOUR_READING) ? 'timeGridDay' : 'dayGridMonth',
             events: getGraphsData(),
             plugins: ['dayGrid', 'timeGrid'],
             header: {
@@ -654,7 +634,7 @@ function visualizeChartsAutomatically() {
         setTimeout(function () {
             calendar.render();
         }, 0);
-        if (readingType == readingTypes.HOUR_READING || readingType == readingTypes.STP_HOUR_READING) {
+        if (readingType == readingTypes.HOUR_READING) {
             $('body > div.container.mt-3 > ul > li:nth-child(2) > a').click();
         } else if (readingDate == null && readingType == null) {
             $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
@@ -670,7 +650,7 @@ function visualizeChartsAutomatically() {
             eventLimitClick: 'day',
             allDaySlot: false,
             eventOrder: 'groupId',
-            defaultDate: readingDate != null && (readingType == readingTypes.GRAPH_HOUR_READING || readingType == readingTypes.STP_GRAPH_HOUR_READING) ? readingDate : formattedToday,
+            defaultDate: readingDate != null && (readingType == readingTypes.GRAPH_HOUR_READING) ? readingDate : formattedToday,
             defaultView: readingDate != null && readingType == readingTypes.GRAPH_HOUR_READING ? 'timeGridDay' : 'dayGridMonth',
             events: getGraphPredictions(),
             plugins: ['dayGrid', 'timeGrid'],
@@ -685,7 +665,7 @@ function visualizeChartsAutomatically() {
             calendar.render();
         }, 0);
 
-        if (readingType == readingTypes.GRAPH_HOUR_READING || readingType == readingTypes.STP_GRAPH_HOUR_READING) {
+        if (readingType == readingTypes.GRAPH_HOUR_READING) {
             $('body > div.container.mt-3 > ul > li:nth-child(3) > a').click();
         } else if (readingDate == null && readingType == null) {
             $('body > div.container.mt-3 > ul > li:nth-child(1) > a').click();
@@ -808,8 +788,8 @@ function processESODataHourly(data) {
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
-        let energyType = data[el].energy_type;
         let i = 0;
+        let type = data[el].type;
         const startIndexHourReadings = 11;
         const endIndexHourReadings = 34;
         let timezoneOffset = false;
@@ -822,7 +802,7 @@ function processESODataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
+                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${type==1?'Потребена':type==2?'Произведена':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red,
@@ -848,7 +828,6 @@ function processESODataHourly(data) {
 }
 
 function processESODataGraphPredictions(data) {
-    console.log(data);
     writeGraphHeading(data[0]['ident_code']);
     let dataArr = [];
     let currHourReading = [];
@@ -857,10 +836,6 @@ function processESODataGraphPredictions(data) {
     let endIndexGraphPrediction = 34;
 
     for (let el in data) {
-        let amount = data[el].amount;
-        if (amount == null || amount == undefined) {
-            amount = 1;
-        }
         currHourReading = [];
         let currHourDate = new Date(data[el].date);
         let diff = data[el].diff;
@@ -908,10 +883,6 @@ function processDataImbalances(data) {
     let currHourReading = [];
     for (let el in data) {
         currHourReading = [];
-        let amount = data[el]['amount'];
-        if (amount == null || amount == undefined) {
-            amount = 1;
-        }
         let currHourDate = new Date(data[el].date);
         let currHourReadingVal = 2;
         let currHourPredictionVal = 26;
@@ -922,7 +893,7 @@ function processDataImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, ((objVals[currHourPredictionVal] * amount).toFixed(3)), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
+                const currImbalance = calcImbalance(isManufacturer, ((objVals[currHourPredictionVal]).toFixed(3)), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,

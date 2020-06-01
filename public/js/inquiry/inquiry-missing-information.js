@@ -109,18 +109,41 @@ const FULL_TABLE_COLUMNS = [{
 const ESO_TABLE_COLUMNS = [{
         data: "id",
         render: function (data, type, row) {
+            let readingType;
+            const selected = missingInfoType.getReadingType();
+            switch (selected) {
+                case readingTypes.HOUR_READING_ESO:
+                    readingType = 'eso-hour-readings';
+                    break;
+                case readingTypes.GRAPH_READING_ESO:
+                    readingType = 'eso-graph-predictions';
+                    break;
+            }
             const date = row['date'];
             const fullDate = new Date(date);
             const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
             const id = row['id'] === '-' ? 'Липсва' : row['id'];
             const classType = id === 'Липсва' ? 'missing-info' : 'full';
-            return `<td><a class="${classType}" href=/users/eso-hour-readings/daily/s?id=${id}&date=${fixedDate}>${id}</td>`
+            return `<td><a class="${classType}" href=/users/${readingType}/daily/s?id=${id}&date=${fixedDate}>${id}</td>`
         }
     },
     {
         data: "ident_code",
         render: function (data, type, row) {
-            return `<td>${row['ident_code']}</td>`;
+            let readingType;
+            const date = row['date'];
+            const fullDate = new Date(date);
+            const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
+            const selected = missingInfoType.getReadingType();
+            switch (selected) {
+                case readingTypes.HOUR_READING_ESO:
+                    readingType = 'hour-reading';
+                    break;
+                case readingTypes.GRAPH_READING_ESO:
+                    readingType = 'graph';
+                    break;
+            }
+            return `<a href="/users/clients-eso/info/${row['cId']}?date=${formattedDate}&type=${readingType}">${row['ident_code']}</a>`;
         }
     },
     {
@@ -138,28 +161,25 @@ const ESO_TABLE_COLUMNS = [{
             return '<td>' + formattedDate + '</td>'
         },
     },
-    {
-        data: "type",
-        render: function (data, type, row) {
-            const energyType = row['type'] == 1 ? 'Потребена' : row['type'] == 2 ? 'Произведена' : 'Липсва';
-            return '<td>' + energyType + '</td>';
-        }
-    },
+
 ]
 
 function renderTableHeadings() {
     const type = missingInfoType.getReadingType();
     let tHeadSettings = '';
-
-    if (type === readingTypes.HOUR_READING_ESO) {
-        tHeadSettings = $(`<th>ID на мерене</th> <th>Идентификационен код на клиент</th>
-        <th>Име на клиент</th><th> Дата на мерене </th>`);
-    } else {
-        tHeadSettings = $(`<th>ID на мерене</th>
+    switch (type) {
+        case readingTypes.HOUR_READING_ESO:
+        case readingTypes.GRAPH_READING_ESO:
+            tHeadSettings = $(`<th>ID на мерене</th> <th>Идентификационен код на клиент</th>
+            <th>Име на клиент</th><th> Дата на мерене </th>`);
+            break;
+        default:
+            tHeadSettings = $(`<th>ID на мерене</th>
       <th>Идентификационен код на клиент</th>
       <th>Име на клиент</th>
       <th>Дата на мерене</th>
       <th>ЕРП</th>`);
+            break;
     }
     $('#inquiry-missing-information-table > thead > tr').append(tHeadSettings);
 }
@@ -297,10 +317,16 @@ function getReadings(arr) {
             },
             type: 'POST',
         },
-        columns: missingInfoType.getReadingType() === readingTypes.HOUR_READING_ESO ? ESO_TABLE_COLUMNS : FULL_TABLE_COLUMNS,
+        columns: missingInfoType.getReadingType() === readingTypes.HOUR_READING_ESO || missingInfoType.getReadingType() === readingTypes.GRAPH_READING_ESO ? ESO_TABLE_COLUMNS : FULL_TABLE_COLUMNS,
         retrieve: true
     });
     toastr.clear();
+    //  Check if dataTable is empty / has error
+    setTimeout(() => {
+        if ($('#inquiry-missing-information-table').dataTable().fnSettings().aoData.length === 0) {
+            alert('Възникна грешка в заявката. Опитай с различни филтри и по възможност по-конкретни.');
+        }
+    }, 60000);
 };
 
 function getURLForAPI() {
@@ -323,6 +349,8 @@ function getURLForAPI() {
                         return `/api/filter/inquiry-missing-information/graphs`;
                     case readingTypes.STP_GRAPH_READING:
                         return `/api/filter/inquiry-missing-information/stp-graphs`;
+                    case readingTypes.GRAPH_READING_ESO:
+                        return `/api/filter/inquiry-missing-information/eso-graphs`;
                 }
     }
 }
@@ -366,13 +394,6 @@ function visualizeCheckboxesFromHistoryLocation() {
     }
 }
 
-function showHorizontalLineESO() {
-    $('#hr-line-eso').css('display', 'block');
-}
-
-function hideHorizontalLineESO() {
-    $('#hr-line-eso').css('display', 'none');
-}
 
 function removeClientNameInput() {
     $('body > div.container.mt-3 > div.card.card-default > div.card-body > form > div.row.justify-content-around.my-3 > div:nth-child(1)').css('display', 'none');
@@ -420,7 +441,13 @@ function configurateInputsForESOReadings() {
     showClientNameInput();
     removeProfileNameInput();
     showClientsIdentCodeInput();
-    showHorizontalLineESO();
+    showERPCheckboxes();
+}
+
+function configurateInputsForESOGraphs() {
+    showClientNameInput();
+    removeProfileNameInput();
+    showClientsIdentCodeInput();
     showERPCheckboxes();
 }
 
@@ -429,7 +456,6 @@ function configurateInputsForSTPHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
-    showHorizontalLineESO();
 }
 
 function configurateInptusForSTPGraphs() {
@@ -437,7 +463,6 @@ function configurateInptusForSTPGraphs() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     showProfileNameInput();
-    showHorizontalLineESO();
 }
 
 function configurateInputsForGraphReadings() {
@@ -445,7 +470,6 @@ function configurateInputsForGraphReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
-    showHorizontalLineESO();
 }
 
 function configurateInputsForHourReadings() {
@@ -453,7 +477,6 @@ function configurateInputsForHourReadings() {
     showClientsIdentCodeInput();
     showERPCheckboxes();
     removeProfileNameInput();
-    showHorizontalLineESO();
 }
 
 function makeClientIDRequired() {
@@ -467,6 +490,7 @@ function makeClientIDNotRequired() {
 function configurateInputs() {
     const dataType = $("input[name='data_type']:checked")[0].value || findGetParameter('data_type');
     const selected = $("input[name='readings']:checked")[0].value || findGetParameter('readings');
+
     switch (dataType) {
         case 'data_readings':
             missingInfoType.setDataType(dataTypes.HOUR_READING);
@@ -488,11 +512,11 @@ function configurateInputs() {
             break;
         case 'data_graphs':
             missingInfoType.setDataType(dataTypes.GRAPH);
-            removeESORadioOption();
             showERPCheckboxes();
             showClientNameInput();
             showClientsIdentCodeInput();
             switch (selected) {
+
                 case 'hour_readings':
                     configurateInputsForGraphReadings();
                     missingInfoType.setReadingType(readingTypes.GRAPH_READING);
@@ -500,6 +524,10 @@ function configurateInputs() {
                 case 'stp_hour_readings':
                     configurateInptusForSTPGraphs();
                     missingInfoType.setReadingType(readingTypes.STP_GRAPH_READING);
+                    break;
+                case 'hour_readings_eso':
+                    configurateInputsForESOGraphs();
+                    missingInfoType.setReadingType(readingTypes.GRAPH_READING_ESO);
                     break;
             }
             break;

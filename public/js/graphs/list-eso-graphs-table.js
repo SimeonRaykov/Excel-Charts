@@ -172,7 +172,11 @@ function listESOHourReadings(arr) {
             {
                 data: "ident_code",
                 render: function (data, type, row) {
-                    return `<a href="/users/clients-eso/info/${row['cId']}">${row['ident_code']}</a>`;
+                    const readingType = 'graph';
+                    const date = row['date'];
+                    const fullDate = new Date(date);
+                    const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
+                    return `<a href="/users/clients-eso/info/${row['cId']}?date=${formattedDate}&type=${readingType}">${row['ident_code']}</a>`;
                 },
 
             }, {
