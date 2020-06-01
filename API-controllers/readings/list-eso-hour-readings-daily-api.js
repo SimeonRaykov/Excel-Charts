@@ -80,7 +80,7 @@ router.get('/api/eso-graph-predictions/daily/:id/:date', (req, res) => {
     INNER JOIN clients ON clients.id = hour_prediction_eso.client_id
     WHERE hour_prediction_eso.date = '${req.params.date}'
     AND hour_prediction_eso.id = '${req.params.id}'`;
-console.log(sql);
+    console.log(sql);
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
