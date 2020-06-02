@@ -3,6 +3,7 @@ $(document).ready(function () {
     getAllCharts();
     visualizeAllDefaultInputs();
     visualizeChartsAutomatically();
+    getProfileHistory();
 });
 
 const readingTypes = {
@@ -17,14 +18,27 @@ let _IS_EXECUTED = false;
 class Client {
     constructor() {
         this.meteringType = '';
+        this.name = '';
+        this.ident_code = '';
     }
-
+    getName() {
+        return this.name;
+    }
+    getIdentCode() {
+        return this.ident_code;
+    }
     getMeteringType() {
         return this.meteringType;
     }
 
     setMeteringType(meteringType) {
         return this.meteringType = meteringType;
+    }
+    setName(name) {
+        return this.name = name;
+    }
+    setIdentCode(ident_code) {
+        return this.ident_code = ident_code;
     }
 }
 
@@ -119,6 +133,7 @@ function saveChangesForSTPClient() {
             isManufacturer,
             profileName
         } = getInputValsForInfoPage();
+
         validateProfileName(profileName)
         $.ajax({
             url: `/api/saveClientSTPChanges/details/${clientID}`,
@@ -130,10 +145,20 @@ function saveChangesForSTPClient() {
                 name
             },
             success: function () {
-                refreshURL()
+                notification('Клиентът е успешно променен', 'success');
+                setTimeout(() => {
+                    refreshURL()
+                }, 1000);
             },
             error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown);
+                if (jqXhr.status === 200) {
+                    notification('Клиентът е успешно променен', 'success');
+                    setTimeout(() => {
+                        refreshURL()
+                    }, 1000);
+                } else {
+                    notification('Възникна грешка при променяне на клиента!', 'error');
+                }
             }
         });
     }, 0);
@@ -148,9 +173,13 @@ function getClientInfo() {
         dataType: 'json',
         async: false,
         success: function (data) {
-            setMeteringType(data['metering_type']);
-            visualizeClientInfo(data);
-            getDatalistingOptions(data['erp_type']);
+            if (data) {
+                client.setName(data['client_name']);
+                client.setIdentCode(data['ident_code']);
+                setMeteringType(data['metering_type']);
+                visualizeClientInfo(data);
+                getDatalistingOptions(data['erp_type']);
+            }
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -195,6 +224,7 @@ function getGraphPredictionsFilterData(fromDate, toDate, clientID) {
     }
     let url = client.getMeteringType() == 2 ? `/api/stp-graph-predictions/${fromDate}/${toDate}/${clientID}` :
         `/api/graph-predictions/${fromDate}/${toDate}/${clientID}`;
+
     $.ajax({
         url,
         method: 'GET',
@@ -876,7 +906,6 @@ function processDataHourly(data) {
 }
 
 function processDataGraphPredictions(data) {
-console.log(data);
     writeGraphHeading(data[0]['ident_code']);
     let dataArr = [];
     let currHourReading = [];
@@ -904,7 +933,7 @@ console.log(data);
                 break;
             }
             if (i >= startIndexGraphPrediction && i <= endIndexGraphPrediction) {
-           //     console.log(value*amount);
+                //     console.log(value*amount);
                 currHourReading = {
                     groupId: diff,
                     id: key,
@@ -1127,6 +1156,53 @@ function visualizeAllDefaultInputs() {
 
 function goBack() {
     window.history.back();
+}
+
+function getProfileHistory() {
+    const clientID = getClientID();
+    const url = `/api/profile-history/${clientID}`;
+    $.ajax({
+        url,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            if (data && data.length) {
+                renderProfileHistoryGroupListings(data);
+            } else {
+                $('#profile-history > div > div.card-body').append($('<span>Няма история на профилите</span>'));
+            }
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function renderProfileHistoryGroupListings(data) {
+    console.log(data)
+    let groupList = $('<ul class="list-group text-center"></ul>');
+    for (let i = 0; i < data.length; i += 1) {
+        const currProfileName = data[i].profile_name;
+        const profileID = data[i].profile_id;
+        const startDate = new Date(data[i].created_date);
+        const endDate = new Date(data[i].end_date);
+        const formattedStartDate = `${startDate.getFullYear()}-${startDate.getMonth()+1<10?`0${startDate.getMonth()+1}`:startDate.getMonth()+1}-${startDate.getDate()<10?`0${startDate.getDate()}`:startDate.getDate()}`;
+        const formattedEndDate = `${endDate.getFullYear()}-${endDate.getMonth()+1<10?`0${endDate.getMonth()+1}`:endDate.getMonth()+1}-${endDate.getDate()<10?`0${endDate.getDate()}`:endDate.getDate()}`;
+        let currentEl = $(`<li class="list-group-item list-group-item-action" data-id=${profileID}>Профил: ${currProfileName}, От дата: ${formattedStartDate}, До дата: ${formattedEndDate}</li>`);
+        if (data[i].end_date == null) {
+            currentEl = $(`<li class="list-group-item list-group-item-action" data-id=${profileID}>Профил: ${currProfileName}, От дата: ${formattedStartDate}, Настоящ</li>`);
+            currentEl.addClass('active');
+        }
+        currentEl.appendTo(groupList);
+    }
+    $('#profile-history > div > div.card-body').append(groupList);
+    $('#profile-history > div > div.card-header > h2').text(`История на профилите за клиент: ${client.getIdentCode()}`);
+    (function redirectToProfilePageEvent() {
+        $('.list-group-item-action').on('click', (e) => {
+            const selectedProfileID = e.target.getAttribute('data-id');
+            window.location.href = `/users/profiles/${selectedProfileID}`;
+        })
+    })();
 }
 
 function validateProfileName(profileName) {

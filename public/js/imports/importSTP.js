@@ -389,7 +389,6 @@ function processFile(e) {
                         const currDateVals = Object.values(monthlyAmount[i]);
                         const currDate = new Date(monthlyAmount[i].date);
                         const formattedCurrDate = `${currDate.getFullYear()}-${currDate.getMonth()+2<10?`0${currDate.getMonth()+2}`:currDate.getMonth()+2}-${currDate.getDate()<10?`0${currDate.getDate()}`:currDate.getDate()}`;
-                        console.log(currDateVals)
                         for (let val = 0; val < 24; val += 1) {
                             currHourObj = {
                                 currHour: val,
@@ -397,14 +396,12 @@ function processFile(e) {
                             }
                             currHourValues.push(currHourObj);
                         }
-                        console.log(currHourReading);
                         currHourReading.push(currClientName, currClientID, typeEnergy, formattedCurrDate, currHourValues, erpType, new Date());
                         finalSTPHourReadings.push(currHourReading);
                         currHourReading = [];
                         currHourValues = [];
                     }
                 }
-                console.log(finalSTPHourReadings);
                 changeClientIdForHourReadings(finalSTPHourReadings, cl);
                 saveSTPHourReadingsToDB(finalSTPHourReadings);
             } else {
