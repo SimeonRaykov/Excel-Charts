@@ -243,7 +243,6 @@ input:checked+.slider:before {
 .switch {
     position: relative;
     display: block;
-    vertical-align: top;
     width: 100px;
     height: 30px;
     padding: 3px;
@@ -363,6 +362,6 @@ input:checked+.slider:before {
     border-top-width: 1px !important;
 }
 
-.list-group-item+.list-group-item:hover {
+.list-group-item+.list-group-item,.list-group-item.active:hover {
     cursor: pointer;
 }
