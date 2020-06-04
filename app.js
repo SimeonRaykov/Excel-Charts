@@ -121,6 +121,7 @@ app.use(require('./API-controllers/profiles/profiles-api'));
 app.use(require('./API-controllers/invoices/stp-list-readings-api'));
 app.use(require('./API-controllers/invoices/stp-list-clients-details-api'));
 app.use(require('./API-controllers/invoices/stp-reading-details-api'));
+app.use(require('./API-controllers/invoices/hourly-list-readings-api'));
 
 //  Inquiry
 app.use(require('./API-controllers/inquiry/inquiry-readings-api'));

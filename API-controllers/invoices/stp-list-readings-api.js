@@ -4,7 +4,7 @@ const {
     db
 } = require('../../db.js');
 
-router.get('/getInvoicingClientIDs&Names', (req, res) => {
+router.get('/invoicingClientIDs&NamesSTP', (req, res) => {
     let sql = `SELECT DISTINCT clients.id, clients.client_name, ident_code FROM clients
     INNER JOIN invoicing on invoicing.client_id = clients.id;`;
 
@@ -15,7 +15,7 @@ router.get('/getInvoicingClientIDs&Names', (req, res) => {
         return res.send(result);
     });
 });
-router.post('/api/filterData', (req, res) => {
+router.post('/api/filterData-invoicing-stp', (req, res) => {
     let {
         search,
         start,
@@ -106,7 +106,7 @@ router.post('/api/filterData', (req, res) => {
         })
     });
 });
-
+ 
 function getInvoicingColumnType(columnNum) {
     let result = 'invoicing.id';
 
@@ -157,7 +157,7 @@ router.get('/api/data-listings/STP-Hour-Readings', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
-router.post('/api/filter/invoices', (req, res) => {
+router.post('/api/filter/invoices-stp', (req, res) => {
     let {
         IDs
     } = req.body;

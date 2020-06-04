@@ -109,7 +109,10 @@ router.get('/users/list/eso-graph-readings/', (req, res) => res.render('./graphs
 }));
 
 //  Invoicing
-router.get('/users/invoicing', (req, res) => res.render('./invoicing/list-readings-stp.ejs', {
+router.get('/users/invoicing-stp', (req, res) => res.render('./invoicing/list-readings-stp.ejs', {
+    name: user.getName()
+}));
+router.get('/users/invoicing-hourly', (req, res) => res.render('./invoicing/list-readings-hourly.ejs', {
     name: user.getName()
 }));
 router.get('/users/invoicing/preview', (req, res) => res.render('./invoicing/invoicing-preview-readings.ejs', {

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
+    <script src="../../../js/datatables/datatables.js"></script>
+    <link rel="stylesheet" href="../../css/checkboxes.css">
+    <link rel="stylesheet" href="../../css/inquiry-readings-stp.css">
+    <title>Детайли на мерене</title>
+</head>
+
+<body>
+    <main>
+        <div class="card card-default">
+            <div class="card-header">
+                <h2 class="text-center mb-4">Фактуриране - почасови</h2>
+            </div>
+            <div class="card-body">
+                <form action="" method="GET">
+                    <div class="row justify-content-around">
+                        <div class="mt-3"><span class="text-heading"> От дата</span> <input id="fromDate"
+                                name="fromDate" class="ml-2" type="date" required type="search"></input>
+                        </div>
+                        <div class="mt-3"><span class="text-heading"> До дата </span><input id="toDate" name="toDate"
+                                class="ml-2" type="date" required type="search"></input>
+                        </div>
+                        <span class="text-heading mt-3"> Вид ЕРП:</span>
+                        <label class="checkbox">
+                            <input type="checkbox" name="erp_type" value="evn" id="evn" checked>
+                            <span>EVN</span>
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" name="erp_type" value="cez" id="cez" checked>
+                            <span>ЧЕЗ</span>
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox" name="erp_type" value="energoPRO" id="energoPRO" checked>
+                            <span>ЕнергоПРО</span>
+                        </label>
+                    </div>
+                    <hr>
+                    <div class="row justify-content-around my-3">
+                        <div><span class="text-heading"> Име на клиент </span><input id="nameOfClient"
+                                autocomplete="off" list="names" name="clientNames" class="ml-2" type="search"></input>
+                            <datalist id="names">
+                            </datalist>
+                        </div>
+                        <div><span class="text-heading"> Идентификационен код </span><input id="clientID"
+                                autocomplete="off" name="clientID" class="ml-2" list="idList" type="search"></input>
+                            <datalist id="idList">
+                            </datalist>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row justify-content-center">
+                        <button id="search" type="submit" class="btn-primary btn-lg mr-5">Търсене</button>
+                        <button id="invoiceBTN" class="btn-warning btn-lg">Фактурирай</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <table id="invoices-hourly" class="display text-center">
+            <thead>
+                <tr>
+                    <th>Идентификационен код</th>
+                    <th>Име на клиент</th>
+                    <th>От дата</th>
+                    <th>До дата</th>
+                    <th>Потребление (MW)</th>
+                    <th>Вид ЕРП</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+            </tbody>
+        </table>
+    </main>
+    <script src="../js/helper-functions/find-get-parameter.js"></script>
+    <script src="../js/helper-functions/get-this-and-last-month-dates.js"></script>
+    <script src="../js/helper-functions/toastr-notifications.js"></script>
+    <script src="../js/helper-functions/remove-duplicates-from-array.js"></script>
+    <script src="../js/invoicing/list-invoices-hourly.js"></script>
+</body>
+
+</html>

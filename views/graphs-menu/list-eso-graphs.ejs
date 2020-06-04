@@ -34,12 +34,13 @@
             <form action="" method="GET">
                 <div class="row justify-content-around my-3">
                     <div class="text-heading">
-                        <span class="mr-3"> Име на Клиент</span> <input list="client_names" autocomplete="off"
+                        <span> Име на Клиент</span> <input list="client_names" class="ml-4" autocomplete="off"
                             aria-controls="clients" type="search" id="client_name" name="client_name">
                     </div>
                     <div class="text-heading">
-                        <span class="mr-3">Идентификационен код</span> <input type="text" autocomplete="off"
-                            aria-controls="clients" type="search" list="ident_codes" id="ident_code" name="ident_code">
+                        <span class="mr-3">Идентификационен код</span> <input class="mr-4" type="text"
+                            autocomplete="off" aria-controls="clients" type="search" list="ident_codes" id="ident_code"
+                            name="ident_code">
                     </div>
                 </div>
                 <hr>
@@ -49,9 +50,8 @@
                             class="" type="date" type="search"></input>
                     </div>
                     <div class="text-heading ml-5"> <span class="mr-3">До дата</span> <input id="toDate" name="toDate"
-                            class="ml-5" type="date" type="search"></input>
+                            type="date" type="search"></input>
                     </div>
-
                 </div>
                 <hr>
                 <div class="row justify-content-center">
@@ -81,4 +81,5 @@
     <script src="../../../../../../js/helper-functions/get-this-and-last-month-dates.js"></script>
     <script src="../../../../../../js/graphs/list-eso-graphs-table.js"></script>
 </body>
+
 </html>
