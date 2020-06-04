@@ -6,7 +6,7 @@ $(document).ready(function () {
 (function issueInvoices() {
     $('#invoiceBTN').on('click', () => {
         $.ajax({
-            url: `/api/filter/invoices`,
+            url: `/api/filter/invoices-stp`,
             method: 'POST',
             data: {
                 IDs: localStorage.getItem('current-invoicing-data').split(),
@@ -82,7 +82,7 @@ function renderTableHeadingsCols() {
 
 function getTableRowData() {
     $.ajax({
-        url: `/api/filter/invoices`,
+        url: `/api/filter/invoices-stp`,
         method: 'POST',
         data: {
             IDs: localStorage.getItem('current-invoicing-data').split(),

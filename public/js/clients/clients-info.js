@@ -1179,7 +1179,6 @@ function getProfileHistory() {
 }
 
 function renderProfileHistoryGroupListings(data) {
-    console.log(data)
     let groupList = $('<ul class="list-group text-center"></ul>');
     for (let i = 0; i < data.length; i += 1) {
         const currProfileName = data[i].profile_name;

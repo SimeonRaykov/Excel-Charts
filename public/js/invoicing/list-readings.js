@@ -3,7 +3,7 @@ $(document).ready(function () {
     stopBubblingForInputs();
     visualizeHistoryParams();
     getInitialDataListings();
-    listAllReadings();
+    getInvoicesSTP();
 });
 
 (function addOnClickToReadingsPreviewBTN() {
@@ -48,7 +48,7 @@ $(document).ready(function () {
 (function issueInvoices() {
     $('#invoiceBTN').click(() => {
         $.ajax({
-            url: `/api/filter/invoices`,
+            url: `/api/filter/invoices-stp`,
             method: 'POST',
             data: {
                 IDs: localStorage.getItem('current-invoicing-data').split(),
@@ -77,7 +77,7 @@ function stopBubblingForInputs() {
 
 function getDataListings() {
     $.ajax({
-        url: '/getInvoicingClientIDs&Names',
+        url: '/invoicingClientIDs&NamesSTP',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -124,11 +124,11 @@ function visualizeDataListings(arr) {
         let clientID = $('#clientID').val();
         let ERP = $('#ERP').val();
 
-        listAllReadings([fromDate, toDate, nameOfClient, clientID, ERP]);
+        getInvoicesSTP([fromDate, toDate, nameOfClient, clientID, ERP]);
     });
 }())
 
-function listAllReadings(arr) {
+function getInvoicesSTP(arr) {
     if (!arr) {
         var name = findGetParameter('clientNames');
         var fromDate = findGetParameter('fromDate');
@@ -170,7 +170,7 @@ function listAllReadings(arr) {
             "targets": "_all"
         }],
         ajax: {
-            url: "/api/filterData",
+            url: "/api/filterData-invoicing-stp",
             data: {
                 fromDate,
                 toDate,
