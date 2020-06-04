@@ -39,8 +39,7 @@ router.post('/api/filterData-invoicing-hourly', (req, res) => {
         FROM clients
         LEFT JOIN hour_readings ON hour_readings.client_id = clients.id
         LEFT JOIN hour_prediction ON hour_prediction.client_id = clients.id
-        WHERE clients.metering_type = '1' `
-
+        WHERE clients.metering_type = '1' `;
 
     sql += ` AND ((hour_readings.date >= '${fromDate}' AND hour_readings.date <= '${toDate}') OR hour_prediction.date >= '${fromDate}' AND hour_prediction.date <= '${toDate}') `;
 
@@ -57,12 +56,11 @@ router.post('/api/filterData-invoicing-hourly', (req, res) => {
             sql += ` AND ( clients.erp_type = '${erp[0]}'`;
             sql += ` OR clients.erp_type = '${erp[1]}' )`;
         }
-        sql += ` GROUP BY clients.ident_code `;
+        
     } else if (erp == undefined) {
         return res.send(JSON.stringify([]));
     }
-
-    console.log(sql)
+    sql += ` GROUP BY ident_code`;
     db.query(sql, (err, result) => {
         if (err) {
             throw err;
