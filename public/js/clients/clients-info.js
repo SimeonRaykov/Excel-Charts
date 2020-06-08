@@ -911,7 +911,7 @@ function processDataGraphPredictions(data) {
     let currHourReading = [];
     //  Hour Predictions
     let startIndexGraphPrediction = 11;
-    let endIndexGraphPrediction = 34;
+    let endIndexGraphPrediction = 34;  
     //  STP Predicitons
     if (client.getMeteringType() == 2) {
         startIndexGraphPrediction = 4;

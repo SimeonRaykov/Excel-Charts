@@ -117,10 +117,9 @@ function getInvoicesHourly(arr) {
 };
 
 function visualizeDataTable(data) {
-    console.log(data);
     let i = 0;
     for (let el in data) {
-        if (el.ident_code != null) {
+        if (data[el].ident_code != null) {
             let currRow = $('<tr>').attr('role', 'row');
             if (i % 2 == 1) {
                 currRow.addClass('even');

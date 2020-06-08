@@ -235,7 +235,7 @@ function processHourReadingCEZ(e) {
                         let clientName = arr[i][0];
                         let clientID = arr[i][1];
                         let typeEnergy = arr[i][2];
-                        typeEnergy === "Активна енергия - Del" ? typeEnergy = 0 : typeEnergy = 1;
+                        typeEnergy.includes('Активна енергия')? typeEnergy = 0 : typeEnergy =1;
                         currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
                         client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
                         allClients.push(client);
