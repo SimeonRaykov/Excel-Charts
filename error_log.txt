@@ -1,1 +1,1 @@
-Error: Cannot enqueue Handshake after fatal error.
+Error: connect ECONNREFUSED 127.0.0.1:3306

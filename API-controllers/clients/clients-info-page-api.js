@@ -28,12 +28,16 @@ router.post('/api/saveClientSTPChanges/details/:id', async (req, res) => {
         profileID = resultProfile[0].id;
     }
     let updateClientsSQL = `UPDATE clients SET profile_id = ${profileID}, client_name = '${clientName}' , is_manufacturer= ${isManufacturer} WHERE id=${clientID}`;
-    if (resultProfile[0].id != currentProfile[0].profile_id) {
-        const selectProfileHistoryResult = selectLastProfileHistoryRowForClient(clientID);
-        if (selectProfileHistoryResult) {
-            updateLastRowProfileHistory(clientID);
+    try {
+        if (resultProfile[0].id != currentProfile[0].profile_id) {
+            const selectProfileHistoryResult = selectLastProfileHistoryRowForClient(clientID);
+            if (selectProfileHistoryResult) {
+                updateLastRowProfileHistory(clientID);
+            }
+            insertRowProfileHistory(profileID, clientID)
         }
-        insertRowProfileHistory(profileID, clientID)
+    } catch (err) {
+
     }
     updateClient(updateClientsSQL);
     return res.sendStatus(200);
@@ -507,7 +511,9 @@ router.get('/api/getClientSTP/details/:id', (req, res) => {
 });
 
 router.get('/api/profile-history/:clientID', (req, res) => {
-    const {clientID} = req.params;
+    const {
+        clientID
+    } = req.params;
     const sql = `SELECT DISTINCT profile_history.created_date, profile_history.end_date, profile_history.profile_id, stp_profiles.profile_name
     FROM profile_history
     INNER JOIN clients ON clients.profile_id = profile_history.id
