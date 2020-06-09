@@ -6,6 +6,11 @@ $(document).ready(function () {
     getProfileHistory();
 });
 
+const colors = {
+    blue: '#aa62ea',
+    red: '#ff4d4d'
+}
+
 const readingTypes = {
     STP_HOUR_READING: 'stp-hour-reading',
     HOUR_READING: 'hour-reading',
@@ -530,8 +535,8 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
-                        const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                        const currPredictionValue = valuesData[indexPrediction] == null ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
+                        const currReadingValue = valuesData[indexActualData] == null ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
                         const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
@@ -571,8 +576,8 @@ function showImbalanceChart(data) {
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
-                    const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
-                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
+                    const currReadingValue = valuesData[indexActualData] == null ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                    const currPredictionValue = valuesData[indexPrediction] == null ? 0 : (valuesData[indexPrediction] * amount).toFixed(3);
                     const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
@@ -851,11 +856,6 @@ function getClientID() {
     return window.location.href.substr(lastIndexOfIncline + 1);
 }
 
-const colors = {
-    blue: '#aa62ea',
-    red: '#ff4d4d'
-}
-
 function processDataHourly(data) {
     writeReadingsHeading(data[0]['ident_code']);
     writeGraphHeading(data[0]['ident_code']);
@@ -880,10 +880,11 @@ function processDataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
+                    title: value === null ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);
@@ -937,10 +938,11 @@ function processDataGraphPredictions(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${client.getMeteringType() == 2?(value * amount).toFixed(3):value * amount}`,
+                    title: value === null ? title = 'Няма стойност' : `Стойност: ${client.getMeteringType() == 2?(value * amount).toFixed(3):value * amount}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: colors.blue
+                    backgroundColor:value === null ?colors.red: colors.blue,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);
@@ -990,7 +992,8 @@ function processDataImbalances(data) {
                     title: currImbalance,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: colors.blue
+                    backgroundColor:currImbalance === null ?colors.red: colors.blue,
+                    textColor: currImbalance === null ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);
                 let oldDate = new Date(currHourDate.getTime());

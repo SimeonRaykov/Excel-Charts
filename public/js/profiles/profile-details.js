@@ -300,15 +300,15 @@ function getReadingsDataForCalendar(data) {
         let timezoneOffset = false;
         let moveRestOneHr = false;
         let iterator = 0;
-        const color = colors.blue;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator) {
                 currHourReading = {
                     id: data[el].ident_code,
-                    title: val,
+                    title: val === null ? 'Няма стойност' : val,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: color
+                    backgroundColor: val === null ? colors.red : colors.blue,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);
                 let oldDate = new Date(currHourDate.getTime());

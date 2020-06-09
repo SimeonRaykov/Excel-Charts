@@ -207,25 +207,25 @@ function processHourReadingCEZ(e) {
                         try {
                             var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            currHourValue = -1
+                            currHourValue = null;
                         }
                         try {
                             var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            nextHourValue = -1
+                            nextHourValue = null;
                         }
 
                         if (currHourValue === nextHourValue) {
                             undefinedHour = Number(arr[i][x]) + Number(arr[i][x + 1]);
                             x += 1;
                         } else if (currHourValue != val) {
-                            undefinedHour = -1;
+                            undefinedHour = null;
                             x -= 1;
                         }
 
                         currHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[i][x] || -1
+                            currValue: undefinedHour === null ? undefinedHour : arr[i][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -235,7 +235,7 @@ function processHourReadingCEZ(e) {
                         let clientName = arr[i][0];
                         let clientID = arr[i][1];
                         let typeEnergy = arr[i][2];
-                        typeEnergy.includes('Активна енергия')? typeEnergy = 0 : typeEnergy =1;
+                        typeEnergy.includes('Активна енергия') ? typeEnergy = 0 : typeEnergy = 1;
                         currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
                         client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
                         allClients.push(client);
@@ -326,13 +326,13 @@ function processHourReadingEVN_EnergoPRO(e) {
                             try {
                                 var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
                             } catch (e) {
-                                currHourValue = -1
+                                currHourValue = null;
                             }
 
                             try {
                                 var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
                             } catch (e) {
-                                nextHourValue = -1
+                                nextHourValue = null;
                             }
 
                             if (currHourValue === nextHourValue) {
@@ -340,18 +340,18 @@ function processHourReadingEVN_EnergoPRO(e) {
                                 reactiveEnergyHour = Number(arr[2][x] + Number(arr[2][x + 1]));
                                 x += 1;
                             } else if (currHourValue != val) {
-                                undefinedHour = -1;
-                                reactiveEnergyHour = -1;
+                                undefinedHour = null;
+                                reactiveEnergyHour = null;
                                 x -= 1;
                             }
 
                             currHourActiveEnergyObj = {
                                 currHour: val,
-                                currValue: undefinedHour || arr[1][x]
+                                currValue: undefinedHour === null ? undefinedHour : arr[1][x]
                             }
                             currReactiveEnergyObj = {
                                 currHour: val,
-                                currValue: reactiveEnergyHour || arr[2][x] || 0
+                                currValue: reactiveEnergyHour === null ? reactiveEnergyHour : arr[2][x] || 0
                             }
                             currActiveEnergyValues.push(currHourActiveEnergyObj);
                             currReactiveEnergyValues.push(currReactiveEnergyObj);
@@ -482,21 +482,21 @@ function processGraphFile(e) {
                         try {
                             var nextHourValue = Number(arr[0][y + 1].split(':')[0].split(':')[0]) - 1 === -1 ? 23 : Number(arr[0][y + 1].split(':')[0].split(':')[0]) - 1;
                         } catch (e) {
-                            nextHourValue = -1
+                            nextHourValue = null;
                         }
 
                         if (currHourValue === nextHourValue) {
                             undefinedHour = Number(arr[i][y]) + Number(arr[i][y + 1]);
                             y += 1;
                         } else if (currHourValue != val) {
-                            undefinedHour = -1;
+                            undefinedHour = null;
                             y -= 1;
                         }
 
                         let currValue = arr[i][y];
                         let currHourObj = {
                             currHour: currHourValue,
-                            currValue: undefinedHour || currValue
+                            currValue: undefinedHour === null ? undefinedHour : currValue
                         }
                         currHourValues.push(currHourObj);
                         val += 1;

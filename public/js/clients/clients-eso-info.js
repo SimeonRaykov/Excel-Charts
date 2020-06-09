@@ -4,6 +4,10 @@ $(document).ready(function () {
     visualizeAllDefaultInputs();
     visualizeChartsAutomatically();
 });
+const colors = {
+    blue: '#aa62ea',
+    red: '#ff4d4d'
+}
 
 const readingTypes = {
     HOUR_READING: 'hour-reading',
@@ -459,8 +463,8 @@ function showImbalanceChart(data) {
                         if (index > finalIndex) {
                             break;
                         }
-                        const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction]).toFixed(3);
-                        const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                        const currPredictionValue = valuesData[indexPrediction] == null ? 0 : (valuesData[indexPrediction]).toFixed(3);
+                        const currReadingValue = valuesData[indexActualData] == null ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
                         const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                         let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                         let actualHourObj = {
@@ -496,8 +500,8 @@ function showImbalanceChart(data) {
                 let isManufacturer = el['is_manufacturer'];
                 let valuesData = Object.values(el);
                 for (let y = 0; y < Math.floor(valuesData.length / 2); y += 1) {
-                    const currReadingValue = valuesData[indexActualData] == -1 ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
-                    const currPredictionValue = valuesData[indexPrediction] == -1 ? 0 : (valuesData[indexPrediction]).toFixed(3);
+                    const currReadingValue = valuesData[indexActualData] == null ? 0 : (Number(valuesData[indexActualData]) / 1000).toFixed(7);
+                    const currPredictionValue = valuesData[indexPrediction] == null ? 0 : (valuesData[indexPrediction]).toFixed(3);
                     const currImbalance = calcImbalance(isManufacturer, currPredictionValue, currReadingValue);
                     let t = index == startingIndexActualHourData ? date : incrementHoursOne(date)
                     let actualHourObj = {
@@ -773,11 +777,6 @@ function getClientID() {
     return window.location.href.substr(lastIndexOfIncline + 1);
 }
 
-const colors = {
-    blue: '#aa62ea',
-    red: '#ff4d4d'
-}
-
 function processESODataHourly(data) {
     writeReadingsHeading(data[0]['ident_code']);
     writeGraphHeading(data[0]['ident_code']);
@@ -802,10 +801,11 @@ function processESODataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${type==1?'Потребена':type==2?'Произведена':''}`,
+                    title: value === null ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${type==1?'Потребена':type==2?'Произведена':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: diff === 0 ? colors.blue : colors.red,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);
@@ -850,10 +850,11 @@ function processESODataGraphPredictions(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${value}`,
+                    title: value === null ? title = 'Няма стойност' : `Стойност: ${value}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: colors.blue
+                    backgroundColor:value === null ?colors.red: colors.blue,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);
@@ -899,7 +900,8 @@ function processDataImbalances(data) {
                     title: currImbalance,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: colors.blue
+                    backgroundColor:value === currImbalance ?colors.red: colors.blue,
+                    textColor: value === currImbalance ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);
                 let oldDate = new Date(currHourDate.getTime());

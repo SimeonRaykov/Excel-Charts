@@ -234,13 +234,13 @@ function processHourReadingFile(e) {
                             try {
                                 var currHourValue = (arr[0][y].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][y].split(' ')[1].split(':')[0]) - 1;
                             } catch (e) {
-                                currHourValue = -1
+                                currHourValue = null;
                             }
 
                             try {
                                 var nextHourValue = (arr[0][y + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][y + 1].split(' ')[1].split(':')[0]) - 1;
                             } catch (e) {
-                                nextHourValue = -1
+                                nextHourValue = null;
                             }
 
 
@@ -248,13 +248,13 @@ function processHourReadingFile(e) {
                                 undefinedHour = Number(arr[i][y]) + Number(arr[i][y + 1]);
                                 y += 1;
                             } else if (currHourValue != val) {
-                                undefinedHour = -1;
+                                undefinedHour = null;
                                 y -= 1;
                             }
 
                             currHourObj = {
                                 currHour: val,
-                                currValue: undefinedHour || arr[i][y]
+                                currValue: undefinedHour === null? undefinedHour: arr[i][y]
                             }
                             currHourValues.push(currHourObj);
                             y += 1;

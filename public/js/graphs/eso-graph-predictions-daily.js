@@ -183,11 +183,11 @@ function processCalendarData(data) {
                 currHourReading = {
                     groupId: key,
                     id: key,
-                    title: value === -1 ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)}`,
+                    title: value === null ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: value === -1 ? colors.red : colors.blue,
-                    textColor: value === -1 ? 'white' : 'black'
+                    backgroundColor: value === null ? colors.red : colors.blue,
+                    textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
                 let newDate = incrementHoursOne(currHourDate);

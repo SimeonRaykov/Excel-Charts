@@ -78,30 +78,30 @@ function processEsoHourReadings(e) {
                         try {
                             var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            currHourValue = -1
+                            currHourValue = null
                         }
 
                         try {
                             var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            nextHourValue = -1
+                            nextHourValue = null
                         }
 
                         if (currHourValue === nextHourValue) {
                             undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
                             x += 1;
                         } else if (currHourValue != val) {
-                            undefinedHour = -1;
+                            undefinedHour = null;
                             x -= 1;
                         }
 
                         usedHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[1][x] || -1
+                            currValue: undefinedHour === null? undefinedHour : arr[1][x] || -1
                         }
                         producedHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[2][x] || 0
+                            currValue: undefinedHour === null? undefinedHour : arr[2][x] || 0
                         }
                         currUsedEnergyHourValues.push(usedHourObj);
                         currProducedEnergyHourValues.push(producedHourObj)

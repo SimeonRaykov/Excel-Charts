@@ -139,7 +139,7 @@ function processFile(e) {
                                 var currHourValue = Number(arr[2][x].split(' ')[0].split(':')[0]) === 12 ? Number(arr[2][x].split(' ')[0].split(':')[0]) - 12 : Number(arr[2][x].split(' ')[0].split(':')[0]) - 1;
                             }
                         } catch (e) {
-                            currHourValue = -1
+                            currHourValue = null;
                         }
 
                         try {
@@ -154,20 +154,20 @@ function processFile(e) {
                                 var nextHourValue = Number(arr[2][x + 1].split(' ')[0].split(':')[0]) === 12 ? Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 12 : Number(arr[2][x + 1].split(' ')[0].split(':')[0]) - 1;
                             }
                         } catch (e) {
-                            nextHourValue = -1
+                            nextHourValue = null;
                         }
 
                         if (currHourValue === nextHourValue) {
                             undefinedHour = Number(arr[3][x]) + Number(arr[3][x + 1]);
                             x += 1;
                         } else if (currHourValue != val) {
-                            undefinedHour = -1;
+                            undefinedHour = null;
                             x -= 1;
                         }
 
                         currHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[3][x]
+                            currValue: undefinedHour === null ? undefinedHour : arr[3][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
@@ -181,7 +181,6 @@ function processFile(e) {
                     currHourObj = {};
                     x -= 1;
                 }
-
                 saveProfileReadingsToDB(allProfileCoefs);
                 /*    while (true) {
                     if (arr[0][i] != '' && arr[0][i] != undefined && arr[2][i] != '' && arr[2][i] != undefined) {
@@ -234,26 +233,26 @@ function processFile(e) {
                         try {
                             var currHourValue = (arr[0][x].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            currHourValue = -1
+                            currHourValue = null;
                         }
 
                         try {
                             var nextHourValue = (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1 === -1 ? 23 : (arr[0][x + 1].split(' ')[1].split(':')[0]) - 1;
                         } catch (e) {
-                            nextHourValue = -1
+                            nextHourValue = null;
                         }
 
                         if (currHourValue === nextHourValue) {
                             undefinedHour = Number(arr[1][x]) + Number(arr[1][x + 1]);
                             x += 1;
                         } else if (currHourValue != val) {
-                            undefinedHour = -1;
+                            undefinedHour = null;
                             x -= 1;
                         }
 
                         currHourObj = {
                             currHour: val,
-                            currValue: undefinedHour || arr[1][x]
+                            currValue: undefinedHour === null ? undefinedHour : arr[1][x]
                         }
                         currHourValues.push(currHourObj);
                         x += 1;
