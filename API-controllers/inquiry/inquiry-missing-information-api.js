@@ -48,10 +48,10 @@ router.post('/api/filter/inquiry-missing-information/stp-hour-readings', async (
         FROM all_dates d
         LEFT JOIN stp_hour_readings t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
         LEFT JOIN clients c ON c.id = t.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine = null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
@@ -120,10 +120,10 @@ router.post('/api/filter/inquiry-missing-information/graphs', async (req, res) =
         FROM all_dates d
         LEFT JOIN hour_prediction t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
         LEFT JOIN clients c ON c.id = t.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine = null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
@@ -197,10 +197,10 @@ router.post('/api/filter/inquiry-missing-information/stp-graphs', async (req, re
         LEFT JOIN prediction p on p.date = d.date AND p.client_id = '${clientsInfo[i].id}'
         LEFT JOIN profile_coef t on t.date = d.date
         LEFT JOIN clients c ON c.id = p.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine =  null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
@@ -270,10 +270,10 @@ router.post('/api/filter/inquiry-missing-information/eso-graphs', async (req, re
         FROM all_dates d
         LEFT JOIN ${hoursTable} t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
         LEFT JOIN ${clientsTable} c ON c.id = t.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine = null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
@@ -342,10 +342,10 @@ router.post('/api/filter/inquiry-missing-information/eso-readings', async (req, 
         FROM all_dates d
         LEFT JOIN ${hoursTable} t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
         LEFT JOIN ${clientsTable} c ON c.id = t.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine = null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
@@ -415,10 +415,10 @@ router.post('/api/filter/inquiry-missing-information/hour-readings', async (req,
         FROM all_dates d
         LEFT JOIN hour_readings t on t.date = d.date AND t.client_id = '${clientsInfo[i].id}'
         LEFT JOIN clients c ON c.id = t.client_id
-        WHERE t.hour_zero = -1 OR t.hour_one = -1 OR t.hour_two = -1 OR t.hour_three = -1 OR  t.hour_four = -1 OR t.hour_five = -1 OR t.hour_five = -1
-        OR t.hour_six = -1 OR t.hour_seven = -1 OR t.hour_eight = -1 OR t.hour_nine = -1 OR t.hour_ten = -1 OR t.hour_eleven = -1 OR t.hour_twelve = -1
-        OR t.hour_thirteen = -1 OR t.hour_fourteen = -1 OR t.hour_fifteen = -1 OR t.hour_sixteen = -1 OR t.hour_seventeen = -1 OR t.hour_eighteen = -1
-        OR t.hour_nineteen = -1 OR t.hour_twenty = -1 OR t.hour_twentyone = -1 OR t.hour_twentytwo = -1 OR t.hour_twentythree = -1 OR t.id IS NULL`;
+        WHERE t.hour_zero = null OR t.hour_one = null OR t.hour_two = null OR t.hour_three = null OR  t.hour_four = null OR t.hour_five = null OR t.hour_five = null
+        OR t.hour_six = null OR t.hour_seven = null OR t.hour_eight = null OR t.hour_nine = null OR t.hour_ten = null OR t.hour_eleven = null OR t.hour_twelve = null
+        OR t.hour_thirteen = null OR t.hour_fourteen = null OR t.hour_fifteen = null OR t.hour_sixteen = null OR t.hour_seventeen = null OR t.hour_eighteen = null
+        OR t.hour_nineteen = null OR t.hour_twenty = null OR t.hour_twentyone = null OR t.hour_twentytwo = null OR t.hour_twentythree = null OR t.id IS NULL`;
         if (search.value) {
             sql += `  AND (d.date LIKE '%${search.value}%')`;
         }
