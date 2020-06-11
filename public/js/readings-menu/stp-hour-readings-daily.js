@@ -89,7 +89,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: (Number(data[el][hr])/1000).toFixed(7),
+                            y: (Number(data[el][hr]) / 1000).toFixed(7),
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -109,7 +109,7 @@ function showChartDaily(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: (Number(data[el][hr])/1000).toFixed(7)
+                            y: (Number(data[el][hr]) / 1000).toFixed(7)
                         }
                         chartData.push(hourObj);
                     }
