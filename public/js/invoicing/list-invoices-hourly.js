@@ -2,7 +2,7 @@
 $(document).ready(function () {
     visualizeHistoryParams();
     getInitialDataListings();
-    getInvoicesHourly();
+    //   getInvoicesHourly();
 });
 
 function getDataListings() {
@@ -46,6 +46,7 @@ function visualizeDataListings(arr) {
 
 (function filterClientData() {
     $('#search').on('click', (event) => {
+        event.preventDefault();
         try {
             dataTable.clear().destroy();
         } catch (err) {}
@@ -54,14 +55,14 @@ function visualizeDataListings(arr) {
         let nameOfClient = $('#nameOfClient').val();
         let clientID = $('#clientID').val();
         let erp = [];
-        if (window.location.href.includes('energoPRO')) {
-            erp.push(3);
+        if ($('#evn').prop('checked')) {
+            erp.push(1);
         }
-        if (window.location.href.includes('cez')) {
+        if ($('#cez').prop('checked')) {
             erp.push(2);
         }
-        if (window.location.href.includes('evn')) {
-            erp.push(1);
+        if ($('#energoPRO').prop('checked')) {
+            erp.push(3);
         }
         getInvoicesHourly([fromDate, toDate, nameOfClient, clientID, erp]);
     });
@@ -118,6 +119,7 @@ function getInvoicesHourly(arr) {
 };
 
 function visualizeDataTable(data) {
+    $('#invoices-hourly').removeClass('invisible');
     let i = 0;
     for (let el in data) {
         if (data[el].ident_code != null) {

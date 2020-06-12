@@ -3,7 +3,7 @@ $(document).ready(function () {
     stopBubblingForInputs();
     visualizeHistoryParams();
     getInitialDataListings();
-    getInvoicesSTP();
+    // getInvoicesSTP();
 });
 
 (function addOnClickToReadingsPreviewBTN() {
@@ -55,7 +55,6 @@ $(document).ready(function () {
             },
             dataType: 'json',
             success: function (data) {
-                console.log(data);
                 clearInvoices();
             },
             error: function (jqXhr, textStatus, errorThrown) {
@@ -115,20 +114,22 @@ function visualizeDataListings(arr) {
 }
 
 (function filterClientData() {
-    $('body > div > form > div > button').on('click', (event) => {
+    $('#search').on('click', (event) => {
         event.preventDefault();
-        dataTable.clear().destroy();
+        try {
+            dataTable.clear().destroy();
+        } catch (err) {};
         let fromDate = $('#fromDate').val();
         let toDate = $('#toDate').val();
         let nameOfClient = $('#nameOfClient').val();
         let clientID = $('#clientID').val();
-        let ERP = $('#ERP').val();
 
-        getInvoicesSTP([fromDate, toDate, nameOfClient, clientID, ERP]);
+        getInvoicesSTP([fromDate, toDate, nameOfClient, clientID]);
     });
 }())
 
 function getInvoicesSTP(arr) {
+    $('#list-readings').removeClass('invisible');
     if (!arr) {
         var name = findGetParameter('clientNames');
         var fromDate = findGetParameter('fromDate');
@@ -151,8 +152,17 @@ function getInvoicesSTP(arr) {
             toDate,
             name,
             clientID,
-            erp
         ] = arr;
+        var erp = [];
+        if ($('#evn').prop('checked')) {
+            erp.push(1);
+        }
+        if ($('#cez').prop('checked')) {
+            erp.push(2);
+        }
+        if ($('#energoPRO').prop('checked')) {
+            erp.push(3);
+        }
     }
     notification('Loading...', 'loading');
     dataTable = $('#list-readings').DataTable({
@@ -263,6 +273,7 @@ function getInvoicesSTP(arr) {
         ],
         retrieve: true
     });
+
     toastr.clear();
 };
 
