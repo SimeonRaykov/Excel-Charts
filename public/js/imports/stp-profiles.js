@@ -83,6 +83,27 @@ $(document).ready(function () {
     document.getElementById('upload-profiles').addEventListener('change', processFile, false);
 });
 
+$('#profile-name').on('change', function () {
+    const currentProfileVal = $('#profile-name').val();
+    const profileValues = $('#profilesList option');
+    for (let el of profileValues) {
+        if (el.value === currentProfileVal) {
+            const erpValue = Number($(el).attr("data-id"));
+            switch (erpValue) {
+                case 1:
+                    $('#profiles-evn').click();
+                    break;
+                case 2:
+                    $('#profiles-cez').click();
+                    break;
+                case 3:
+                    $('#profiles-energo-pro').click();
+                    break;
+            }
+        }
+    }
+});
+
 function processFile(e) {
     notification('Зареждане', 'loading');
     e.stopPropagation();
@@ -420,7 +441,7 @@ function getDataListing() {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            convertDataToSet(data);
+            visualizeDataListings(data);
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -430,19 +451,20 @@ function getDataListing() {
 
 function convertDataToSet(data) {
     let profileNames = [];
+    let identCodes = [];
     for (let num in data) {
         profileNames.push(data[num].profile_name);
+        identCodes.push(data[num].type);
     }
     let uniqueProfileNames = removeDuplicatesFromArr(profileNames);
-    visualizeDataListings(uniqueProfileNames);
+    visualizeDataListings(uniqueProfileNames, identCodes);
 }
 
-function visualizeDataListings(profileNames) {
-    for (let name of profileNames) {
-        if (name != undefined) {
-            $('#profilesList').append(`<option value="${name}"></option>`);
+function visualizeDataListings(data) {
+    for (let i = 0; i < data.length; i += 1) {
+        if (data[i] && data[i].profile_name && data[i].type) {
+            $('#profilesList').append(`<option data-id="${data[i].type}" value="${data[i].profile_name}"></option>`);
         }
-
     }
 }
 

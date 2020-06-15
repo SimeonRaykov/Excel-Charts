@@ -11470,7 +11470,7 @@
 			 *      } );
 			 *    } );
 			 */
-			"sEmptyTable": "No data available in table",
+			"sEmptyTable": "Няма данни в таблицата",
 	
 	
 			/**

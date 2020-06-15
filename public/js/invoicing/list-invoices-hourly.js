@@ -109,8 +109,6 @@ function getInvoicesHourly(arr) {
         },
         success: async function (data) {
             await visualizeDataTable(data);
-            addOnChangeEventsToInputs();
-
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -155,31 +153,31 @@ function visualizeDataTable(data) {
         ]
     });
 };
-
+ 
 function generateInvoiceXML(data) {
     //  1.5
     let xml = `<Invoice>`;
     //  1.7
-    generateInvoiceHeader(xml);
+    generateInvoiceHeader();
     //  1.9
-    generateAddress(xml);
+    generateAddress();
     //  1.13
-    generateRecipient(xml);
+    generateRecipient();
     //  1.14
-    generateDetails(xml);
+    generateDetails();
     //  1.15
-    generateTax(xml);
+    generateTax();
     //  1.16
-    generateTotalGrossAmount(xml);
+    generateTotalGrossAmount();
     //  1.17
-    generatePaymentMethod(xml);
+    generatePaymentMethod();
     //  1.18
-    generatePaymentConditions(xml)
+    generatePaymentConditions()
     //  1.19
-    generatePresentationDetails(xml);
+    generatePresentationDetails();
     xml += `</Invoice>`;
 
-    function generateInvoiceHeader(xml) {
+    function generateInvoiceHeader() {
         xml += `<InvoiceHeader>
      <InvoiceNumber></InvoiceNumber>
      <InvoiceDate></InvoiceDate>
@@ -192,13 +190,13 @@ function generateInvoiceXML(data) {
      </InvoiceHeader>`;
     }
 
-    function generateAddress(xml) {
+    function generateAddress() {
         xml += `<Address>
         <Email></Email>    
         </Address>`
     }
 
-    function generateRecipient(xml) {
+    function generateRecipient() {
         xml += `<Recipient>
         <VATIdentificationNumber>BG130221692</VATIdentificationNumber>
         <IdentificationNumber>130221692</IdentificationNumber>
@@ -212,7 +210,7 @@ function generateInvoiceXML(data) {
         </Recipient>`;
     }
 
-    function generateDetails(xml) {
+    function generateDetails() {
         xml += `<Details>
         <ItemList ListType="structured">
         <ListLineItem>
@@ -230,7 +228,7 @@ function generateInvoiceXML(data) {
         `;
     }
 
-    function generateTax(xml) {
+    function generateTax() {
         xml += `<Tax>
         <VAT>
         <Item>
@@ -242,11 +240,11 @@ function generateInvoiceXML(data) {
         </Tax>`;
     }
 
-    function generateTotalGrossAmount(xml) {
+    function generateTotalGrossAmount() {
         xml += `<TotalGrossAmount Currency="BGN" >23.51</TotalGrossAmount>`;
     }
 
-    function generatePaymentMethod(xml) {
+    function generatePaymentMethod() {
         xml += `<PaymentMethod xsi:type="CreditTransferType">
         <Comment>платежно нареждане</ Comment>
         <BeneficiaryAccount>
@@ -263,7 +261,7 @@ function generateInvoiceXML(data) {
         `;
     }
 
-    function generatePaymentConditions(xml) {
+    function generatePaymentConditions() {
         xml += `<PaymentConditions>
         <DueDate>2006-02-03</DueDate>
         <Discount>
@@ -284,7 +282,7 @@ function generateInvoiceXML(data) {
         `;
     }
 
-    function generatePresentationDetails(xml) {
+    function generatePresentationDetails() {
         xml += `<PresentationDetails>
         <LogoURL>RaifaizenLizing.gif</LogoURL>
         <LayoutID>0100</LayoutID>

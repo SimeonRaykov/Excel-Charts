@@ -147,6 +147,7 @@ function processFile(e) {
             if (companies.CEZ === company.getCompany()) {
                 getCols(workbook['Sheets'][`${first_sheet_name}`]).forEach(function (value, i) {
                     if (i !== 0 && i !== 1) {
+
                         if (value['4'] == '' || value['4'] == undefined) {
                             return;
                         }
@@ -174,7 +175,7 @@ function processFile(e) {
                         let arr1 = d2.split('.');
                         let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
 
-                        let reading = [value['4'].replace(/"/g, ''), date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+                        let reading = [value['4'], date_from, date_to, value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
 
                         readingsAll.push(reading);
                         clientIds.push(value['4']);
@@ -183,6 +184,7 @@ function processFile(e) {
                     }
                 });
                 let filteredClients = filterClients(clientsAll);
+                console.log(filteredClients)
                 saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
                 changeClientIdForReadings(readingsAll, cl)
@@ -418,7 +420,7 @@ function processFile(e) {
                 let clientNumber;
                 let ident_code;
                 let client_name;
-
+                
                 if (i !== 0 && i !== 1) {
                     if (value['0'] != '""' && value['0'] != null && value['0'] != undefined && value['0'] != '') {
                         if (value['7'] !== undefined) {
@@ -434,8 +436,6 @@ function processFile(e) {
                         const profileID = 0;
                         const isManufacturer = 0;
 
-
-
                         let type = value['3'];
                         if (type == '"Техническа част"') {
                             type = 1;
@@ -445,16 +445,21 @@ function processFile(e) {
                         //CEZ operator 2
                         let operator = 2;
                         let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
-                        let dateFromHelper = value['12'].replace(/"/g, '');
 
-                        let arr = dateFromHelper.split('.');
-                        let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+                        let dateFromHelper = value['12'];
+                        try {
+                            var arr = dateFromHelper.split('.');
+                            var date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
+                        } catch (err) {
 
-                        let dateToHelper = value['13'].replace(/"/g, '');
-                        let arr1 = dateToHelper.split('.');
-                        let date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+                        }
 
-                        let reading = [ident_code, date_from, date_to, value['14'].replace(/"/g, ''), value['15'].replace(/"/g, ''), value['17'].replace(/"/g, ''), value['18'].replace(/"/g, ''), value['19'].replace(/"/g, ''), value['20'].replace(/"/g, ''), value['21'].replace(/"/g, ''), value['23'].replace(/"/g, ''), value['24'].replace(/"/g, ''), value['25'].replace(/"/g, ''), value['26'].replace(/"/g, ''), value['27'].replace(/"/g, ''), value['28'].replace(/"/g, ''), value['29'].replace(/"/g, ''), type, operator];
+                        try {
+                            var dateToHelper = value['13'];
+                            var arr1 = dateToHelper.split('.');
+                            var date_to = `${arr1[2]}-${arr1[1]}-${arr1[0]}`;
+                        } catch (err) {}
+                        let reading = [ident_code, date_from, date_to, value['14'], value['15'], value['17'], value['18'], value['19'], value['20'], value['21'], value['23'], value['24'], value['25'], value['26'], value['27'], value['28'], value['29'], type, operator];
                         readingsAll.push(reading);
                         clientIds.push(ident_code);
                         clientsAll.push(client);
@@ -462,8 +467,11 @@ function processFile(e) {
                 }
             });
             saveClientsToDB(clientsAll);
-            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds)
+            console.log(clientIds)
+            const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
+            console.log(mappedClientsIDs)
             cl = getClientsFromDB(mappedClientsIDs);
+            console.log(cl)
             changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
         }
