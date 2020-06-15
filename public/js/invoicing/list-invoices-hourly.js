@@ -110,6 +110,7 @@ function getInvoicesHourly(arr) {
         success: async function (data) {
             await visualizeDataTable(data);
             addOnChangeEventsToInputs();
+
         },
         error: function (jqXhr, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -145,6 +146,9 @@ function visualizeDataTable(data) {
         }
     }
     dataTable = $('#invoices-hourly').DataTable({
+        "drawCallback": () => {
+            addOnChangeEventsToInputs();
+        },
         stateSave: true,
         "order": [
             [0, "asc"]
