@@ -5,7 +5,7 @@ const {
 } = require('../../db.js');
 
 router.get('/api/data-listings/profiles', (req, res) => {
-    let sql = `SELECT profile_name
+    let sql = `SELECT profile_name, type
  FROM stp_profiles`;
     db.query(sql, (err, result) => {
         if (err) {

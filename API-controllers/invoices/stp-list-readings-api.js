@@ -77,6 +77,7 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
             countFilteredSql += ` OR clients.erp_type = '${erp[1]}' )`;
         }
     } else if (erp == undefined) {
+        
         return res.send(JSON.stringify([]));
     }
     if (search.value) {
