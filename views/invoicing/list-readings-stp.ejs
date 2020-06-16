@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../../css/inquiry-readings-stp.css">
 
 </head>
+
 <body>
     <div class="card card-default mt-2">
         <div class="card-header">
@@ -56,7 +57,7 @@
                     </div>
                 </div>
                 <hr>
-                <div class="row justify-content-center"><button type="submit"
+                <div class="row justify-content-center"><button type="submit" id="search"
                         class="btn-primary btn-lg ml-3">Търсене</button></div>
             </form>
         </div>
@@ -68,21 +69,22 @@
         <button id="invoiceBTN" class="btn-warning btn-lg">Фактуриране</button>
         <button id="select-rows" class="btn-primary btn-lg">Селектиране на всички редове</button>
     </div>
-    <table id="list-readings" class="display">
+    <hr>
+    <table id="list-readings" class="invisible display">
         <thead>
             <tr>
-                <th>ID на отчет</th>
                 <th>Клиентски номер</th>
                 <th>Идентификационен код</th>
                 <th>Име на клиент</th>
                 <th>Период на отчетност от</th>
                 <th>Период на отчетност до</th>
-                <th>Часова зона</th>
-                <th>Количество</th>
-                <th>Стойност в лв.</th>
-                <th>Тип на документа</th>
+                <th>Сума дневна</th>
+                <th>Сума нощна</th>
+                <th>Сума върхова</th>
+                <th>Сума единична</th>
+                <th>Акциз</th>
+                <th>Мощност</th>
                 <th>ЕРП</th>
-                <th>Детайли</th>
             </tr>
         </thead>
         <tbody id="tBody">

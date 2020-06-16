@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {
-    db
+    db,
+    dbSync
 } = require('../../db.js');
 
 router.get('/invoicingClientIDs&NamesSTP', (req, res) => {
@@ -17,134 +18,117 @@ router.get('/invoicingClientIDs&NamesSTP', (req, res) => {
 });
 router.post('/api/filterData-invoicing-stp', (req, res) => {
     let {
-        search,
-        start,
-        length,
-        order,
         fromDate,
         toDate,
         name,
         ident_code,
         erp
     } = req.body;
-    const columnNum = order[0].column;
-    const columnType = getInvoicingColumnType(columnNum)
-    const orderType = order[0].dir;
 
-    let sql = `SELECT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, invoicing.id AS invoicing_id,client_number, ident_code, qty, period_from, period_to, value_bgn, type
+    let searchIDsSQL = `SELECT DISTINCT invoicing.client_id AS id
     FROM invoicing
-    INNER JOIN clients
-    ON invoicing.client_id = clients.id
-    WHERE 1=1 `;
-    let countTotalSql = `SELECT COUNT(invoicing.id) AS count
-    FROM invoicing
-    INNER JOIN clients
-    ON invoicing.client_id = clients.id
-    WHERE 1=1 `;
-    let countFilteredSql = `SELECT COUNT(invoicing.id) AS count
-    FROM invoicing
-    INNER JOIN clients
-    ON invoicing.client_id = clients.id
+    INNER JOIN clients ON clients.id = invoicing.client_id
     WHERE 1=1 `;
 
     if (fromDate != '' && fromDate != undefined && toDate != '' && toDate != undefined) {
-        sql += ` AND invoicing.period_from >= '${fromDate}' AND invoicing.period_to <= '${toDate}' `;
-        countFilteredSql += ` AND invoicing.period_from >= '${fromDate}' AND invoicing.period_to <= '${toDate}' `;
+        searchIDsSQL += ` AND invoicing.period_from >= '${fromDate}' AND invoicing.period_to <= '${toDate}' `;
     } else if (fromDate != '' && fromDate != undefined && (toDate == '' || toDate == undefined)) {
-        sql += ` AND invoicing.period_from >= '${fromDate}' `;
-        countFilteredSql += ` AND invoicing.period_from >= '${fromDate}' `;
+        searchIDsSQL += ` AND invoicing.period_from >= '${fromDate}' `;
     } else if (toDate != '' && toDate != undefined && (fromDate == '' || fromDate == undefined)) {
-        sql += ` AND invoicing.period_to <= '${toDate}' `;
-        countFilteredSql += ` AND invoicing.period_to <= '${toDate}' `;
+        searchIDsSQL += ` AND invoicing.period_to <= '${toDate}' `;
     }
 
     if (name != '' && name != undefined) {
-        sql += ` AND clients.client_name LIKE '%${name}%'`;
-        countFilteredSql += ` AND clients.client_name LIKE '%${name}%'`;
+        searchIDsSQL += ` AND clients.client_name LIKE '%${name}%'`;
     }
     if (ident_code != '' && ident_code != undefined) {
-        sql += ` AND clients.ident_code = '${ident_code}'`;
-        countFilteredSql += ` AND clients.ident_code = '${ident_code}'`;
+        searchIDsSQL += ` AND clients.ident_code = '${ident_code}'`;
     }
+
     if (erp && erp.length !== 3 && erp.length != 0) {
         if (erp.length == 1) {
-            sql += ` AND clients.erp_type = '${erp}'`;
-            countFilteredSql += ` AND clients.erp_type = '${erp}'`;
+            searchIDsSQL += ` AND clients.erp_type = '${erp}'`;
         } else if (erp.length == 2) {
-            sql += ` AND ( clients.erp_type = '${erp[0]}'`;
-            sql += ` OR clients.erp_type = '${erp[1]}' )`;
-            countFilteredSql += ` AND ( clients.erp_type = '${erp[0]}'`;
-            countFilteredSql += ` OR clients.erp_type = '${erp[1]}' )`;
+            searchIDsSQL += ` AND ( clients.erp_type = '${erp[0]}'`;
+            searchIDsSQL += ` OR clients.erp_type = '${erp[1]}' )`;
         }
     } else if (erp == undefined) {
-        
         return res.send(JSON.stringify([]));
     }
-    if (search.value) {
-        sql += `  AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `
-        countFilteredSql += ` AND (client_name LIKE '%${search.value}%' OR ident_code LIKE '%${search.value}%') `;
-    }
-    sql += ` ORDER BY ${columnType} ${orderType}`;
-    sql += ` LIMIT ${start},${length}`;
-
-    const countSQL = countTotalSql + ' UNION ' + countFilteredSql;
-    db.query(countSQL, (err, countTotal) => {
-        if (err) {
-            throw err;
+    const clientIDs = dbSync.query(searchIDsSQL);
+    if (clientIDs) {
+        let currClientID = clientIDs[0].id;
+        let sql = `SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
+        invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) AS period_from, MAX(period_to) AS period_to, type, 
+            (SELECT SUM(diff)
+            FROM invoicing
+            INNER JOIN clients ON clients.id = invoicing.client_id
+            WHERE time_zone = "А Н" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+        ) AS diff_night,
+            (SELECT SUM(diff)
+            FROM invoicing
+            INNER JOIN clients ON clients.id = invoicing.client_id
+            WHERE time_zone = "А Д" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+        ) AS diff_day,
+        (SELECT SUM(diff)
+            FROM invoicing
+            INNER JOIN clients ON clients.id = invoicing.client_id
+            WHERE time_zone = "А В" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+        ) AS diff_peak,
+        (SELECT SUM(diff)
+            FROM invoicing
+            INNER JOIN clients ON clients.id = invoicing.client_id
+            WHERE time_zone = "А Е" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+        ) AS diff_single
+            FROM invoicing
+            INNER JOIN clients ON invoicing.client_id = clients.id
+            WHERE invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}' 
+            GROUP BY ident_code`;
+        for (let i = 1; i < clientIDs.length; i += 1) {
+            currClientID = clientIDs[i].id;
+            sql += ` UNION SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
+         invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) as period_from, MAX(period_to) as period_to, type, 
+             (SELECT SUM(diff)
+             FROM invoicing
+             INNER JOIN clients ON clients.id = invoicing.client_id
+             WHERE time_zone = "А Н" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+         ) AS diff_night,
+             (SELECT SUM(diff)
+             FROM invoicing
+             INNER JOIN clients ON clients.id = invoicing.client_id
+             WHERE time_zone = "А Д" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+         ) AS diff_day,
+         (SELECT SUM(diff)
+             FROM invoicing
+             INNER JOIN clients ON clients.id = invoicing.client_id
+             WHERE time_zone = "А В" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+         ) AS diff_peak,
+         (SELECT SUM(diff)
+             FROM invoicing
+             INNER JOIN clients ON clients.id = invoicing.client_id
+             WHERE time_zone = "А Е" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+         ) AS diff_single
+             FROM invoicing
+             INNER JOIN clients ON invoicing.client_id = clients.id
+             WHERE invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
+             GROUP BY ident_code`
         }
+
         db.query(sql, (err, result) => {
             if (err) {
                 throw err;
             }
-            const recordsTotal = countTotal[0].count;
-            const recordsFiltered = countTotal[1] ? countTotal[1].count : countTotal[0].count
-            let arr = {
-                recordsTotal,
-                recordsFiltered,
-                data: result
-            }
-            return res.send(JSON.stringify(arr));
+            result = result.map(obj => ({
+                ...obj,
+                service: '-',
+                duty: (Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single)) * 2
+            }))
+            return res.send(JSON.stringify(result));
         })
-    });
-});
- 
-function getInvoicingColumnType(columnNum) {
-    let result = 'invoicing.id';
-
-    switch (columnNum) {
-        case '0':
-            result = 'invoicing.id'
-            break;
-        case '1':
-            result = 'clients.client_number'
-            break;
-        case '2':
-            result = 'clients.ident_code'
-            break;
-        case '3':
-            result = 'invoicing.period_from'
-            break;
-        case '4':
-            result = 'invoicing.period_to'
-            break;
-        case '5':
-            result = 'invoicing.time_zone'
-            break;
-        case '6':
-            result = 'invoicing.qty'
-            break;
-        case '7':
-            result = 'invoicing.value_bgn'
-            break;
-        case '8':
-            result = 'invoicing.type'
-            break;
-        case '9':
-            result = 'invoicing.operator'
-            break;
+    } else {
+        return res.send(JSON.stringifiy([]));
     }
-    return result
-}
+});
 
 router.get('/api/data-listings/STP-Hour-Readings', (req, res) => {
     let sql = `SELECT DISTINCT clients.ident_code, clients.client_name
