@@ -153,7 +153,7 @@ function visualizeDataTable(data) {
         ]
     });
 };
- 
+
 function generateInvoiceXML(data) {
     //  1.5
     let xml = `<Invoice>`;

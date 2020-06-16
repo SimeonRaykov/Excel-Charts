@@ -39,12 +39,6 @@ $(document).ready(function () {
     })
 }());
 
-/* (function renderInvoicingPreview() {
-    $('body > div.container.mt-3 > div.row.justify-content-around.mb-3 > button.btn-success.btn-lg').on('click', () => {
-        setHeadingsColsandItemsRowsInLocalStorage();
-    });
-}()); */
-
 (function issueInvoices() {
     $('#invoiceBTN').click(() => {
         $.ajax({
@@ -165,117 +159,70 @@ function getInvoicesSTP(arr) {
         }
     }
     notification('Loading...', 'loading');
+    $.ajax({
+        url: '/api/filterData-invoicing-stp',
+        method: 'POST',
+        data: {
+            fromDate,
+            toDate,
+            name,
+            ident_code: clientID,
+            erp
+        },
+        dataType: 'json',
+        success: function (data) {
+            renderDataTable(data);
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+    });
+};
+
+function renderDataTable(data) {
+    for (let i = 0; i < data.length; i += 1) {
+        let currRow = $('<tr>').attr('role', 'row');
+        if (i % 2 == 1) {
+            currRow.addClass('even');
+        } else {
+            currRow.addClass('odd');
+        }
+        const erpType = data[i]['operator'];
+        const periodFrom = new Date(data[i]['period_from']);
+        const periodTo = new Date(data[i]['period_to']);
+        const formattedPeriodTo = `${periodTo.getFullYear()}-${periodTo.getMonth()+1<10?`0${periodTo.getMonth()+1}`:periodTo.getMonth()+1}-${periodTo.getDate()<10?`0${periodTo.getDate()}`:periodTo.getDate()}`;
+        const formattedPeriodFrom = `${periodFrom.getFullYear()}-${periodFrom.getMonth()+1<10?`0${periodFrom.getMonth()+1}`:periodFrom.getMonth()+1}-${periodFrom.getDate()<10?`0${periodFrom.getDate()}`:periodFrom.getDate()}`;
+        const diff_day = data[i]['diff_day'] || '-';
+        const diff_night = data[i]['diff_night'] || '-';
+        const diff_peak = data[i]['diff_peak'] || '-';
+        const diff_single = data[i]['diff_single'] || '-';
+        const service = data[i]['service'] || '-';
+        currRow
+            .append($('<td>' + data[i]['client_number'] + '</td>'))
+            .append($(`<td><a href=clients/${data[i]['id']}>${data[i]['ident_code']}</a></td>`))
+            .append($('<td>' + data[i]['client_name'] + '</td>'))
+            .append($(`<td>${formattedPeriodFrom}</td>`))
+            .append($(`<td>${formattedPeriodTo}</td>`))
+            .append($(`<td>${diff_day}</td>`))
+            .append($(`<td>${diff_night}</td>`))
+            .append($(`<td>${diff_peak}</td>`))
+            .append($(`<td>${diff_single}</td>`))
+            .append($(`<td>${data[i]['duty']}</td>`))
+            .append($(`<td>${service}</td>`))
+            .append($('<td>' + (erpType === 1 ? 'EVN' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))
+            .append($('</tr>'));
+        currRow.appendTo($('#tBody'));
+    }
+    $('#tBody').addClass('text-center');
+    //DESC order 
     dataTable = $('#list-readings').DataTable({
-        destroy: false,
-        "paging": true,
         stateSave: true,
-        sAjaxDataProp: 'data',
         "order": [
             [0, "asc"]
-        ],
-        "processing": true,
-        "serverSide": true,
-        "columnDefs": [{
-            "className": "dt-center",
-            "targets": "_all"
-        }],
-        ajax: {
-            url: "/api/filterData-invoicing-stp",
-            data: {
-                fromDate,
-                toDate,
-                name,
-                ident_code: clientID,
-                erp
-            },
-            type: 'POST',
-        },
-        columns: [{
-                data: "id",
-                render: function (data, type, row) {
-                    return `<td><input type="checkbox" class="mr-1">${row['invoicing_id']}</td>`;
-                }
-            },
-            {
-                data: "client_number",
-                render: function (data, type, row) {
-                    return `<td>${row['client_number']}</td>`;
-                },
-
-            }, {
-                data: "ident_code",
-                render: function (data, type, row) {
-                    return `<td><a href=clients/${row['id']}>${row['ident_code']}</a></td>`;
-                },
-            }, {
-                data: "client_name",
-                render: function (data, type, row) {
-                    return `<td>${row['client_name']}</td>`;
-                },
-            },
-            {
-                data: "period_from",
-                render: function (data, type, row) {
-                    const periodFrom = new Date(row['period_from']);
-                    const formattedPeriodFrom = `${periodFrom.getFullYear()}-${periodFrom.getMonth()+1<10?`0${periodFrom.getMonth()+1}`:periodFrom.getMonth()+1}-${periodFrom.getDate()<10?`0${periodFrom.getDate()}`:periodFrom.getDate()}`;
-                    return `<td>${formattedPeriodFrom}</td>`;
-                }
-            },
-            {
-                data: "period_to",
-                render: function (data, type, row) {
-                    const periodTo = new Date(row['period_to']);
-                    const formattedPeriodTo = `${periodTo.getFullYear()}-${periodTo.getMonth()+1<10?`0${periodTo.getMonth()+1}`:periodTo.getMonth()+1}-${periodTo.getDate()<10?`0${periodTo.getDate()}`:periodTo.getDate()}`;
-                    return `<td>${formattedPeriodTo}</td>`;
-                }
-            },
-            {
-                data: "time_zone",
-                render: function (data, type, row) {
-                    const timeZone = row['time_zone'] == '' ? '' : row['time_zone'];
-                    return `<td>${timeZone}</td>`;
-                }
-            },
-            {
-                data: "qty",
-                render: function (data, type, row) {
-                    const quantity = row['qty'] == '' ? '' : `${row['qty']}(кВтч/кВАрч)`;
-                    return `<td>${quantity}</td>`;
-                }
-            },
-            {
-                data: "value_bgn",
-                render: function (data, type, row) {
-                    const valueBGN = row['value_bgn'] == 0 ? '' : `${row['value_bgn']} лв`;
-                    return `<td>${valueBGN}</td>`;
-                }
-            },
-            {
-                data: "type",
-                render: function (data, type, row) {
-                    const currType = row['type'] == 1 ? 'Техническа част' : 'Разпределение';
-                    return `<td>${currType}</td>`;
-                }
-            },
-            {
-                data: "operator",
-                render: function (data, type, row) {
-                    const operator = row['operator'] == 2 ? 'ЧЕЗ' : row['operator'] == 1 ? 'EVN' : 'EnergoPRO';
-                    return `<td>${operator}</td>`;
-                }
-            },
-            {
-                data: "details",
-                render: function (data, type, row) {
-                    return `<td><a href="reading/${row['invoicing_id']}"><button type="button" class="btn btn-success" data-id="${row['invoicing_id']}">Детайли на мерене</button></a></td>`;
-                }
-            },
-        ],
-        retrieve: true
+        ]
     });
-
     toastr.clear();
-};
+}
 
 function visualizeHistoryParams() {
     findGetParameter('toDate') === null ? '' : $('#toDate').val(findGetParameter('toDate'));

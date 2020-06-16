@@ -420,7 +420,7 @@ function processFile(e) {
                 let clientNumber;
                 let ident_code;
                 let client_name;
-                
+                console.log(value)
                 if (i !== 0 && i !== 1) {
                     if (value['0'] != '""' && value['0'] != null && value['0'] != undefined && value['0'] != '') {
                         if (value['7'] !== undefined) {
