@@ -56,10 +56,13 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
         return res.send(JSON.stringify([]));
     }
     const clientIDs = dbSync.query(searchIDsSQL);
-    if (clientIDs) {
+    if (clientIDs[0]) {
         let currClientID = clientIDs[0].id;
         let sql = `SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
-        invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) AS period_from, MAX(period_to) AS period_to, type, 
+        invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) AS period_from, MAX(period_to) AS period_to, type,
+        (SELECT SUM(qty) FROM invoicing
+        INNER JOIN clients ON clients.id = invoicing.client_id
+        WHERE service LIKE "%Достъп до разпред. мрежа%" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}') AS service, 
             (SELECT SUM(diff)
             FROM invoicing
             INNER JOIN clients ON clients.id = invoicing.client_id
@@ -88,6 +91,9 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
             currClientID = clientIDs[i].id;
             sql += ` UNION SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
          invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) as period_from, MAX(period_to) as period_to, type, 
+         (SELECT SUM(qty) FROM invoicing
+        INNER JOIN clients ON clients.id = invoicing.client_id
+        WHERE service LIKE "%Достъп до разпред. мрежа%" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}') AS service,
              (SELECT SUM(diff)
              FROM invoicing
              INNER JOIN clients ON clients.id = invoicing.client_id
@@ -120,13 +126,13 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
             }
             result = result.map(obj => ({
                 ...obj,
-                service: '-',
+                total: Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single),
                 duty: (Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single)) * 2
             }))
             return res.send(JSON.stringify(result));
         })
     } else {
-        return res.send(JSON.stringifiy([]));
+        return res.send(JSON.stringify([]));
     }
 });
 
@@ -142,6 +148,7 @@ router.get('/api/data-listings/STP-Hour-Readings', (req, res) => {
         return res.send(JSON.stringify(result));
     });
 });
+
 router.post('/api/filter/invoices-stp', (req, res) => {
     let {
         IDs

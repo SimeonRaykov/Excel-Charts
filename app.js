@@ -97,6 +97,7 @@ app.use(require('./API-controllers/imports/import-stp-hour-predictions-api'));
 app.use(require('./API-controllers/imports/import-graphs-api'));
 app.use(require('./API-controllers/imports/import-profiles-api'));
 app.use(require('./API-controllers/imports/import-hour-readings-eso-api'));
+app.use(require('./API-controllers/imports/import-exchange-prices-api'));
 
 //  Clients - Menu
 app.use(require('./API-controllers/clients/clients-menu-table-api'));
@@ -122,6 +123,9 @@ app.use(require('./API-controllers/invoices/stp-list-readings-api'));
 app.use(require('./API-controllers/invoices/stp-list-clients-details-api'));
 app.use(require('./API-controllers/invoices/stp-reading-details-api'));
 app.use(require('./API-controllers/invoices/hourly-list-readings-api'));
+
+//  Exchange-prices
+app.use(require('./API-controllers/exchange-prices/list-exchange-prices-api'));
 
 //  Inquiry
 app.use(require('./API-controllers/inquiry/inquiry-readings-api'));

@@ -48,6 +48,10 @@ router.get('/users/import/eso', (req, res) => res.render('./imports/hourly-eso.e
 router.get('/users/import/invoicing', (req, res) => res.render('./imports/importSTP.ejs', {
     name: user.getName()
 }));
+router.get('/users/import/exchange-prices', (req, res) => res.render('./imports/exchange-prices.ejs', {
+    name: user.getName()
+}));
+
 
 // Profiles
 router.get('/users/profiles', (req, res) => res.render('./profiles/list-profiles-table.ejs', {
@@ -122,6 +126,11 @@ router.get('/users/clients/:id', (req, res) => res.render('./invoicing/clients.e
     name: user.getName()
 }));
 router.get('/users/reading/:id', (req, res) => res.render('./invoicing/readingDetails.ejs', {
+    name: user.getName()
+}));
+
+// Exchange prices
+router.get('/users/exchange-prices', (req, res) => res.render('./exchange-prices/list-exchange-prices.ejs', {
     name: user.getName()
 }));
 
