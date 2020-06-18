@@ -207,6 +207,7 @@ function renderDataTable(data) {
             .append($(`<td>${diff_night}</td>`))
             .append($(`<td>${diff_peak}</td>`))
             .append($(`<td>${diff_single}</td>`))
+            .append($(`<td>${data[i]['total']}</td>`))
             .append($(`<td>${data[i]['duty']}</td>`))
             .append($(`<td>${service}</td>`))
             .append($('<td>' + (erpType === 1 ? 'EVN' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))

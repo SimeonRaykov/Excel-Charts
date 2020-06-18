@@ -51,9 +51,13 @@ function setDefaultDateForLinks() {
 
     //  Change profiles href
     $('#profiles-href').attr('href', '/users/profiles?name=&erp_type=evn&erp_type=cez&erp_type=energoPRO');
+
     //  Invoicing href
     $('#invoicing-stp-href').attr('href', `/users/invoicing-stp?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
     $('#invoicing-hourly-href').attr('href', `/users/invoicing-hourly?fromDate=${formattedLastWeek}&toDate=${formattedToday}&erp_type=evn&erp_type=cez&erp_type=energoPRO&clientNames=&clientID=`);
+
+    //  Exchange prices href
+    $('#exchange-price-href').attr('href', `/users/exchange-prices?fromDate=${formattedLastWeek}&toDate=${formattedToday}`);
 
     //  Imbalances inquiry href   
     $('#inquiry-readings-href').attr('href', `/users/inquiry/readings?fromDate=${formattedLastWeek}&toDate=${formattedToday}&name=&clientID=&erp_type=evn&erp_type=cez&erp_type=energoPRO&metering_type=stp&metering_type=hourly&clientID=`);
