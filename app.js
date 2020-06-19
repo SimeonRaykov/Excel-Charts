@@ -126,6 +126,7 @@ app.use(require('./API-controllers/invoices/hourly-list-readings-api'));
 
 //  Exchange-prices
 app.use(require('./API-controllers/exchange-prices/list-exchange-prices-api'));
+app.use(require('./API-controllers/exchange-prices/exchange-prices-daily-api'));
 
 //  Inquiry
 app.use(require('./API-controllers/inquiry/inquiry-readings-api'));

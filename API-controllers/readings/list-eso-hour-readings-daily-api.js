@@ -38,7 +38,7 @@ router.get('/api/eso-hour-readings/daily/:id/:date', (req, res) => {
     INNER JOIN clients ON clients.id = hour_readings_eso.client_id
     WHERE hour_readings_eso.date = '${req.params.date}'
     AND hour_readings_eso.id = '${req.params.id}'`;
-
+    
     db.query(sql, (err, result) => {
         if (err) {
             throw err;

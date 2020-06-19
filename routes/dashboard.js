@@ -133,6 +133,10 @@ router.get('/users/reading/:id', (req, res) => res.render('./invoicing/readingDe
 router.get('/users/exchange-prices', (req, res) => res.render('./exchange-prices/list-exchange-prices.ejs', {
     name: user.getName()
 }));
+router.get('/users/exchange-prices/daily/s', (req, res) => res.render('./exchange-prices/exchange-prices-daily.ejs', {
+    name: user.getName()
+}));
+
 
 //  Inquiry 
 router.get('/users/inquiry', (req, res) => res.render('./inquiry/inquirySTP.ejs', {
