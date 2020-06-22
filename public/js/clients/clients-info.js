@@ -91,11 +91,13 @@ client = new Client();
 function getInputValsForInfoPage() {
     const name = $('#info div:nth-child(1) > input').val();
     const profileName = $('#input-profile-name').val();
-    const isManufacturer = $('#squaredThree').prop('checked') === true ? 1 : 0;
+    const isManufacturer = $('#producer').prop('checked') === true ? 1 : 0;
+    const isBusiness = $('#business').prop('checked') === true ? 1 : 0;
     return {
         name,
         profileName,
-        isManufacturer
+        isManufacturer,
+        isBusiness,
     };
 }
 
@@ -135,8 +137,9 @@ function saveChangesForSTPClient() {
     setTimeout(function () {
         let {
             name,
+            profileName,
             isManufacturer,
-            profileName
+            isBusiness,
         } = getInputValsForInfoPage();
 
         validateProfileName(profileName)
@@ -146,6 +149,7 @@ function saveChangesForSTPClient() {
             dataType: 'json',
             data: {
                 isManufacturer,
+                isBusiness,
                 profileName,
                 name
             },
@@ -840,6 +844,7 @@ function getImbalances() {
 }
 
 function visualizeClientInfo(data) {
+    console.log(data)
     $('#info div:nth-child(1) > input').val(data['client_name']);
     $('#info div:nth-child(2) > input').val(data['ident_code']);
     $(`<option value="${data['profile_name'] == undefined ? '0' : data['profile_name']}">${data['profile_name'] == undefined ? '0' : data['profile_name']}</option>`).appendTo(`#input-profile-name`)
@@ -847,7 +852,10 @@ function visualizeClientInfo(data) {
     $('#info div:nth-child(4) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
     $('#info div:nth-child(5) > input').val(data['erp_type'] == 1 ? 'EVN' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
     if (data['is_manufacturer']) {
-        $('#squaredThree').prop('checked', true);
+        $('#producer').prop('checked', true);
+    }
+    if (data['is_business']) {
+        $('#business').prop('checked', true);
     }
 }
 
@@ -912,7 +920,7 @@ function processDataGraphPredictions(data) {
     let currHourReading = [];
     //  Hour Predictions
     let startIndexGraphPrediction = 11;
-    let endIndexGraphPrediction = 34;  
+    let endIndexGraphPrediction = 34;
     //  STP Predicitons
     if (client.getMeteringType() == 2) {
         startIndexGraphPrediction = 4;
@@ -941,7 +949,7 @@ function processDataGraphPredictions(data) {
                     title: value === null ? title = 'Няма стойност' : `Стойност: ${client.getMeteringType() == 2?(value * amount).toFixed(3):value * amount}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor:value === null ?colors.red: colors.blue,
+                    backgroundColor: value === null ? colors.red : colors.blue,
                     textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
@@ -992,7 +1000,7 @@ function processDataImbalances(data) {
                     title: currImbalance,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor:currImbalance === null ?colors.red: colors.blue,
+                    backgroundColor: currImbalance === null ? colors.red : colors.blue,
                     textColor: currImbalance === null ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);

@@ -58,11 +58,13 @@ let _IS_EXECUTED = false;
 function getInputValsForInfoPage() {
     const name = $('#info div:nth-child(1) > input').val();
     const profileName = $('#input-profile-name').val();
-    const isManufacturer = $('#squaredThree').prop('checked') === true ? 1 : 0;
+    const isManufacturer = $('#producer').prop('checked') === true ? 1 : 0;
+    const isBusiness = $('#business').prop('checked') === true ? 1 : 0;
     return {
         name,
         profileName,
-        isManufacturer
+        isManufacturer,
+        isBusiness,
     };
 }
 
@@ -103,6 +105,7 @@ function saveChangesForSTPClient() {
         let {
             name,
             isManufacturer,
+            isBusiness,
             profileName
         } = getInputValsForInfoPage();
         validateProfileName(profileName)
@@ -112,14 +115,23 @@ function saveChangesForSTPClient() {
             dataType: 'json',
             data: {
                 isManufacturer,
+                isBusiness,
                 profileName,
                 name
             },
             success: function () {
-                refreshURL()
+                notification('Клиентът е успешно променен', 'success');
+                setTimeout(() => {
+                    refreshURL()
+                }, 1000);
             },
             error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown);
+                if (jqXhr.responseText === 'OK') {
+                    notification('Клиентът е успешно променен', 'success');
+                    setTimeout(() => {
+                        refreshURL()
+                    }, 1000);
+                }
             }
         });
     }, 0);
@@ -768,7 +780,10 @@ function visualizeClientInfo(data) {
     $('#info div:nth-child(4) > input').val(data['metering_type'] == 2 ? 'СТП' : 'Почасово');
     $('#info div:nth-child(5) > input').val(data['erp_type'] == 1 ? 'EVN' : data['erp_type'] == 2 ? 'ЧЕЗ' : 'ЕнергоПРО');
     if (data['is_manufacturer']) {
-        $('#squaredThree').prop('checked', true);
+        $('#producer').prop('checked', true);
+    }
+    if (data['is_business']) {
+        $('#business').prop('checked', true);
     }
 }
 
@@ -853,7 +868,7 @@ function processESODataGraphPredictions(data) {
                     title: value === null ? title = 'Няма стойност' : `Стойност: ${value}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor:value === null ?colors.red: colors.blue,
+                    backgroundColor: value === null ? colors.red : colors.blue,
                     textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());
@@ -894,14 +909,14 @@ function processDataImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, ((objVals[currHourPredictionVal]).toFixed(3)), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
+                const currImbalance = calcImbalance(isManufacturer, Number(objVals[currHourPredictionVal]), Number(objVals[currHourReadingVal]) / 1000);
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor:value === currImbalance ?colors.red: colors.blue,
-                    textColor: value === currImbalance ? 'white' : 'black'
+                    backgroundColor: currImbalance ? colors.red : colors.blue,
+                    textColor: currImbalance ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);
                 let oldDate = new Date(currHourDate.getTime());

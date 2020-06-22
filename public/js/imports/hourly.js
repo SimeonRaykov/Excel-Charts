@@ -152,6 +152,7 @@ function processHourReadingCEZ(e) {
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
+    const isBusiness = 0;
     e.stopPropagation();
     e.preventDefault();
     let files = '';
@@ -237,7 +238,7 @@ function processHourReadingCEZ(e) {
                         let typeEnergy = arr[i][2];
                         typeEnergy.includes('Активна енергия') ? typeEnergy = 0 : typeEnergy = 1;
                         currHourReading.push(clientName, clientID, typeEnergy, formattedDate, currHourValues, new Date());
-                        client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
+                        client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, isBusiness, new Date());
                         allClients.push(client);
                         allHourReadings.push(currHourReading);
                         currHourValues = [];
@@ -264,6 +265,7 @@ function processHourReadingEVN_EnergoPRO(e) {
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
+    const isBusiness = 0;
     e.stopPropagation();
     e.preventDefault();
     let files = '';
@@ -374,7 +376,7 @@ function processHourReadingEVN_EnergoPRO(e) {
                     }
                     let client = [];
                     clientIDs.push(clientID);
-                    client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, new Date());
+                    client.push(0, clientName, clientID, meteringType, profileID, operator, isManufacturer, isBusiness, new Date());
                     clientsALL.push(client);
                     // Last Iteration of files []
                     if (z + 1 === files.length) {
@@ -399,7 +401,7 @@ function processGraphFile(e) {
     const meteringType = 1; // Hour-Reading
     const profileID = 0;
     const isManufacturer = 0;
-
+    const isBusiness = 0;
     let files = '';
     let f = '';
     try {
@@ -449,19 +451,21 @@ function processGraphFile(e) {
                 let clientName = arr[i][0];
                 let clientIdentCode = arr[i][1];
                 if (clientIdentCode != null && clientIdentCode != undefined && clientName != null && clientName != undefined) {
-                    client.push(0, clientName, clientIdentCode, meteringType, profileID, graphPrediction.getType(), isManufacturer, new Date());
+                    const currentErp = convertERPTypeForGraphPrediction(arr[i][2]);
+                    console.log(currentErp);
+                    client.push(0, clientName, clientIdentCode, meteringType, profileID, currentErp, isManufacturer, isBusiness, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
             }
-            saveClientsToDB(clientsAll);
+            console.log(clientsAll);
+            //  saveClientsToDB(clientsAll);
             let val = 0;
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
                 const clientName = arr[i][0];
                 const ident_code = arr[i][1];
                 const currentErp = convertERPTypeForGraphPrediction(arr[i][2]);
-
                 if (clientName == '' || clientName == undefined || clientName == null ||
                     ident_code == '' || ident_code == undefined || ident_code == null) {
                     continue;
@@ -605,6 +609,7 @@ function convertERPTypeForGraphPrediction(erp) {
         case 'ЕНЕРГОПРО':
         case 'ENERGOPRO':
         case 'ENERGO-PRO':
+        case 'ЕнергоПРО':
             result = 3;
             break;
         case 'ESO':

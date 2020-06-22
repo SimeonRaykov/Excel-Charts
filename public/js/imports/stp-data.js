@@ -181,6 +181,7 @@ function processHourReadingFile(e) {
     const meteringType = 2; // STP Hourly
     const profileID = 0;
     const isManufacturer = 0;
+    const isBusiness = 0;
     const erp_type = company.getErpType();
     try {
         files = e.dataTransfer.files,
@@ -254,7 +255,7 @@ function processHourReadingFile(e) {
 
                             currHourObj = {
                                 currHour: val,
-                                currValue: undefinedHour === null? undefinedHour: arr[i][y]
+                                currValue: undefinedHour === null ? undefinedHour : arr[i][y]
                             }
                             currHourValues.push(currHourObj);
                             y += 1;
@@ -272,7 +273,7 @@ function processHourReadingFile(e) {
                             y -= 1;
                         }
                     }
-                    client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, new Date());
+                    client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, isBusiness, new Date());
                     allClients.push(client);
                 }
                 saveClientsToDB(allClients);
@@ -320,7 +321,7 @@ function processHourReadingFile(e) {
                                     y -= 1;
                                 }
                             }
-                            client.push(0, clientName, clientIdentCode, meteringType, profileID, erp_type, isManufacturer, new Date());
+                            client.push(0, clientName, clientIdentCode, meteringType, profileID, erp_type, isManufacturer, isBusiness, new Date());
                             allClients.push(client);
                         }
                     }
@@ -388,7 +389,7 @@ function processPredictionFile(e) {
             for (let i = 1; i < arr.length; i += 1) {
                 let clientIdentCode = arr[i][clientIdentCodeIndex];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, stpPrediction.getType(), isManufacturer, new Date());
+                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, stpPrediction.getType(), isManufacturer, isBusiness, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
@@ -402,7 +403,7 @@ function processPredictionFile(e) {
                 let ident_code = arr[i][clientIdentCodeIndex];
                 if (getProfile(ident_code) === 0) {
                     clientsWithoutProfile.push(ident_code);
-                }  
+                }
                 for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientsFromDB(ident_code);

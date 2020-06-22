@@ -48,6 +48,7 @@ function processFile(e) {
     const meteringType = 2; // STP Hourly
     const profileID = 0;
     const isManufacturer = 0;
+    const isBusiness = 0;
     const erp_type = company.getErpType();
     var files = e.dataTransfer.files,
         f = files[0];
@@ -118,7 +119,7 @@ function processFile(e) {
                             y -= 1;
                         }
                     }
-                    client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, new Date());
+                    client.push(0, clientName, clientID, meteringType, profileID, erp_type, isManufacturer, isBusiness, new Date());
                     allClients.push(client);
                 }
                 console.log(allSTPHourReadings);
@@ -162,7 +163,7 @@ function processFile(e) {
                                     y -= 1;
                                 }
                             }
-                            client.push(0, clientName, clientIdentCode, meteringType, profileID, erp_type, isManufacturer, new Date());
+                            client.push(0, clientName, clientIdentCode, meteringType, profileID, erp_type, isManufacturer, isBusiness, new Date());
                             allClients.push(client);
                         }
                     }

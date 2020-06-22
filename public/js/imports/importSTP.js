@@ -5,6 +5,8 @@
     });
 })();
 
+const isBusiness = 0;
+
 const companies = {
     CEZ: 'CEZ',
     ENERGO_PRO: 'ENERGO_PRO',
@@ -116,7 +118,7 @@ function processFile(e) {
                         }
                         //ENERGO PRO operator 3
                         let operator = 3;
-                        let client = [value['7'], value['4'], operator, new Date()];
+                        let client = [value['7'], value['4'], operator, isBusiness, new Date()];
 
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
@@ -165,7 +167,7 @@ function processFile(e) {
                         //CEZ operator 2
                         let operator = 2;
 
-                        let client = [value['7'], value['4'].replace(/"/g, ''), operator, new Date()];
+                        let client = [value['7'], value['4'].replace(/"/g, ''), operator, isBusiness, new Date()];
 
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
@@ -212,7 +214,7 @@ function processFile(e) {
                         }
                         //EVN operator 1
                         let operator = 1;
-                        let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), operator, new Date()];
+                        let client = [value['7'].replace(/"/g, ''), value['4'].replace(/"/g, ''), operator, isBusiness, new Date()];
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -316,7 +318,7 @@ function processFile(e) {
                         }
                         //EVN operator 1  
                         let operator = 1;
-                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
+                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, isBusiness, new Date()];
                         let d1 = value['12'].replace(/"/g, '');
                         let arr = d1.split('.');
                         let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
@@ -444,7 +446,7 @@ function processFile(e) {
                         }
                         //CEZ operator 2
                         let operator = 2;
-                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
+                        let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, isBusiness, new Date()];
 
                         let dateFromHelper = value['12'];
                         try {
@@ -512,7 +514,7 @@ function processFile(e) {
                     }
                     //ENERGO PRO operator 3
                     let operator = 3;
-                    let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, new Date()];
+                    let client = [clientNumber, client_name, ident_code, meteringType, profileID, operator, isManufacturer, isBusiness, new Date()];
                     let d1 = value['12'].replace(/"/g, '');
                     let arr = d1.split('.');
                     let date_from = `${arr[2]}-${arr[1]}-${arr[0]}`;
