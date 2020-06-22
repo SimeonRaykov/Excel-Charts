@@ -8,7 +8,7 @@ const {
 
 router.post('/addclients', (req, res) => {
 
-    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, erp_type, is_manufacturer ,date_created) VALUES ?';
+    let sql = 'INSERT IGNORE INTO clients (client_number, client_name, ident_code, metering_type, profile_id, erp_type, is_manufacturer , is_business, date_created) VALUES ?';
     db.query(sql, [req.body], (err, result) => {
         if (err) {
             throw err;

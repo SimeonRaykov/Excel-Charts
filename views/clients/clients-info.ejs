@@ -74,13 +74,18 @@
                         <input list="profilesID" name="erp_type" class="col-md-7" disabled />
                     </div>
                     <div class="row justify-content-center">
-                        <label class="col-md-4 ml-2">Производител</label>
-
+                        <label>Производител</label>
                         <div class="squaredThree">
-                            <input type="checkbox" value="None" id="squaredThree" name="check" />
-                            <label for="squaredThree"></label>
+                            <input type="checkbox" id="producer" name="producer" />
+                            <label for="producer"></label>
+                        </div>
+                        <label>Стопански</label>
+                        <div class="squaredThree">
+                            <input type="checkbox" id="business" name="business" />
+                            <label for="business"></label>
                         </div>
                     </div>
+
                     <button onclick="goBack()" class="btn-lg btn-success pull-right ">Върни се</button>
                     <button class="btn-lg btn-warning pull-right mr-5 mb-2">Запази</button>
                 </div>

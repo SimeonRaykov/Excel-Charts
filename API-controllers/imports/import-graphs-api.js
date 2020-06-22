@@ -238,7 +238,7 @@ async function filterGraphHourReadings(allProfileHourReadings) {
                     break;
             }
         }
-        let selectReading = `SELECT * FROM hour_prediction 
+        /* let selectReading = `SELECT * FROM hour_prediction 
         WHERE hour_prediction.date = '${currDate}'
         AND client_id = '${currID}'`;
         let result = dbSync.query(selectReading);
@@ -415,7 +415,7 @@ async function filterGraphHourReadings(allProfileHourReadings) {
         } else {
             // Insert row for first time
             addToFinalReadings = true;
-        }
+        } */
         if (addToFinalReadings) {
             filteredHourReading = [currID, currDate, hour_zero, hour_one, hour_two, hour_three, hour_four,
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,

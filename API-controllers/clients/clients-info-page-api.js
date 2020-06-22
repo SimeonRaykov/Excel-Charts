@@ -18,6 +18,7 @@ router.get('/api/getClientSTP/details/datalist/:operator', (req, res) => {
 router.post('/api/saveClientSTPChanges/details/:id', async (req, res) => {
     const profileName = req.body.profileName;
     const isManufacturer = req.body.isManufacturer;
+    const isBusiness = req.body.isBusiness;
     const clientName = req.body.name;
     const clientID = req.params.id;
 
@@ -27,7 +28,8 @@ router.post('/api/saveClientSTPChanges/details/:id', async (req, res) => {
     if (resultProfile.length) {
         profileID = resultProfile[0].id;
     }
-    let updateClientsSQL = `UPDATE clients SET profile_id = ${profileID}, client_name = '${clientName}' , is_manufacturer= ${isManufacturer} WHERE id=${clientID}`;
+    let updateClientSQL = `UPDATE clients SET profile_id = ${profileID}, client_name = '${clientName}' WHERE id = ${clientID} `;
+    let updateALLclientsSQL = `UPDATE clients SET is_manufacturer = ${isManufacturer}, is_business = ${isBusiness} WHERE client_name = '${clientName}'`;
     try {
         if (resultProfile[0].id != currentProfile[0].profile_id) {
             const selectProfileHistoryResult = selectLastProfileHistoryRowForClient(clientID);
@@ -36,15 +38,14 @@ router.post('/api/saveClientSTPChanges/details/:id', async (req, res) => {
             }
             insertRowProfileHistory(profileID, clientID)
         }
-    } catch (err) {
-
-    }
-    updateClient(updateClientsSQL);
+    } catch (err) {}
+    queryDB(updateALLclientsSQL);
+    queryDB(updateClientSQL);
     return res.sendStatus(200);
 });
 router.get('/api/getClientInfo/:id', (req, res) => {
     let clientID = req.params.id;
-    let sql = `SELECT clients.id, stp_profiles.profile_name, client_name, ident_code, metering_type, is_manufacturer, profile_id, erp_type FROM clients
+    let sql = `SELECT clients.id, stp_profiles.profile_name, client_name, ident_code, metering_type, is_manufacturer, is_business, profile_id, erp_type FROM clients
     INNER JOIN stp_profiles on clients.profile_id = stp_profiles.id
     WHERE clients.id = ${clientID}`;
     db.query(sql, (err, result) => {
@@ -52,7 +53,7 @@ router.get('/api/getClientInfo/:id', (req, res) => {
             throw err;
         }
         if (!result || result == '' || result == undefined || result == null) {
-            sql = `SELECT clients.id, client_name, ident_code, metering_type, is_manufacturer, profile_id, erp_type FROM clients
+            sql = `SELECT clients.id, client_name, ident_code, metering_type, is_manufacturer, is_business, profile_id, erp_type FROM clients
             WHERE clients.id = ${clientID}`;
             db.query(sql, (err, result) => {
                 if (err) {
@@ -564,9 +565,8 @@ function insertRowProfileHistory(profileID, clientID) {
     });
 }
 
-function updateClient(updateClientsSQL) {
-
-    db.query(updateClientsSQL, (err, result) => {
+function queryDB(sql) {
+    db.query(sql, (err, result) => {
         if (err) {
             throw err;
         }

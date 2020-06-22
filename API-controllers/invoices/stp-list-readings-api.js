@@ -59,7 +59,7 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
     if (clientIDs[0]) {
         let currClientID = clientIDs[0].id;
         let sql = `SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
-        invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) AS period_from, MAX(period_to) AS period_to, type,
+        invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) AS period_from, MAX(period_to) AS period_to, type, is_business,
         (SELECT SUM(qty) FROM invoicing
         INNER JOIN clients ON clients.id = invoicing.client_id
         WHERE service LIKE "%Достъп до разпред. мрежа%" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}') AS service, 
@@ -90,11 +90,11 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
         for (let i = 1; i < clientIDs.length; i += 1) {
             currClientID = clientIDs[i].id;
             sql += ` UNION SELECT DISTINCT clients.id, invoicing.operator AS operator, clients.ident_code, clients.client_name, invoicing.time_zone, 
-         invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) as period_from, MAX(period_to) as period_to, type, 
+         invoicing.id AS invoicing_id,client_number, ident_code, MIN(period_from) as period_from, MAX(period_to) as period_to, type, is_business,
          (SELECT SUM(qty) FROM invoicing
         INNER JOIN clients ON clients.id = invoicing.client_id
         WHERE service LIKE "%Достъп до разпред. мрежа%" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}') AS service,
-             (SELECT SUM(diff)
+             (SELECT SUM(diff) 
              FROM invoicing
              INNER JOIN clients ON clients.id = invoicing.client_id
              WHERE time_zone = "А Н" AND invoicing.period_from >= "${fromDate}" AND invoicing.period_to <= "${toDate}" AND invoicing.client_id = '${currClientID}'
@@ -127,7 +127,13 @@ router.post('/api/filterData-invoicing-stp', (req, res) => {
             result = result.map(obj => ({
                 ...obj,
                 total: Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single),
-                duty: (Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single)) * 2
+                duty: function calcDuty() {
+                    if (obj.is_business) {
+                        return (Number(obj.diff_night) + Number(obj.diff_day) + Number(obj.diff_peak) + Number(obj.diff_single)) * 2
+                    } else {
+                        return 0;
+                    }
+                }()
             }))
             return res.send(JSON.stringify(result));
         })
