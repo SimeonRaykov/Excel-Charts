@@ -65,6 +65,9 @@ router.get('/users/profiles/:id', (req, res) => res.render('./profiles/profile-d
 router.get('/users/clients', (req, res) => res.render('./clients/clients.ejs', {
     name: user.getName()
 }));
+router.get('/users/groups', (req, res) => res.render('./clients/client-groups.ejs', {
+    name: user.getName()
+}));
 router.get('/users/clients/info/:id', (req, res) => res.render('./clients/clients-info.ejs', {
     name: user.getName()
 }));

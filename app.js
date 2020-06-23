@@ -101,6 +101,7 @@ app.use(require('./API-controllers/imports/import-exchange-prices-api'));
 
 //  Clients - Menu
 app.use(require('./API-controllers/clients/clients-menu-table-api'));
+app.use(require('./API-controllers/clients/clients-groups-api'));
 app.use(require('./API-controllers/clients/clients-info-page-api'));
 app.use(require('./API-controllers/clients/clients-eso-info-page-api'));
 
