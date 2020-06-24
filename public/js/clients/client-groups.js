@@ -59,7 +59,7 @@ function renderTabBasedOnState() {
                 },
                 dataType: 'json',
                 success: function (data) {
-                    notification('Успешно създадена група', 'success');
+                    notification('Успешно добавен  клиент в групата', 'success');
                     setTimeout(function () {
                         location.reload();
                     }, 1000);
