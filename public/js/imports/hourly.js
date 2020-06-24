@@ -452,14 +452,13 @@ function processGraphFile(e) {
                 let clientIdentCode = arr[i][1];
                 if (clientIdentCode != null && clientIdentCode != undefined && clientName != null && clientName != undefined) {
                     const currentErp = convertERPTypeForGraphPrediction(arr[i][2]);
-                    console.log(currentErp);
                     client.push(0, clientName, clientIdentCode, meteringType, profileID, currentErp, isManufacturer, isBusiness, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
             }
-            console.log(clientsAll);
-            //  saveClientsToDB(clientsAll);
+
+              saveClientsToDB(clientsAll);
             let val = 0;
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
