@@ -137,7 +137,7 @@ $(document).ready(function () {
 
     if ($('#data-energo-pro').is(':checked')) {
         company.setCompany('ENERGO_PRO').setErpType(3);
-        stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(7).setIndexOfIdentCode(3);
+        stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2);
     } else if ($('#data-evn').is(':checked')) {
         company.setCompany('EVN').setErpType(1);
         stpPrediction.setCompany('EVN').setType(1).setStartingIndexOfAmountValues(6).setIndexOfIdentCode(1);
@@ -374,6 +374,7 @@ function processPredictionFile(e) {
             const profileID = 0;
             const meteringType = 2; // STP
             const isManufacturer = 0;
+            const isBusiness = 0;
 
             let client = [];
             let clientsAll = [];
@@ -398,12 +399,11 @@ function processPredictionFile(e) {
 
             // ImportSTP Predictions
             let clientsWithoutProfile = [];
+            let clientIDs = [];
             let startingIndexOfLoadValues = stpPrediction.getStartingIndexOfAmountValues();
             for (let i = 1; i < arr.length; i += 1) {
                 let ident_code = arr[i][clientIdentCodeIndex];
-                if (getProfile(ident_code) === 0) {
-                    clientsWithoutProfile.push(ident_code);
-                }
+                clientIDs.push(ident_code);
                 for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
                     if (ident_code != '' && ident_code != undefined && ident_code != null) {
                         clientID = getClientsFromDB(ident_code);
@@ -417,16 +417,15 @@ function processPredictionFile(e) {
                     }
                 }
             }
+            clientsWithoutProfile = getProfiles(clientIDs);
             if (clientsWithoutProfile.length > 0) {
                 let clientsNoProfile = $('<div class="clients-no-profile mt-5"></div>');
                 clientsNoProfile.text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили, за да се изчислят графиците!');
                 clientsNoProfile.appendTo($('#data'));
                 console.log('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
                 notification('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.', 'error');
-                throw new Error('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили.');
             }
             saveSTPpredictionsToDB(allSTPpredictions);
-            return;
         };
         reader.readAsArrayBuffer(f);
     } else {
@@ -631,7 +630,6 @@ function validateGraphDocument() {
 
 function validateHourReadingDocument(nameOfThirdCell) {
     if (company.getCompany() !== companies.CEZ) {
-        console.log(nameOfThirdCell);
         if (nameOfThirdCell.includes('Сетълмент')) {
             notification(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`, 'error')
             throw new Error(`Избрана е опция за ${company.getCompany()}, а е подаден документ за ЧЕЗ`);
@@ -687,7 +685,7 @@ function getProfile(identCode) {
         method: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        async: true,
+        async: false,
         success: function (data) {
             profile = data;
         },
@@ -696,4 +694,26 @@ function getProfile(identCode) {
         }
     });
     return profile;
+}
+
+
+function getProfiles(identCodes) {
+    let profiles;
+    $.ajax({
+        url: `/api/profileIDs`,
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        async: false,
+        data: JSON.stringify({
+            identCodes
+        }),
+        success: function (data) {
+            profiles = data;
+        },
+        error: function (jqXhr, textStatus, errorThrown) {
+            notification(jqXhr.responseText, 'success');
+        }
+    });
+    return profiles;
 }
