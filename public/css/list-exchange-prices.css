@@ -1,135 +1,15 @@
-input:not([type='date']):not([type='search']):not([type='checkbox']) {
-    width: 100%;
-    background: none;
-    border: 1px solid rgb(97, 80, 80);
-    border-radius: 3px;
-    padding: 6px 20px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-    font-size: 22px;
-    color: black;
-    background-color: white;
-    text-align: center;
-}
-
 .nav-tabs .nav-link {
+    border: 1px solid lightblue;
+    color: black;
+    width: 200%;
     transition: 0.5s;
     transition-timing-function: ease-in-out;
 }
 
 .nav-tabs .nav-link:hover {
-    color: white !important;
+    color:white !important;
     border: 1px solid #3d5af1;
     background-color: #9c1de7
-}
-
-ul.nav-tabs a.nav-link {
-    color: black !important;
-}
-
-input:hover:not([type='date']) {
-    border: 1px solid #9c1de7 !important;
-}
-
-input[type='date']:hover {
-    border: 2px solid #ff304f !important;
-    border-radius: 5px;
-}
-
-label.red-border {
-    border: 2px solid transparent;
-}
-
-.card-body select {
-    border: 1px solid rgb(97, 80, 80);
-}
-
-.card-body input,
-.card-body select:hover {
-    border: 1px solid blue;
-}
-
-label.red-border:hover {
-    border: 2px solid #fc85ae;
-}
-
-
-label:not(.form-check-label):not(.custom-file-label) {
-    font-size: 25px;
-    font-weight: normal
-}
-
-
-.squaredThree {
-    width: 20px;
-    position: relative;
-    margin: 8px auto;
-    top:-5px;
-}
-
-div.justify-content-center div {
-    margin: 0 10%;
-}
-
-.squaredThree label {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: -webkit-gradient(linear, left top, left bottom, from(#222222), to(#45484d));
-    background: linear-gradient(to bottom, #222222 0%, #45484d 100%);
-    border-radius: 4px;
-    box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.4);
-}
-
-.squaredThree label:after {
-    content: '';
-    width: 19px;
-    height: 7px;
-    position: absolute;
-    top: 10px;
-    left: 8px;
-    border: 3px solid #fcfff4;
-    border-top: none;
-    border-right: none;
-    background: transparent;
-    opacity: 0;
-    -webkit-transform: rotate(-45deg);
-    transform: rotate(-45deg);
-}
-
-.squaredThree label:hover::after {
-    opacity: 50%;
-}
-
-.squaredThree input[type=checkbox] {
-    visibility: hidden;
-}
-
-.squaredThree input[type=checkbox]:checked+label:after {
-    opacity: 1;
-}
-
-body>div.container.mt-3>header>div.row>div>label {
-    padding: 15px
-}
-
-body>div.container.mt-3>header>div.row {
-    margin-left: 70%
-}
-
-input:not([type='date']):not([type='search']):not([type='checkbox'])::-webkit-calendar-picker-indicator {
-    display: none;
-}
-
-ul.nav-tabs a.nav-link {
-    color: black !important;
-}
-
-.nav-tabs .nav-link:hover {
-    border: 1px solid blueviolet;
 }
 
 .nav-tabs .nav-item.show .nav-link,
@@ -137,50 +17,48 @@ ul.nav-tabs a.nav-link {
     color: black;
 }
 
-
-.fc-content .fc-time {
-    display: none !important;
+ul.nav-tabs a.nav-link {
+    color:black !important;
 }
 
-.fc-content span.fc-time {
-    display: inline-block !important;
+#export-readings {
+    display: none
+}
+
+input:hover {
+    border: 2px solid #ff304f;
+    transition: border 0.6s ease, -webkit-transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 2);
 }
 
 .fc-time-grid-event .fc-time,
 .fc-time-grid-event .fc-title {
-    padding: 15px 1px !important;
+    padding: -5px 1px !important;
+}
+
+div.fc-time {
+    visibility: hidden;
+}
+
+a.fc-more::after {
+    visibility: visible;
+    content: 'Има цени';
+    background-color: #2d6cdf;
+    white-space: nowrap;
+    border-radius: 10px;
+    position: relative !important;
+    left: -5% !important;
+    top: -15px !important;
+    padding: 10px
 }
 
 a.fc-more {
     visibility: hidden;
 }
 
-a.fc-more::after {
-    visibility: visible;
-    content: 'Има мерене';
-    background-color: #2d6cdf;
-    color: white;
-    white-space: nowrap;
-    border-radius: 10px;
-    position: relative !important;
-    left: -8%;
-    top: -26px;
-    padding: 10px
+#calendar-readings a.fc-more::after {
+    content: 'Има цени';
+    left: -14%;
 }
-
-.graphRow-calendar a.fc-more::after {
-    content: 'Има график';
-}
-
-#calendar-imbalance a.fc-more::after {
-    content: 'Има небаланс';
-    left: -22%;
-}
-
-.btn-primary {
-    padding: 5px 10px;
-}
-
 
 .switch {
     position: relative;
@@ -243,7 +121,6 @@ input:checked+.slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
-
 
 .switch {
     position: relative;
@@ -362,12 +239,10 @@ input:checked+.slider:before {
     -o-transition: All 0.3s ease;
 }
 
-
-.list-group-item+.list-group-item {
-    border-top-width: 1px !important;
+label.red-border {
+    border: 2px solid transparent;
 }
 
-.list-group-item+.list-group-item,
-.list-group-item.active:hover {
-    cursor: pointer;
+label.red-border:hover {
+    border: 2px solid #fc85ae;
 }
