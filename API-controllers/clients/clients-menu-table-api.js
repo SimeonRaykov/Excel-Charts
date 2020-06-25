@@ -21,13 +21,14 @@ router.get('/api/filterClients/:erp_type/:metering_type', (req, res) => {
     let sql = `SELECT clients.id, client_name, ident_code, metering_type, erp_type FROM clients
     WHERE 1=1 `;
     if (erpType != 'all') {
-        if (erpType.length == 1) {
-            sql += ` AND erp_type = ${erpType}`;
-        } else if (erpType.split(',').length == 2) {
-            sql += `  AND ( erp_type = ${erpType.split(',')[0]}`;
-            sql += ` OR erp_type = ${erpType.split(',')[1]} )`;
+        const splitedERPTypes = erpType.split(',');
+        sql += ` AND ( erp_type = ${splitedERPTypes[0]} `;
+        for (let i = 1; i < erpType.length; i += 1) {
+            if (splitedERPTypes[i] && splitedERPTypes[i] != null) {
+                sql += ` OR erp_type = ${splitedERPTypes[i]} `;
+            }
         }
-
+        sql += ` )`;
     }
     if (meteringType != 'all') {
         if (meteringType.length != 2) {
