@@ -83,6 +83,9 @@ class STPPrediction {
     getStartingIndexOfAmountValues() {
         return this.amountIndex;
     }
+    getIndexOfClientName() {
+        return this.clientNameIndex;
+    }
     getIndexOfIdentCode() {
         return this.indexID;
     }
@@ -96,6 +99,10 @@ class STPPrediction {
     }
     setStartingIndexOfAmountValues(amountIndex) {
         this.amountIndex = amountIndex;
+        return this;
+    }
+    setIndexOfClientName(clientNameIndex) {
+        this.clientNameIndex = clientNameIndex;
         return this;
     }
     setIndexOfIdentCode(indexID) {
@@ -137,13 +144,13 @@ $(document).ready(function () {
 
     if ($('#data-energo-pro').is(':checked')) {
         company.setCompany('ENERGO_PRO').setErpType(3);
-        stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2);
+        stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2).setIndexOfClientName(1);
     } else if ($('#data-evn').is(':checked')) {
         company.setCompany('EVN').setErpType(1);
         stpPrediction.setCompany('EVN').setType(1).setStartingIndexOfAmountValues(6).setIndexOfIdentCode(1);
     } else if ($('#data-cez').is(':checked')) {
         company.setCompany('CEZ').setErpType(2);
-        stpPrediction.setCompany('CEZ').setType(2).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2);
+        stpPrediction.setCompany('CEZ').setType(2).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2).setIndexOfClientName(1);
     }
     const checker = validateSTPInput();
     checker ? showUploadBlocksSTP() : '';
@@ -386,15 +393,17 @@ function processPredictionFile(e) {
             validateDocumentSTPPrediction();
 
             // ImportClients
-            let clientIdentCodeIndex = stpPrediction.getIndexOfIdentCode();
+            const clientIdentCodeIndex = stpPrediction.getIndexOfIdentCode();
+            const clientNameIndex = stpPrediction.getIndexOfClientName();
             for (let i = 1; i < arr.length; i += 1) {
-                let clientIdentCode = arr[i][clientIdentCodeIndex];
+                const clientIdentCode = arr[i][clientIdentCodeIndex];
+                const clientName = arr[i][clientNameIndex];
                 if (clientIdentCode != null && clientIdentCode != undefined) {
-                    client.push(0, 'NULL', clientIdentCode, meteringType, profileID, stpPrediction.getType(), isManufacturer, isBusiness, new Date());
+                    client.push(0, clientName, clientIdentCode, meteringType, profileID, stpPrediction.getType(), isManufacturer, isBusiness, new Date());
                     clientsAll.push(client);
                     client = [];
                 }
-            }
+            }  
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
