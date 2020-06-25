@@ -54,6 +54,9 @@ function processInitialData() {
             if (!erpType.includes('3')) {
                 disableEnergoPROCheckbox();
             }
+            if (!erpType.includes('4')) {
+                disableESOCheckbox();
+            }
         }
     }
     getInitialData(url);
@@ -176,11 +179,27 @@ function visualizeDataTable(data) {
         i += 1;
         const meteringType = data[el]['metering_type'];
         const erpType = data[el]['erp_type'];
-        currRow
+        let erp;
+        switch (erpType) {
+            case 1:
+                erp = 'EVN'
+                break;
+            case 2:
+                erp = 'ЧЕЗ'
+                break;
+            case 3:
+                erp = 'EнергоПРО'
+                break;
+            case 4:
+                erp = 'EСО'
+                break;
+        }
+        const menuLink = erp !== 'EСО' ? `<a href=/users/clients/info/${data[el]['id']}>${data[el]['ident_code']}</a>` : `<a href=/users/clients-eso/info/${data[el]['id']}>${data[el]['ident_code']}</a>`
+        currRow 
             .append($('<td>' + data[el]['id'] + '</td>'))
-            .append($(`<td><a href=/users/clients/info/${data[el]['id']}>${data[el]['ident_code']}</a></td>`))
+            .append($(`<td>${menuLink}</td>`))
             .append($('<td>' + data[el]['client_name'] + '</td>'))
-            .append($('<td>' + (erpType === 1 ? 'EVN' : erpType === 2 ? 'ЧЕЗ' : 'EнергоПРО') + '</td>'))
+            .append($('<td>' + erp + '</td>'))
             .append($('<td>' + (meteringType === 2 ? 'СТП' : 'Почасови') + '</td>'))
             .append($('</tr>'));
         currRow.appendTo($('#tBody'));
@@ -209,7 +228,21 @@ function addEventListenerToCheckboxes() {
         }
         for (let i = 0, length = checkboxesERPType.length; i < length; i++) {
             if (checkboxesERPType[i].checked) {
-                erpTypeValue.push(checkboxesERPType[i].value === 'evn' ? 1 : checkboxesERPType[i].value === 'cez' ? 2 : 3);
+                const currVal = checkboxesERPType[i].value;
+                switch (currVal) {
+                    case 'evn':
+                        erpTypeValue.push(1);
+                        break;
+                    case 'cez':
+                        erpTypeValue.push(2);
+                        break;
+                    case 'energoPRO':
+                        erpTypeValue.push(3);
+                        break;
+                    case 'ESO':
+                        erpTypeValue.push(4);
+                        break;
+                }
             }
         }
         window.history.replaceState(null, null, `clients?erpType=${erpTypeValue}&meteringType=${meteringValue}`)
@@ -222,7 +255,7 @@ function filterClients(erpValue, meteringValue) {
         erpValue = 0;
         meteringValue = 0;
     }
-    if (erpValue.length === 3) {
+    if (erpValue.length === 4) {
         erpValue = 'all';
     } else if (erpValue.length === 0) {
         meteringValue = 0;
@@ -254,6 +287,7 @@ function disableAllERPCheckbox() {
     disableEVNCheckBox();
     disableCEZCheckbox();
     disableEnergoPROCheckbox();
+    disableESOCheckbox();
 }
 
 function disableMeteringTypeCheckbox() {
@@ -271,6 +305,10 @@ function disableCEZCheckbox() {
 
 function disableEnergoPROCheckbox() {
     $('#energoPRO').prop('checked', false);
+}
+
+function disableESOCheckbox() {
+    $('#ESO').prop('checked', false);
 }
 
 function disableSTPCheckbox() {
