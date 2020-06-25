@@ -134,31 +134,14 @@ function visualizeGroupsDataTable(data) {
     }
     //DESC order 
     dataTable = $('#groups-table').DataTable({
+        "drawCallback": () => {
+            updateGroupClientsModal();
+        },
         stateSave: true,
         "order": [
             [0, "asc"]
         ]
     });
-
-    $('.group-modal').on('click', function (ev) {
-        const groupID = ev.target.getAttribute('data-id');
-        const groupName = ev.target.getAttribute('data-name');
-        $('#GroupLongTitle').text(`Група: ${groupName}`);
-
-        $.ajax({
-            url: `/api/clients-in-group/${groupID}`,
-            method: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                updateGroupModalText(data);
-            },
-            error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });
-    });
-
-
 }
 
 function setHistorySearchState() {
@@ -250,12 +233,18 @@ function visualizeClientsDataTable(data) {
     $('#clients-table > thead').addClass('text-center');
     //DESC order 
     dataTable = $('#clients-table').DataTable({
+        "drawCallback": () => {
+            updateClientsInGroupModal();
+        },
         stateSave: true,
         "order": [
             [0, "asc"]
         ]
     });
+    updateClientsInGroupModal();
+};
 
+function updateClientsInGroupModal() {
     $('.client-name').on('click', function (ev) {
         const currClient = ev.target.innerText;
         $('#ClientsGroupLongTitle').text(`Клиент: ${currClient}`);
@@ -272,7 +261,7 @@ function visualizeClientsDataTable(data) {
             }
         });
     });
-};
+}
 
 function updateClientsGroupText(data) {
     $('.modal-body-clients').empty();
@@ -321,7 +310,6 @@ function updateGroupModalText(data) {
             }
         });
     })
-
 }
 
 function redrawDataTable(data) {
@@ -351,4 +339,24 @@ function validateGroupName() {
     } else {
         return 200;
     }
+}
+
+function updateGroupClientsModal() {
+    $('.group-modal').on('click', function (ev) {
+        const groupID = ev.target.getAttribute('data-id');
+        const groupName = ev.target.getAttribute('data-name');
+        $('#GroupLongTitle').text(`Група: ${groupName}`);
+
+        $.ajax({
+            url: `/api/clients-in-group/${groupID}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                updateGroupModalText(data);
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    });
 }
