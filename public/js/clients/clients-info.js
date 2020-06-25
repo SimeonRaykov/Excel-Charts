@@ -994,7 +994,9 @@ function processDataImbalances(data) {
         let moveRestOneHr = false;
         for (let val of objVals) {
             if (iterator >= beginningIndexOfIterator && iterator < endIndexOfIterator) {
-                const currImbalance = calcImbalance(isManufacturer, ((objVals[currHourPredictionVal] * amount).toFixed(3)), (Number(objVals[currHourReadingVal]) / 1000).toFixed(7));
+                const currActualData = (Number(objVals[currHourReadingVal]) / 1000).toFixed(7);
+                const currPredictionData = (Number(objVals[currHourPredictionVal]) * amount).toFixed(3);
+                const currImbalance = calcImbalance(isManufacturer, currPredictionData, currActualData);
                 currHourReading = {
                     id: iterator,
                     title: currImbalance,
