@@ -37,6 +37,26 @@ router.get('/api/getProfile/:ident_code', (req, res) => {
     return result;
 });
 
+router.post('/api/profileIDs', (req, res) => {
+    const {
+        identCodes
+    } = req.body;
+    const sql = `SELECT ident_code
+    FROM clients
+    WHERE ident_code IN (?)
+    AND profile_id = 0`;
+    db.query(sql, [identCodes], function (err, result) {
+        if (err) throw err;
+        if (result && result.length) {
+            let identCodeArr = [];
+            for (let res of result) {
+                identCodeArr.push(res.ident_code);
+            }
+            return res.send(JSON.stringify(identCodeArr));
+        }
+    });
+})
+
 router.get('/api/getProfile-HourValue/:identCode/:date', (req, res) => {
     let {
         identCode,
