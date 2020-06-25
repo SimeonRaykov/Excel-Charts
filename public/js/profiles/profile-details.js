@@ -308,7 +308,7 @@ function getReadingsDataForCalendar(data) {
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
                     backgroundColor: val === null ? colors.red : colors.blue,
-                    textColor: value === null ? 'white' : 'black'
+                    textColor: val === null ? 'white' : 'black'
                 }
                 dataArr.push(currHourReading);
                 let oldDate = new Date(currHourDate.getTime());
