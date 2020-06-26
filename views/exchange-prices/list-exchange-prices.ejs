@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.0/fullcalendar.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
     </script>
@@ -16,12 +17,21 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href='../../../AdminLTE-master/plugins/fullcalendar/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.css' rel='stylesheet' />
+    <link href='../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.css' rel='stylesheet' />
+    <script src='../../../AdminLTE-master/plugins/fullcalendar/main.js'></script>
+    <script src='../../../AdminLTE-master/plugins/fullcalendar-daygrid/main.js'></script>
+    <script src="../../../AdminLTE-master/plugins/fullcalendar-timegrid/main.js"></script>
+    <link rel="stylesheet" href="../../../AdminLTE-master/css/custom-calendar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../../../js/datatables/datatables.min.css">
     <script src="../../../js/datatables/datatables.js"></script>
     <link rel="stylesheet" href="../../css/checkboxes.css">
+    <link rel="stylesheet" href="../../../css/list-exchange-prices.css">
+    <link rel="stylesheet" href="../../../css/radio-btns.css">
     <title>Document</title>
 </head>
 
@@ -51,17 +61,32 @@
         <div class="container clients text-center">
         </div>
     </div>
-    <table id="exchange-prices-table" class="display">
-        <thead>
-            <tr>
-                <th>ID на мерене</th>
-                <th>Дата</th>
-            </tr>
-        </thead>
-        <tbody id="tBody">
-        </tbody>
-    </table>
+
+    <div class="container exchange-prices text-center">
+        <div class="row">
+            <div class="offset-md-2">
+                <label class="switch red-border">
+                    <input class="switch-input" id="switch-calendar-graph" type="checkbox" checked />
+                    <span class="switch-label" data-on="Календар" data-off="Графики"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+            <div class="offset-md-6">
+                <label class="switch red-border">
+                    <input id="switch-bar-line" class="switch-input" type="checkbox" checked />
+                    <span class="switch-label" data-on="Линия" data-off="Бар"></span>
+                    <span class="switch-handle"></span>
+                </label>
+            </div>
+        </div>
+        <div id="calendar-exchange-price" class="col-md-12">
+        </div>
+        <div class="exchange-prices-graph-div">
+            <canvas id="exchange-prices-chart" class="mb-5" width="1100" height="500"></canvas>
+        </div>
     </div>
+    </div>
+    <script src="../../../../js/helper-functions/date-manipulations.js"></script>
     <script src="../../../../js/helper-functions/toastr-notifications.js"></script>
     <script src="../../../../js/helper-functions/find-get-parameter.js"></script>
     <script src="../../../../js/helper-functions/remove-duplicates-from-array.js"></script>

@@ -45,8 +45,7 @@ router.post('/api/saveGraphHourReadings', async (req, res) => {
        hour_twenty = VALUES(hour_twenty),
        hour_twentyone = VALUES(hour_twentyone),
        hour_twentytwo = VALUES(hour_twentytwo),
-       hour_twentythree = VALUES(hour_twentythree),
-       created_date = VALUES(created_date)`;
+       hour_twentythree = VALUES(hour_twentythree)`;
         db.query(sql, [graphHourReadingsFiltered], (err, result) => {
             if (err) {
                 throw err;
