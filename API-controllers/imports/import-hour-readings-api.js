@@ -152,7 +152,7 @@ async function filterHourReadings(hour_readingsAll) {
                 hour_zero = currHourReading[4][z].currValue;
             }
         }
-        let selectReading = `SELECT * FROM hour_readings 
+      /*  let selectReading = `SELECT * FROM hour_readings 
         WHERE hour_readings.date = '${currDate}'
         AND client_id = '${currID}' AND energy_type = '${type}'`;
         let result = dbSync.query(selectReading);
@@ -330,6 +330,7 @@ async function filterHourReadings(hour_readingsAll) {
             // Insert row for first time
             addToFinalReadings = true;
         }
+        */
         if (addToFinalReadings) {
             filteredHourReading = [currID, currDate, hour_one, hour_two, hour_three, hour_four,
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
