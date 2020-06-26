@@ -11,9 +11,9 @@ const colors = {
 
 function hideGraph() {
     hideSwitch();
-    /*   $('.readings-graph-div').css('display', 'none');
-      $('body > div.container.mt-3 > div.container.clients.text-center > div.row > div.offset-md-6 > label')
-          .css('display', 'none'); */
+    $('.exchange-prices-graph-div').css('display', 'none');
+    $('div.row > div.offset-md-6 > label')
+        .css('display', 'none');
 }
 
 function hideSwitch() {
@@ -32,7 +32,7 @@ let initialCalendarDate = new Date();
 (function () {
     const today = new Date();
     document.addEventListener('DOMContentLoaded', function () {
-        const calendarEl = document.getElementById('calendar-readings');
+        const calendarEl = document.getElementById('calendar-exchange-price');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             eventLimit: true,
             eventLimit: 1,
@@ -62,7 +62,6 @@ function incrementHoursOne(date) {
 }
 
 function getReadingsDataForCalendar(data) {
-    console.log(data)
     const beginningIndexOfIterator = 2;
     let dataArr = [];
     let currHourReading = [];
@@ -100,11 +99,154 @@ function getReadingsDataForCalendar(data) {
             iterator += 1;
         }
     }
-    console.log(dataArr);
     return dataArr;
 }
 
+
+function writeDailyPeriodHeading(firstDate, secondDate) {
+    $('#period').empty();
+    const formattedFirstDate = formatDate(firstDate);
+    let chartDailyPeriod = '';
+    if (secondDate === null) {
+        chartDailyPeriod = $(`<h3 id="period" class="text-center mb-3">Дата: ${formattedFirstDate}<h3>`);
+    } else {
+        const formattedSecondDate = formatDate(secondDate);
+        chartDailyPeriod = $(`<h3 id="period" class="text-center mb-3">От: ${formattedFirstDate} До: ${formattedSecondDate}<h3>`);
+    }
+    $('div.exchange-prices-graph-div').prepend(chartDailyPeriod);
+}
+
+
+function showReadingsChart(data) {
+    const maxDate = getMaxDate(data);
+    const minDate = getMinDate(data);
+    const equalDates = checkIfDatesAreEqual(maxDate, minDate);
+    if (equalDates) {
+        writeDailyPeriodHeading(maxDate, null);
+    } else {
+        writeDailyPeriodHeading(minDate, maxDate);
+    }
+    let _IS_MULTIPLE_DAYS_READINGS_CHART = false;
+    let labels = [];
+    let tempActualArr = [];
+    let index = 0;
+
+    if (data != undefined) {
+        if ((findGetParameter('fromDate') == findGetParameter('toDate')) && findGetParameter('fromDate')) {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = false;
+            for (let el in data) {
+                const startingIndexActualHourData = 2;
+                let indexActualData = 2;
+                let finalIndex = 26;
+                let date = new Date(data[el]['date']);
+                let valuesData = Object.values(data[el]);
+                let t = date;
+                for (let val of valuesData) {
+                    if (index >= startingIndexActualHourData) {
+                        if (index > finalIndex) {
+                            break;
+                        }
+
+                        let actualHourObj = {
+                            t,
+                            y: valuesData[indexActualData] == null ? 0 : valuesData[indexActualData]
+                        }
+                        if (actualHourObj.y != undefined) {
+                            tempActualArr.push(actualHourObj);
+                        }
+
+                        indexActualData += 1;
+                        labels.push(`${t.getHours()} ч.`);
+                        t = incrementHoursOne(date);
+                    }
+                    index += 1;
+                }
+                index = 0;
+            }
+        } else {
+            _IS_MULTIPLE_DAYS_READINGS_CHART = true;
+            for (let el in data) {
+                let date = new Date(data[el]['date']);
+                let t = date;
+                for (let hr in data[el]) {
+                    if (index >= 2) {
+                        let hourObj = {
+                            t,
+                            y: data[el][hr] == null ? 0 : data[el][hr]
+                        }
+                        tempActualArr.push(hourObj);
+                        labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
+                        t = incrementHoursOne(date);
+                    }
+                    index += 1;
+                }
+                index = 0;
+            }
+        }
+    }
+    let labelsNoDuplicates = removeDuplicatesFromArr(labels);
+    var ctx = document.getElementById('exchange-prices-chart').getContext('2d');
+    var config = {
+        type: 'line',
+        data: {
+            labels: labelsNoDuplicates,
+            datasets: [{
+                label: 'Настоящи',
+                data: tempActualArr,
+                borderWidth: 2,
+                backgroundColor: "rgb(255,99,132)",
+                borderColor: "#ac3f21"
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    offset: true,
+                    ticks: {
+                        userCallback: _IS_MULTIPLE_DAYS_READINGS_CHART ? function (item, index) {
+                            if (index === 12) return item.substring(0, item.length - 6);
+                            if (((index + 12) % 24) === 0) return item.substring(0, item.length - 6);
+                        } : '',
+                        autoSkip: false
+                    }
+                }]
+            },
+            maintainAspectRatio: false,
+            responsive: false
+        }
+    }
+    var myChart = new Chart(ctx, config);
+
+    $('#switch-bar-line').click((e) => {
+        myChart.destroy();
+        var temp = jQuery.extend(true, {}, config);
+        if (myChart.config.type == 'line') {
+            temp.type = 'bar';
+        } else {
+            temp.type = 'line';
+        }
+        myChart = new Chart(ctx, temp);
+    })
+}
+
+(function switchReadingsCalendarAndGraph() {
+    $('#switch-calendar-graph').on('click', () => {
+        if ($('#calendar-exchange-price').css('display') == 'block') {
+            $('#calendar-exchange-price').css("display", "none");
+            $('.exchange-prices-graph-div').css("display", "block");
+            $('div.row > div.offset-md-6 > label')
+                .css('display', 'block')
+        } else {
+            $(".exchange-prices-graph-div").css("display", "none");
+            $('div.row > div.offset-md-6 > label')
+                .css('display', 'none')
+            $('#calendar-exchange-price').css("display", "block");
+        }
+    })
+})();
+
 function listExchangePriceReadings(arr) {
+    notification('Loading...', 'loading');
     let calendarData;
     const url = '/api/filter/exchange-prices-hourly-readings/';
     if (!arr) {
@@ -116,7 +258,6 @@ function listExchangePriceReadings(arr) {
             toDate,
         ] = arr;
     }
-    notification('Loading...', 'loading');
     $.ajax({
         url,
         method: 'POST',
@@ -127,11 +268,9 @@ function listExchangePriceReadings(arr) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            console.log(data)
             if (data != '') {
-                console.log(data)
                 initialCalendarDate = new Date(data[0].date);
-            //    showReadingsChart(data);
+                showReadingsChart(data);
                 calendarData = getReadingsDataForCalendar(data);
             }
         },
@@ -141,52 +280,6 @@ function listExchangePriceReadings(arr) {
     });
     toastr.clear();
     return calendarData;
-
-    /*  dataTable = $('#exchange-prices-table').DataTable({
-         destroy: false,
-         "paging": true,
-         stateSave: true,
-         sAjaxDataProp: 'data',
-         "order": [
-             [0, "asc"]
-         ],
-         "processing": true,
-         "serverSide": true,
-         "columnDefs": [{
-             "className": "dt-center",
-             "targets": "_all"
-         }],
-         ajax: {
-             url: "/api/filter/exchange-prices-readings",
-             data: {
-                 fromDate,
-                 toDate,
-             },
-             type: 'POST',
-         },
-         columns: [{
-                 data: "id",
-                 render: function (data, type, row) {
-                     const date = row['date'];
-                     const fullDate = new Date(date);
-                     const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-                     return `<td><a href=/users/exchange-prices/daily/s?id=${row['id']}&date=${fixedDate}>${row['id']}</td>`;
-                 }
-             },
-             {
-                 data: "date",
-                 render: function (data, type, row) {
-                     const date = row['date'];
-                     const fullDate = new Date(date);
-                     const formattedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1<10?`0${fullDate.getMonth()+1}`:fullDate.getMonth()+1}-${fullDate.getDate()<10?`0${fullDate.getDate()}`:fullDate.getDate()}`;
-                     const fixedDate = `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()}`;
-                     return '<td>' + fixedDate + '</td>'
-                 },
-             },
-         ],
-         retrieve: true
-     }); */
-    toastr.clear();
 };
 
 function visualizeAllInputFromGetParams() {
