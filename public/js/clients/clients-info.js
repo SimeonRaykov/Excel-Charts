@@ -296,7 +296,7 @@ function showHourReadingChart(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: (Number(data[el][hr]) / 1000).toFixed(7),
+                            y: (Number(data[el][hr]) / 1000).toFixed(9),
                         }
                         chartData.push(hourObj);
                         labels.push(`${t.getHours()} ч.`);
@@ -315,7 +315,7 @@ function showHourReadingChart(data) {
                         let t = index == 2 ? date : incrementHoursOne(date)
                         let hourObj = {
                             t,
-                            y: (Number(data[el][hr]) / 1000).toFixed(7)
+                            y: (Number(data[el][hr]) / 1000).toFixed(9)
                         }
                         chartData.push(hourObj);
                         labels.push(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} - ${t.getHours()}ч.`);
@@ -888,10 +888,10 @@ function processDataHourly(data) {
                 currHourReading = {
                     groupId: diff,
                     id: key,
-                    title: value === null ? title = 'Няма стойност' : `Стойност: ${(Number(value)/1000).toFixed(7)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
+                    title: value === null ? title = 'Липсва стойност' : `Стойност: ${(Number(value)/1000).toFixed(9)} ${energyType==0?'Активна':energyType==1?'Реактивна':''}`,
                     start: timezoneOffset ? Number(currHourDate) - 1 : moveRestOneHr ? Number(currHourDate) - 3599999 : Number(currHourDate),
                     end: timezoneOffset ? Number(currHourDate) : moveRestOneHr ? Number(currHourDate) : Number(currHourDate) + 3599999,
-                    backgroundColor: diff === 0 ? colors.blue : colors.red,
+                    backgroundColor: value === null ? colors.red : colors.blue,
                     textColor: value === null ? 'white' : 'black'
                 }
                 let oldDate = new Date(currHourDate.getTime());

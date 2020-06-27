@@ -462,9 +462,9 @@ function showReadingsChart(data) {
 
     const megawattArr = tempActualArr.map(reading => ({
         t: reading.t,
-        y: (Number(reading.y) / 1000).toFixed(7),
+        y: (Number(reading.y) / 1000).toFixed(9),
     }));
-
+   
     var ctx = document.getElementById('readings-chart').getContext('2d');
     var config = {
         type: 'line',
@@ -597,7 +597,7 @@ function getReadingsDataForCalendar(data) {
 
     const megawattArr = sumOfAllArrs.map(reading => ({
         id: reading.id,
-        title: (Number(reading.title) / 1000).toFixed(7),
+        title: (Number(reading.title) / 1000).toFixed(9),
         start: reading.start,
         end: reading.end,
         backgroundColor: reading.backgroundColor
