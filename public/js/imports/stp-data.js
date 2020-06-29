@@ -147,7 +147,7 @@ $(document).ready(function () {
         stpPrediction.setCompany('ENERGO_PRO').setType(3).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2).setIndexOfClientName(1);
     } else if ($('#data-evn').is(':checked')) {
         company.setCompany('EVN').setErpType(1);
-        stpPrediction.setCompany('EVN').setType(1).setStartingIndexOfAmountValues(6).setIndexOfIdentCode(1);
+        stpPrediction.setCompany('EVN').setType(1).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2).setIndexOfClientName(1);
     } else if ($('#data-cez').is(':checked')) {
         company.setCompany('CEZ').setErpType(2);
         stpPrediction.setCompany('CEZ').setType(2).setStartingIndexOfAmountValues(5).setIndexOfIdentCode(2).setIndexOfClientName(1);
@@ -403,7 +403,7 @@ function processPredictionFile(e) {
                     clientsAll.push(client);
                     client = [];
                 }
-            }  
+            }
             saveClientsToDB(clientsAll);
 
             // ImportSTP Predictions
@@ -411,22 +411,25 @@ function processPredictionFile(e) {
             let clientIDs = [];
             let startingIndexOfLoadValues = stpPrediction.getStartingIndexOfAmountValues();
             for (let i = 1; i < arr.length; i += 1) {
-                let ident_code = arr[i][clientIdentCodeIndex];
-                clientIDs.push(ident_code);
-                for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
-                    if (ident_code != '' && ident_code != undefined && ident_code != null) {
-                        clientID = getClientsFromDB(ident_code);
-                        let dateHelper = arr[0][y].split('.');
-                        let currAmount = arr[i][y];
-                        let date = `${dateHelper[1]}-${dateHelper[0]}-01`;
-                        let createdDate = new Date();
-                        stpPredictionReading.push(clientID, `${date}`, currAmount, type, createdDate);
-                        allSTPpredictions.push(stpPredictionReading);
-                        stpPredictionReading = [];
+                const ident_code = arr[i][clientIdentCodeIndex];
+                if (ident_code != null && ident_code != undefined && ident_code != '') {
+                    clientIDs.push(ident_code);
+                    for (let y = startingIndexOfLoadValues; y < arr[i].length; y += 1) {
+                        if (ident_code != '' && ident_code != undefined && ident_code != null) {
+                            clientID = getClientsFromDB(ident_code);
+                            let dateHelper = arr[0][y].split('.');
+                            let currAmount = arr[i][y];
+                            let date = `${dateHelper[1]}-${dateHelper[0]}-01`;
+                            let createdDate = new Date();
+                            stpPredictionReading.push(clientID, `${date}`, currAmount, type, createdDate);
+                            allSTPpredictions.push(stpPredictionReading);
+                            stpPredictionReading = [];
+                        }
                     }
                 }
             }
             clientsWithoutProfile = getProfiles(clientIDs);
+            console.log(clients)
             if (clientsWithoutProfile.length > 0) {
                 let clientsNoProfile = $('<div class="clients-no-profile mt-5"></div>');
                 clientsNoProfile.text('Клиенти ' + clientsWithoutProfile.join(', ') + ' нямат профил! Трябва да им се сложат профили, за да се изчислят графиците!');

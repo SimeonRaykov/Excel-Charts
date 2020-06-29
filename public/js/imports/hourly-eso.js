@@ -97,11 +97,11 @@ function processEsoHourReadings(e) {
 
                         usedHourObj = {
                             currHour: val,
-                            currValue: undefinedHour === null? undefinedHour : arr[1][x] || -1
+                            currValue: undefinedHour === null ? undefinedHour : arr[1][x] || -1
                         }
                         producedHourObj = {
                             currHour: val,
-                            currValue: undefinedHour === null? undefinedHour : arr[2][x] || 0
+                            currValue: undefinedHour === null ? undefinedHour : arr[2][x] || 0
                         }
                         currUsedEnergyHourValues.push(usedHourObj);
                         currProducedEnergyHourValues.push(producedHourObj)

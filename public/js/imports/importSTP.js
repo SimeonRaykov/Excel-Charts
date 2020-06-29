@@ -186,7 +186,6 @@ function processFile(e) {
                     }
                 });
                 let filteredClients = filterClients(clientsAll);
-                console.log(filteredClients)
                 saveClientsToDB(filteredClients);
                 cl = getClientsFromDB(clientIds);
                 changeClientIdForReadings(readingsAll, cl)
@@ -344,6 +343,7 @@ function processFile(e) {
             let allSTPHourReadings = [];
             let clientsWithoutProfile = [];
             let currHourReadingClient = col[3][10];
+            let STPClients = [];
             for (let i = 3; i < col.length; i += 1) {
                 try {
                     let currentDateFrom = col[i][12].split(".");
@@ -357,8 +357,10 @@ function processFile(e) {
                     if (hasProfile == 0 || hasProfile == [] || hasProfile == '') {
                         clientsWithoutProfile.push(currHourReadingClient);
                     }
+                    if (hasProfile && hasProfile[0].metering_type == 2) {
+                        STPClients.push(currHourReadingClient.replace(/['"]+/g, ''));
+                    }
                     while (currHourReadingClient == col[i + 1][10]) {
-
                         let currDiff = col[i][21].replace(/"/g, '');
                         let currScaleType = col[i][17].replace(/"/g, '');
                         currDiff = currDiff.replace(/,/g, '\.');
@@ -387,23 +389,25 @@ function processFile(e) {
                     let currDate = startDate;
                     const currClientName = allSTPHourReadings[x][4];
                     const currClientID = allSTPHourReadings[x][0].replace(/"/g, '');
-                    const formattedDate = `${endDate.getFullYear()}-${endDate.getMonth()+1}-${endDate.getDate()}`;
-                    const monthlyAmount = getProfileAmount(currClientID, formattedDate);
-                    for (let i = 0; i < monthlyAmount.length; i += 1) {
-                        const currDateVals = Object.values(monthlyAmount[i]);
-                        const currDate = new Date(monthlyAmount[i].date);
-                        const formattedCurrDate = `${currDate.getFullYear()}-${currDate.getMonth()+2<10?`0${currDate.getMonth()+2}`:currDate.getMonth()+2}-${currDate.getDate()<10?`0${currDate.getDate()}`:currDate.getDate()}`;
-                        for (let val = 0; val < 24; val += 1) {
-                            currHourObj = {
-                                currHour: val,
-                                currValue: Number(allSTPHourReadings[x][3]) * Number(currDateVals[val + 1])
+                    if (STPClients.includes(currClientID)) {
+                        const formattedDate = `${endDate.getFullYear()}-${endDate.getMonth()+1}-${endDate.getDate()}`;
+                        const monthlyAmount = getProfileAmount(currClientID, formattedDate);
+                        for (let i = 0; i < monthlyAmount.length; i += 1) {
+                            const currDateVals = Object.values(monthlyAmount[i]);
+                            const currDate = new Date(monthlyAmount[i].date);
+                            const formattedCurrDate = `${currDate.getFullYear()}-${currDate.getMonth()+2<10?`0${currDate.getMonth()+2}`:currDate.getMonth()+2}-${currDate.getDate()<10?`0${currDate.getDate()}`:currDate.getDate()}`;
+                            for (let val = 0; val < 24; val += 1) {
+                                currHourObj = {
+                                    currHour: val,
+                                    currValue: Number(allSTPHourReadings[x][3]) * Number(currDateVals[val + 1])
+                                }
+                                currHourValues.push(currHourObj);
                             }
-                            currHourValues.push(currHourObj);
+                            currHourReading.push(currClientName, currClientID, typeEnergy, formattedCurrDate, currHourValues, erpType, new Date());
+                            finalSTPHourReadings.push(currHourReading);
+                            currHourReading = [];
+                            currHourValues = [];
                         }
-                        currHourReading.push(currClientName, currClientID, typeEnergy, formattedCurrDate, currHourValues, erpType, new Date());
-                        finalSTPHourReadings.push(currHourReading);
-                        currHourReading = [];
-                        currHourValues = [];
                     }
                 }
                 changeClientIdForHourReadings(finalSTPHourReadings, cl);
@@ -422,7 +426,6 @@ function processFile(e) {
                 let clientNumber;
                 let ident_code;
                 let client_name;
-                console.log(value)
                 if (i !== 0 && i !== 1) {
                     if (value['0'] != '""' && value['0'] != null && value['0'] != undefined && value['0'] != '') {
                         if (value['7'] !== undefined) {
@@ -469,11 +472,8 @@ function processFile(e) {
                 }
             });
             saveClientsToDB(clientsAll);
-            console.log(clientIds)
             const mappedClientsIDs = mapClientsIDsToGetIdentCodeCorrectly(clientIds);
-            console.log(mappedClientsIDs)
             cl = getClientsFromDB(mappedClientsIDs);
-            console.log(cl)
             changeClientIdForReadings(readingsAll, cl)
             saveReadingsToDB(readingsAll);
         }
@@ -612,7 +612,7 @@ function getProfile(identCode) {
         method: 'GET',
         contentType: 'application/json',
         dataType: 'json',
-        async: true,
+        async: false,
         success: function (data) {
             profile = data;
         },
@@ -680,6 +680,7 @@ function saveSTPHourReadingsToDB(readings) {
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
+        async: false,
         data: JSON.stringify(readings),
         success: function (data) {
             console.log('Readings saved');

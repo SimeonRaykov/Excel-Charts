@@ -250,6 +250,7 @@ function processHourReadingCEZ(e) {
                     }
                 }
             }
+            console.log(allClients)
             saveClientsToDB(allClients);
             cl = getClientsFromDB(convertClientIDsToString(clientsIDs));
             changeClientIdForHourReadings(allHourReadings, cl);
@@ -307,6 +308,7 @@ function processHourReadingEVN_EnergoPRO(e) {
                     if (company.getCompany() === companies.EVN) {
                         clientName = '';
                         clientID = worksheet['A2'].v;
+                        console.log(clientID);
                     } else if (company.getCompany() === companies.ENERGO_PRO) {
                         clientName = worksheet['A1'].v;
                         clientID = (worksheet['A2'].v).split(" ")[2];
@@ -380,11 +382,14 @@ function processHourReadingEVN_EnergoPRO(e) {
                     clientsALL.push(client);
                     // Last Iteration of files []
                     if (z + 1 === files.length) {
+                        console.log(clientsALL);
+                        console.log(allHourReadings);
                         saveClientsToDB(clientsALL);
                         let cl;
                         cl = getClientsFromDB(convertClientIDsToString(clientIDs));
                         changeClientIdForHourReadings(allHourReadings, cl);
                         saveHourReadingsToDB(allHourReadings);
+                        console.log(allHourReadings);
                     }
                 };
             }
@@ -458,7 +463,7 @@ function processGraphFile(e) {
                 }
             }
 
-              saveClientsToDB(clientsAll);
+            saveClientsToDB(clientsAll);
             let val = 0;
             let date = new Date(documentDate);
             for (let i = 1; i < arr.length; i += 1) {
