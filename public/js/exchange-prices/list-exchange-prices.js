@@ -2,7 +2,6 @@
 $(document).ready(function () {
     visualizeAllInputFromGetParams();
     hideGraph();
-    listExchangePriceReadings();
 });
 
 const colors = {
@@ -275,6 +274,7 @@ function listExchangePriceReadings(arr) {
             }
         },
         error: function (jqXhr, textStatus, errorThrown) {
+            notification(jqXhr.textStatus,'error');
             console.log(errorThrown);
         }
     });
