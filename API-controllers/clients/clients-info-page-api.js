@@ -188,7 +188,8 @@ router.get('/api/imbalances/getClient/:fromDate/:toDate/:id', (req, res) => {
     let sql = `SELECT clients.ident_code,hour_readings.date, hour_readings.hour_zero AS 'hr0',hour_readings.hour_one AS 'hr1',  hour_readings.hour_two AS 'hr2', hour_readings.hour_three AS 'hr3', hour_readings.hour_four AS 'hr4', hour_readings.hour_five AS 'hr5', hour_readings.hour_six AS 'hr6', hour_readings.hour_seven AS 'hr7', hour_readings.hour_eight AS 'hr8', hour_readings.hour_nine AS 'hr9', hour_readings.hour_ten AS 'hr10', hour_readings.hour_eleven AS 'hr11', hour_readings.hour_twelve AS 'hr12', hour_readings.hour_thirteen AS 'hr13', hour_readings.hour_fourteen AS 'hr14', hour_readings.hour_fifteen AS 'hr15', hour_readings.hour_sixteen AS 'hr16', hour_readings.hour_seventeen AS 'hr17', hour_readings.hour_eighteen AS 'hr18', hour_readings.hour_nineteen AS 'hr19', hour_readings.hour_twenty AS 'hr20', hour_readings.hour_twentyone AS 'hr21', hour_readings.hour_twentytwo AS 'hr22', hour_readings.hour_twentythree AS 'hr23', hour_prediction.hour_zero AS 'phr0', hour_prediction.hour_one AS 'phr1',  hour_prediction.hour_two AS 'phr2', hour_prediction.hour_three AS 'phr3', hour_prediction.hour_four AS 'phr4', hour_prediction.hour_five AS 'phr5', hour_prediction.hour_six AS 'phr6', hour_prediction.hour_seven AS 'phr7', hour_prediction.hour_eight AS 'phr8', hour_prediction.hour_nine AS 'phr9', hour_prediction.hour_ten AS 'phr10', hour_prediction.hour_eleven AS 'phr11', hour_prediction.hour_twelve AS 'phr12', hour_prediction.hour_thirteen AS 'phr13', hour_prediction.hour_fourteen AS 'phr14', hour_prediction.hour_fifteen AS 'phr15', hour_prediction.hour_sixteen AS 'phr16', hour_prediction.hour_seventeen AS 'phr17', hour_prediction.hour_eighteen AS 'phr18', hour_prediction.hour_nineteen AS 'phr19', hour_prediction.hour_twenty AS 'phr20', hour_prediction.hour_twentyone AS 'phr21', hour_prediction.hour_twentytwo AS 'phr22', hour_prediction.hour_twentythree AS 'phr23', is_manufacturer FROM clients
     INNER JOIN hour_readings on clients.id = hour_readings.client_id 
     INNER JOIN hour_prediction on hour_prediction.client_id = clients.id
-    WHERE clients.id = ${clientID} `;
+    WHERE clients.id = ${clientID} AND hour_readings.energy_type = 0 `;
+    //  Imbalances are calculated only for active energy 
     if (fromDate != -1 && toDate != -1) {
         sql += ` AND hour_prediction.date>='${fromDate}' AND hour_prediction.date<= '${toDate}' `;
     } else if (fromDate != -1 && toDate == -1) {
@@ -445,9 +446,10 @@ router.get('/api/imbalances/getClient/:id', (req, res) => {
     INNER JOIN hour_readings on clients.id = hour_readings.client_id 
     INNER JOIN hour_prediction on hour_prediction.client_id = clients.id
     WHERE clients.id = ${req.params.id}
+    AND hour_readings.energy_type = 0
     AND hour_prediction.date = hour_readings.date
 `;
-
+//  Imbalances are calculated only for active energy
     db.query(sql, (err, result) => {
         if (err) {
             throw err;

@@ -6,8 +6,10 @@ const {
 } = require('../../db.js');
 
 router.post('/api/getSingleClient', (req, res) => {
-    let ident_code = req.body.ident_code;
-    let sql = `SELECT * FROM clients WHERE ident_code = '${ident_code}'`;
+    const {
+        ident_code
+    } = req.body;
+    const sql = `SELECT id FROM clients WHERE ident_code = '${ident_code}'`;
     db.query(sql, (err, result) => {
         if (err) {
             throw err;

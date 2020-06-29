@@ -7,11 +7,10 @@ const {
 } = require('../../db.js');
 
 router.get('/api/client/:identCode', async (req, res) => {
-    let {
+    const {
         identCode
     } = req.params;
-    console.log(identCode)
-    let sql = `SELECT id
+    const sql = `SELECT id
      FROM clients
     WHERE ident_code = '${identCode}'
     LIMIT 1`;
@@ -322,10 +321,10 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                     addToFinalReadings = false;
                 }
             } */
-     //   } else {
-            // Insert row for first time
-            addToFinalReadings = true;
-      //  }
+        //   } else {
+        // Insert row for first time
+        addToFinalReadings = true;
+        //  }
         if (addToFinalReadings) {
             filteredHourReading = [currDate, hour_one, hour_two, hour_three, hour_four,
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
