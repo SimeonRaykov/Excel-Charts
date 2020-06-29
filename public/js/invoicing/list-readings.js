@@ -40,21 +40,50 @@ $(document).ready(function () {
 }());
 
 (function issueInvoices() {
-    $('#invoiceBTN').click(() => {
-        $.ajax({
-            url: `/api/filter/invoices-stp`,
-            method: 'POST',
-            data: {
-                IDs: localStorage.getItem('current-invoicing-data').split(),
-            },
-            dataType: 'json',
-            success: function (data) {
-                clearInvoices();
-            },
-            error: function (jqXhr, textStatus, errorThrown) {
-                console.log(errorThrown);
+    $('#invoiceBTN').click((e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const allInformation = $('#list-readings').DataTable().rows().data();
+        const extractIdentCodeRegex = /(?<=\>).*(?=<)/;
+        const modifiedArr = [];
+        let currInvoice = {};
+        for (let i = 0; i < allInformation.length; i += 1) {
+            const invoiceNum = Number(new Date());
+            const identCode = allInformation[i][1].match(extractIdentCodeRegex)[0];
+            const period = `${allInformation[i][3]} - ${allInformation[i][4]}`;
+            const clientName = allInformation[i][2];
+            const total_amount = allInformation[i][9];
+            const day_amount = allInformation[i][5];
+            const night_amount = allInformation[i][6];
+            const high_amount = allInformation[i][7];
+            currInvoice = {
+                "invoice_number": invoiceNum,
+                "total_amount": total_amount,
+                "prices": [1, 2, 3, 1, 2, 3, 1, 2, 3],
+                "day_amount": day_amount,
+                "night_amount": night_amount,
+                "high_amount": high_amount,
+                "period": period,
+                "ident_code": identCode,
+                "client_name": clientName,
             }
-        });
+            modifiedArr.push(currInvoice);
+        }
+        console.log(modifiedArr);
+        /*  $.ajax({
+             url: `/api/filter/invoices-stp`,
+             method: 'POST',
+             data: {
+                 IDs: localStorage.getItem('current-invoicing-data').split(),
+             },
+             dataType: 'json',
+             success: function (data) {
+                 clearInvoices();
+             },
+             error: function (jqXhr, textStatus, errorThrown) {
+                 console.log(errorThrown);
+             }
+         }); */
     })
 }());
 
