@@ -147,7 +147,7 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                 hour_zero = currHourReading[1][z].currValue;
             }
         }
-        let selectReading = `SELECT * FROM hour_readings_eso 
+        /* let selectReading = `SELECT * FROM hour_readings_eso 
         WHERE date = '${currDate}'
         AND type = '${typeEnergy}'
         AND client_id = '${clID}'
@@ -321,11 +321,11 @@ async function filterEsoHourReadings(allHourReadingsESO) {
                     dbSync.query(updateQuery);
                     addToFinalReadings = false;
                 }
-            }
-        } else {
+            } */
+     //   } else {
             // Insert row for first time
             addToFinalReadings = true;
-        }
+      //  }
         if (addToFinalReadings) {
             filteredHourReading = [currDate, hour_one, hour_two, hour_three, hour_four,
                 hour_five, hour_six, hour_seven, hour_eight, hour_nine, hour_ten, hour_eleven,
