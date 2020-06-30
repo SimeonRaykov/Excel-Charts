@@ -40,7 +40,7 @@ $(document).ready(function () {
 }());
 
 (function issueInvoices() {
-    $('#invoiceBTN').click((e) => {
+    $('#invoiceBTN').click(function (e) {
         e.stopPropagation();
         e.preventDefault();
         const allInformation = $('#list-readings').DataTable().rows().data();
@@ -48,7 +48,7 @@ $(document).ready(function () {
         const modifiedArr = [];
         let currInvoice = {};
         for (let i = 0; i < allInformation.length; i += 1) {
-            const invoiceNum = Number(new Date());
+            const invoiceNum = Number(new Date()) + i;
             const identCode = allInformation[i][1].match(extractIdentCodeRegex)[0];
             const period = `${allInformation[i][3]} - ${allInformation[i][4]}`;
             const clientName = allInformation[i][2];
@@ -56,6 +56,7 @@ $(document).ready(function () {
             const day_amount = allInformation[i][5];
             const night_amount = allInformation[i][6];
             const high_amount = allInformation[i][7];
+            const duty = allInformation[i][10];
             currInvoice = {
                 "invoice_number": invoiceNum,
                 "total_amount": total_amount,
@@ -66,26 +67,54 @@ $(document).ready(function () {
                 "period": period,
                 "ident_code": identCode,
                 "client_name": clientName,
+                "duty": duty,
             }
             modifiedArr.push(currInvoice);
         }
-        console.log(modifiedArr);
-        /*  $.ajax({
-             url: `/api/filter/invoices-stp`,
-             method: 'POST',
-             data: {
-                 IDs: localStorage.getItem('current-invoicing-data').split(),
-             },
-             dataType: 'json',
-             success: function (data) {
-                 clearInvoices();
-             },
-             error: function (jqXhr, textStatus, errorThrown) {
-                 console.log(errorThrown);
-             }
-         }); */
-    })
+        generatePDF(modifiedArr);
+    });
 }());
+
+function generatePDF(arr) {
+    let content = [];
+    for (let i = 0; i < arr.length; i += 1) {
+        content.push({
+            lineHeight: 2,
+            text: `Фактура № ${arr[i].invoice_number}`
+        });
+        content.push(`за периода ${arr[i].period}`);
+        content.push(`Електромер № ${arr[i].ident_code}`);
+        content.push(`Акциз ${arr[i].duty}`);
+        content.push(`Задължения към обществото чл.31,ал.3ПТЕЕ`);
+        if (arr[i].high_amount != '-') {
+            content.push(`Пренос Енерго Про Високо Н - АВ ${arr[i].high_amount}`);
+            content.push(`Достъп Енерго Про Високо Н - АВ ${arr[i].high_amount}`);
+            content.push(`Пренос Енерго Про Ниско Н - АВ ${arr[i].high_amount}`);
+            content.push(`Достъп Енерго Про Средно/Ниско Н - АВ ${arr[i].high_amount}`);
+        }
+        if (arr[i].day_amount != '-') {
+            content.push(`Пренос Енерго Про Високо Н - АД ${arr[i].day_amount}`);
+            content.push(`Достъп Енерго Про Високо Н - АД ${arr[i].day_amount}`);
+            content.push(`Пренос Енерго Про Ниско Н - АД ${arr[i].day_amount}`);
+            content.push(`Достъп Енерго Про Средно/Ниско Н - АД ${arr[i].day_amount}`);
+        }
+        if (arr[i].night_amount != '-') {
+            content.push(`Пренос Енерго Про Високо Н - АН ${arr[i].night_amount}`);
+            content.push(`Достъп Енерго Про Високо Н - АН ${arr[i].night_amount}`);
+            content.push(`Пренос Енерго Про Ниско Н - АН ${arr[i].night_amount}`);
+            content.push(`Достъп Енерго Про Средно/Ниско Н - АН ${arr[i].night_amount}`);
+        }
+        content.push(`ИТ ${arr[i].client_name}`);
+        content.push({
+            text: '',
+            pageBreak: 'after'
+        })
+    }
+    const docDefinition = {
+        content
+    };
+    pdfMake.createPdf(docDefinition).download();
+}
 
 function clearInvoices() {
     localStorage.removeItem('current-invoicing-data');
