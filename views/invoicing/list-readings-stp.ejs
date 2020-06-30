@@ -59,8 +59,8 @@
                 <hr>
                 <div class="row justify-content-center"><button type="submit" id="search"
                         class="btn-primary btn-lg mr-3">Търсене</button>
-                        <button id="invoiceBTN" class="btn-warning btn-lg">Фактуриране</button>
-                    </div>
+                    <button id="invoiceBTN" class="btn-warning btn-lg">Фактуриране</button>
+                </div>
             </form>
         </div>
     </div>
@@ -86,11 +86,13 @@
         <tbody id="tBody">
         </tbody>
     </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.65/pdfmake.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.65/vfs_fonts.js"></script>
     <script src="../js/helper-functions/find-get-parameter.js"></script>
     <script src="../js/helper-functions/get-this-and-last-month-dates.js"></script>
     <script src="../js/helper-functions/toastr-notifications.js"></script>
     <script src="../js/helper-functions/remove-duplicates-from-array.js"></script>
     <script src="../js/invoicing/list-readings.js"></script>
 </body>
-
+  
 </html>
